@@ -1,0 +1,8 @@
+{
+  "name": "adeps-test-local-max-test-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": { "test": "node --test bridge.test.js" },
+  "description": "Local manual Max channel-check bridge; no automatic audio start."
+}

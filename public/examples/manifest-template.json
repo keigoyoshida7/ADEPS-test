@@ -1,0 +1,35 @@
+{
+  "schema": "adeps-test-ir-bundle/1",
+  "provenance": "measured_unverified",
+  "measurement_date": "REPLACE",
+  "venue": "user-supplied",
+  "speaker_files": [
+    "speaker_01.wav",
+    "speaker_02.wav"
+  ],
+  "training_indices": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "heldout_indices": [
+    4,
+    5
+  ],
+  "speaker_labels": [
+    "REPLACE",
+    "REPLACE"
+  ],
+  "microphone_labels": [
+    "M1",
+    "M2",
+    "M3",
+    "M4",
+    "V1",
+    "V2"
+  ],
+  "time_reference": "REPLACE: common trigger/time origin; never align each IR separately",
+  "level_reference": "REPLACE: source gain, microphone gain/calibration",
+  "sample_rate_note": "read from WAV header; all files must match"
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "adeps-test-adeps-adapter-requirements/1",
+  "runnable": false,
+  "status": "OFFICIAL_WEIGHTS_AND_IMPLEMENTATION_NOT_AVAILABLE",
+  "source": "https://arxiv.org/abs/2608.24558v2",
+  "required": [
+    "weights_sha256",
+    "model_license",
+    "official_implementation_commit",
+    "sample_rate_hz",
+    "stft_fft",
+    "stft_window",
+    "stft_hop",
+    "sh_ordering",
+    "sh_normalization",
+    "array_transfer_V",
+    "gamma_regularization",
+    "eta_data_consistency",
+    "denoiser_scaling",
+    "sigma_schedule_endpoint",
+    "reference_evaluation_protocol"
+  ],
+  "paper_confirmed": {
+    "prior_order": 5,
+    "evaluation_order": 1,
+    "steps": 150,
+    "alpha": 0.67,
+    "beta": 3,
+    "sigma_max_inference": 20,
+    "sigma_max_training": 80,
+    "sigma_min": 0.002,
+    "rho": 10
+  },
+  "notes": [
+    "This is a checklist, not an executable ADEPS implementation."
+  ]
+}

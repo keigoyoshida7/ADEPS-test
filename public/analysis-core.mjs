@@ -1,0 +1,130 @@
+// Browser adapter. Copy only the three reviewed Python modules next to the worker
+// in ./python/. No server.py or venue/reference files are required or loaded.
+export const PYODIDE_VERSION = "314.0.6";
+export const MAX_REQUEST_BYTES = 32_000_000;
+
+const PYTHON_ADAPTER = `
+import sys, json
+from pathlib import Path
+sys.path.insert(0, "/app/backend")
+from numerics import run_demo, to_jsonable
+
+def _adeps_dispatch_json(operation, config_json):
+    try:
+        config = json.loads(config_json)
+        if not isinstance(config, dict):
+            raise ValueError("JSON object required")
+        if operation == "playback":
+            if config.get("geometry_profile", "virtual") != "virtual":
+                raise ValueError("The public version supports the virtual layout only")
+            allowed = {"lambda_relative", "reflection", "fault_gain_db", "fault_delay_ms",
+                       "max_column_norm", "speaker_positions", "microphone_positions"}
+            config = {key: value for key, value in config.items() if key in allowed}
+            for key in ("speaker_positions", "microphone_positions"):
+                if key in config and len(config[key]) > 64:
+                    raise ValueError("At most 64 positions are supported")
+            result = run_demo(**config, geometry_profile="virtual")
+        elif operation == "capture":
+            from capture import run_capture
+            result = run_capture(config)
+        elif operation == "ir":
+            from measurements import analyze_bundle
+            result = analyze_bundle(Path("/tmp/adeps-test-input.zip").read_bytes())
+        elif operation == "example-ir":
+            from measurements import sample_zip
+            Path("/tmp/adeps-test-example.zip").write_bytes(sample_zip())
+            result = {"filename": "ADEPS_test_synthetic_IR_example.zip", "mime": "application/zip"}
+        else:
+            raise ValueError("Unsupported browser analysis operation")
+        return json.dumps({"ok": True, "result": to_jsonable(result)}, ensure_ascii=False, allow_nan=False)
+    except Exception as exc:
+        return json.dumps({"ok": False, "error": {"name": type(exc).__name__, "message": str(exc)}}, ensure_ascii=False)
+`;
+
+export function createAnalysisEngine({ loadPyodide, loadSource, progress = () => {} }) {
+  let ready;
+  let scipyReady;
+  let queue = Promise.resolve();
+
+  async function boot() {
+    progress("runtime");
+    const py = await loadPyodide();
+    progress("numpy");
+    await py.loadPackage("numpy");
+    py.FS.mkdirTree("/app/backend");
+    const names = ["numerics", "capture", "measurements"];
+    const sources = await Promise.all(names.map(name => loadSource(name)));
+    names.forEach((name, i) => py.FS.writeFile(`/app/backend/${name}.py`, sources[i], { encoding: "utf8" }));
+    py.runPython(PYTHON_ADAPTER);
+    progress("ready");
+    return py;
+  }
+
+  async function execute({ operation, config = {}, bytes }) {
+    if (!["status", "playback", "capture", "ir", "example-ir"].includes(operation)) {
+      throw new Error("This hosted version has no Max, Dante, or audio-device connection");
+    }
+    const configJson = JSON.stringify(config);
+    if (!configJson || new TextEncoder().encode(configJson).byteLength > MAX_REQUEST_BYTES) {
+      throw new Error("JSON request limit: 32 MB");
+    }
+    if (operation === "ir" && (!(bytes instanceof ArrayBuffer) || !bytes.byteLength || bytes.byteLength > MAX_REQUEST_BYTES)) {
+      throw new Error("Choose an IR ZIP no larger than 32 MB");
+    }
+    ready ||= boot();
+    const py = await ready;
+    if (["capture", "ir", "example-ir"].includes(operation)) {
+      if (!scipyReady) {
+        progress("scipy");
+        scipyReady = py.loadPackage("scipy");
+      }
+      await scipyReady;
+    }
+    if (operation === "status") {
+      return {
+        service: "adeps-test-audio-lab-browser",
+        engine: "pyodide",
+        pyodide_version: py.version,
+        numpy_version: py.runPython("__import__('numpy').__version__"),
+        scipy_version: scipyReady ? py.runPython("__import__('scipy').__version__") : null,
+        max_available: false,
+        dante_available: false,
+        audio_output: "none",
+        data_processing: "browser memory",
+      };
+    }
+    try {
+      if (operation === "ir") py.FS.writeFile("/tmp/adeps-test-input.zip", new Uint8Array(bytes));
+      py.globals.set("_adeps_operation", operation);
+      py.globals.set("_adeps_config_json", configJson);
+      progress("computing");
+      // A Python str is copied to a JavaScript string. No PyProxy leaves the
+      // worker, and to_jsonable keeps existing complex/null serialization.
+      const envelope = JSON.parse(py.runPython("_adeps_dispatch_json(_adeps_operation, _adeps_config_json)"));
+      if (!envelope.ok) {
+        const error = new Error(envelope.error.message);
+        error.name = envelope.error.name;
+        throw error;
+      }
+      if (operation === "example-ir") {
+        const zip = py.FS.readFile("/tmp/adeps-test-example.zip").slice();
+        return { ...envelope.result, bytes: zip.buffer };
+      }
+      return envelope.result;
+    } finally {
+      py.globals.delete("_adeps_operation");
+      py.globals.delete("_adeps_config_json");
+      for (const path of ["/tmp/adeps-test-input.zip", "/tmp/adeps-test-example.zip"]) {
+        if (py.FS.analyzePath(path).exists) py.FS.unlink(path);
+      }
+      progress("ready");
+    }
+  }
+
+  return function request(message) {
+    // One Python interpreter and one temporary IR path: serialize requests.
+    const result = queue.then(() => execute(message));
+    queue = result.catch(() => {});
+    return result;
+  };
+}

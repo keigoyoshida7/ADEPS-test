@@ -1,0 +1,68 @@
+{
+  "app": "outputs/ADEPS-test",
+  "source_sha256": {
+    "backend/numerics.py": "309d2083dac901b494e9151316bd5a95b5d73f2dbb6dcaa7656d6ebf07f84af0",
+    "backend/capture.py": "a6ceee0694a31d4dd608fa047d4c4aaa63ffd72cc2362a8e0f482c40234c3a23",
+    "backend/measurements.py": "c0119dec9be8246b5267a14cc549ab3530ab33ee1b0825dae536a2823f676e1d",
+    "public/analysis-core.mjs": "eb59c311c107fadc5692ed4561e7c908d49c3a4269f481bb14dd4e9f68f49743"
+  },
+  "verified_at": "2026-09-09T06:51:44.663Z",
+  "environment": "Node WebAssembly; browser worker wrapper and GitHub Pages delivery not tested by this script",
+  "native": {
+    "python": "3.11.8",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1"
+  },
+  "wasm": {
+    "service": "adeps-test-audio-lab-browser",
+    "engine": "pyodide",
+    "pyodide_version": "314.0.6",
+    "numpy_version": "2.4.6",
+    "scipy_version": "1.18.0",
+    "max_available": false,
+    "dante_available": false,
+    "audio_output": "none",
+    "data_processing": "browser memory"
+  },
+  "elapsed_ms": 6612,
+  "comparisons": {
+    "playback_default": {
+      "numbers": 181987,
+      "max_abs_error": 1.9038282061956124e-10
+    },
+    "playback_changed": {
+      "numbers": 181979,
+      "max_abs_error": 2.255262643302558e-11
+    },
+    "capture_default": {
+      "numbers": 517,
+      "max_abs_error": 5.8903992794512305e-12
+    },
+    "capture_coplanar": {
+      "numbers": 453,
+      "max_abs_error": 4.844125101044483e-12
+    },
+    "capture_matched": {
+      "numbers": 517,
+      "max_abs_error": 4.796518737748556e-10
+    },
+    "ir_sample": {
+      "numbers": 5134,
+      "max_abs_error": 7.602807272633072e-13
+    }
+  },
+  "numeric_tolerance": "abs error <= 1e-9 + 1e-8 * abs(native value); exact shape/string/null equality",
+  "tests": {
+    "run": 39,
+    "failures": 0,
+    "errors": 0,
+    "log": ".......................................\n----------------------------------------------------------------------\nRan 39 tests in 1.034s\n\nOK\n"
+  },
+  "expected_rejections": [
+    "This hosted version has no Max, Dante, or audio-device connection",
+    "The public version supports the virtual layout only",
+    "Choose an IR ZIP no larger than 32 MB"
+  ],
+  "private_reference_files_loaded": false,
+  "temporary_ir_files_removed": true
+}

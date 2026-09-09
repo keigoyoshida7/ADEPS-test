@@ -1,0 +1,78 @@
+{
+  "schema": "adeps-test-synthetic-layout/1",
+  "provenance": "Synthetic example, not a physical venue or survey",
+  "room_dimensions_m": [
+    12,
+    9,
+    4
+  ],
+  "room_origin_m": [
+    0,
+    0,
+    0
+  ],
+  "speakers_m": [
+    [
+      1.5,
+      2,
+      3.6
+    ],
+    [
+      1.5,
+      4.5,
+      3.6
+    ],
+    [
+      1.5,
+      7,
+      3.6
+    ],
+    [
+      4.5,
+      2,
+      3.6
+    ],
+    [
+      4.5,
+      4.5,
+      3.6
+    ],
+    [
+      4.5,
+      7,
+      3.6
+    ],
+    [
+      7.5,
+      2,
+      3.6
+    ],
+    [
+      7.5,
+      4.5,
+      3.6
+    ],
+    [
+      7.5,
+      7,
+      3.6
+    ],
+    [
+      10.5,
+      2,
+      3.6
+    ],
+    [
+      10.5,
+      4.5,
+      3.6
+    ],
+    [
+      10.5,
+      7,
+      3.6
+    ]
+  ],
+  "units": "metres",
+  "axes": "x=width, y=depth, z=height"
+}
