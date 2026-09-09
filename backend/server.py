@@ -1,5 +1,5 @@
 """Loopback-only scientific test API; no Dante/AFC writes or audio output."""
-import json,time,struct,socket,threading,traceback,io
+import json,time,struct,socket,threading,traceback,io,base64
 from http.server import ThreadingHTTPServer,BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from numerics import run_demo,to_jsonable
@@ -61,6 +61,12 @@ class Handler(BaseHTTPRequestHandler):
             if not 0<size<=32_000_000:raise ValueError('アップロード上限は32 MBです。')
             raw=self.rfile.read(size);path=urlparse(self.path).path
             if path=='/api/ir':result=analyze_bundle(raw)
+            elif path=='/api/neural-audio':
+                from neural_audio import run_audio
+                config=json.loads(self.headers.get('X-ADEPS-Config','{}'))
+                if not isinstance(config,dict):raise ValueError('JSON object required')
+                result,archive=run_audio(raw,config)
+                result.update(zip_base64=base64.b64encode(archive).decode(),filename='ADEPS_test_FOA_comparison.zip')
             else:
                 cfg=json.loads(raw)
                 if not isinstance(cfg,dict):raise ValueError('JSON object required')
@@ -71,6 +77,12 @@ class Handler(BaseHTTPRequestHandler):
                         if key in cfg and len(cfg[key])>64:raise ValueError('配置は64点までです。')
                     result=run_demo(**cfg)
                 elif path=='/api/capture':result=run_capture(cfg)
+                elif path=='/api/neural':
+                    from neural import run_neural
+                    result=run_neural(cfg)
+                elif path=='/api/neural-example':
+                    from neural_audio import example_zip
+                    result={'zip_base64':base64.b64encode(example_zip()).decode(),'filename':'ADEPS_test_array_audio_example.zip'}
                 elif path=='/api/max':result=bridge.command(cfg.get('command'),cfg.get('channel'))
                 else:self.send({'error':'Not found'},404);return
             self.send(result)

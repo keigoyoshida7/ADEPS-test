@@ -1,0 +1,17 @@
+{
+  "schema": "adeps-test-array-audio/1",
+  "sh_ordering": "ACN",
+  "sh_normalization": "N3D",
+  "analysis_sample_rate_hz": 16000,
+  "n_fft": 256,
+  "hop": 128,
+  "array_model": "freefield-omnidirectional",
+  "microphone_positions_m": [
+    [0.034641016151, 0.034641016151, 0.034641016151],
+    [0.034641016151, -0.034641016151, -0.034641016151],
+    [-0.034641016151, 0.034641016151, -0.034641016151],
+    [-0.034641016151, -0.034641016151, 0.034641016151]
+  ],
+  "provenance": "TEMPLATE ONLY: replace coordinates with your actual omni array positions, in WAV channel order. These are synthetic tetrahedron positions, not measured device data.",
+  "instructions": "At ZIP root: array.json and synchronous microphones.wav. Optional reference.wav must be aligned 4ch real ACN/N3D. To use measured V, remove array_model and supply frequencies_hz, V_real and V_imag [F,Q,36] matching the STFT grid. See NEURAL_PROTOCOL.md."
+}

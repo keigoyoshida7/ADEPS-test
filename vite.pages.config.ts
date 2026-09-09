@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/postcss';
-export default defineConfig(({ command }) => ({
+export default defineConfig(({ command, isPreview }) => ({
   base:
-    command === 'serve' ? '/' : process.env.VITE_BASE_PATH || '/ADEPS-test/',
+    command === 'serve' && !isPreview ? '/' : process.env.VITE_BASE_PATH || '/ADEPS-test/',
   plugins: [react()],
   css: { postcss: { plugins: [tailwindcss()] } },
   server: {

@@ -1,0 +1,145 @@
+{
+  "id": "tiny-spatial-v1",
+  "schema": "adeps-test-independent-mlp/1",
+  "official_model": false,
+  "paper_performance_reproduced": false,
+  "architecture": "per-time-frequency-bin EDM MLP, 72 real/imag coordinates + 8 log-sigma features, two SiLU hidden layers; no temporal or frequency context",
+  "hidden_channels": 96,
+  "parameter_count": 24072,
+  "prior_order": 5,
+  "sh_ordering": "real ACN",
+  "sh_normalization": "N3D",
+  "alpha": 0.67,
+  "beta": 3,
+  "sigma_data": 2.218841552734375,
+  "weights_sha256": "a5c7e36437b4ed932ff5bbf04a56ab96b3e12954b49c2bb699035370608e48cb",
+  "training": {
+    "seed": 7319,
+    "steps": 4000,
+    "batch_size": 512,
+    "samples": 48000,
+    "validation_samples": 2048,
+    "data": "Procedural independent 36-coefficient complex vectors: 1–2 plane waves plus 3 weak rays; randomized directions/phases/gains. No speech, HARP, or measured room data.",
+    "source_sha256": null,
+    "optimizer": "AdamW lr=.001 weight_decay=.0001",
+    "objective": "EDM preconditioned weighted squared denoising error",
+    "noise_distribution": "log-uniform sigma .002 to 80 (independent choice)",
+    "log": [
+      {
+        "step": 500,
+        "weighted_training_loss": 1.0073260068893433,
+        "seconds": 0.71
+      },
+      {
+        "step": 1000,
+        "weighted_training_loss": 0.9702880382537842,
+        "seconds": 1.38
+      },
+      {
+        "step": 1500,
+        "weighted_training_loss": 0.9815518856048584,
+        "seconds": 2.07
+      },
+      {
+        "step": 2000,
+        "weighted_training_loss": 0.9811420440673828,
+        "seconds": 2.73
+      },
+      {
+        "step": 2500,
+        "weighted_training_loss": 1.0201106071472168,
+        "seconds": 3.56
+      },
+      {
+        "step": 3000,
+        "weighted_training_loss": 1.0005576610565186,
+        "seconds": 4.46
+      },
+      {
+        "step": 3500,
+        "weighted_training_loss": 0.9748532772064209,
+        "seconds": 5.29
+      },
+      {
+        "step": 4000,
+        "weighted_training_loss": 0.9966515302658081,
+        "seconds": 5.93
+      }
+    ],
+    "validation_before": [
+      {
+        "sigma": 0.029999999329447746,
+        "noisy_mse": 0.0008936016238294542,
+        "denoised_mse": 0.000899934908375144
+      },
+      {
+        "sigma": 0.0958731397986412,
+        "noisy_mse": 0.009126313030719757,
+        "denoised_mse": 0.009172650054097176
+      },
+      {
+        "sigma": 0.3063887059688568,
+        "noisy_mse": 0.09320667386054993,
+        "denoised_mse": 0.09208284318447113
+      },
+      {
+        "sigma": 0.9791483283042908,
+        "noisy_mse": 0.9519155025482178,
+        "denoised_mse": 0.8027965426445007
+      },
+      {
+        "sigma": 3.1291346549987793,
+        "noisy_mse": 9.72187328338623,
+        "denoised_mse": 3.2936978340148926
+      },
+      {
+        "sigma": 10.0,
+        "noisy_mse": 99.28907775878906,
+        "denoised_mse": 4.736240386962891
+      }
+    ],
+    "validation_after": [
+      {
+        "sigma": 0.029999999329447746,
+        "noisy_mse": 0.0008936016238294542,
+        "denoised_mse": 0.0008940969710238278
+      },
+      {
+        "sigma": 0.0958731397986412,
+        "noisy_mse": 0.009126313030719757,
+        "denoised_mse": 0.009110904298722744
+      },
+      {
+        "sigma": 0.3063887059688568,
+        "noisy_mse": 0.09320667386054993,
+        "denoised_mse": 0.09129612147808075
+      },
+      {
+        "sigma": 0.9791483283042908,
+        "noisy_mse": 0.9519155025482178,
+        "denoised_mse": 0.7919550538063049
+      },
+      {
+        "sigma": 3.1291346549987793,
+        "noisy_mse": 9.72187328338623,
+        "denoised_mse": 3.2583253383636475
+      },
+      {
+        "sigma": 10.0,
+        "noisy_mse": 99.28907775878906,
+        "denoised_mse": 4.705528736114502
+      }
+    ],
+    "runtime": "PyTorch 2.9.0, CPU, 3 threads"
+  },
+  "limits": [
+    "Not the paper NCSN++M (30.8M parameters).",
+    "Synthetic-vector validation is not speech, room, or field performance evidence.",
+    "No assurance of improvement on recordings; compare the unchanged linear baseline.",
+    "This file format does not promise compatibility with future author checkpoints."
+  ],
+  "sources": [
+    "https://arxiv.org/abs/2608.24558v2",
+    "https://arxiv.org/abs/2206.00364"
+  ]
+}

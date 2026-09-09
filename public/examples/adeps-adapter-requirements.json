@@ -32,6 +32,9 @@
     "rho": 10
   },
   "notes": [
-    "This is a checklist, not an executable ADEPS implementation."
-  ]
+    "The official model is unavailable. This checklist does not assert compatibility with future author weights.",
+    "The independent tiny-spatial-v1 MLP and equation sampler are runnable; see info/NEURAL_PROTOCOL.md."
+  ],
+  "scope": "Official model integration requirements; independent small-prior sampler is available separately",
+  "independent_equation_test_available": true
 }

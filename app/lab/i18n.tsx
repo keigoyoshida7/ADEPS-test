@@ -107,6 +107,11 @@ export function useT() {
   if (!context) throw new Error('Translation requires LocaleProvider');
   return context.t;
 }
+export function useLanguage() {
+  const context = useContext(LanguageContext);
+  if (!context) throw new Error('Translation requires LocaleProvider');
+  return context.language;
+}
 export function LanguageToggle() {
   const context = useContext(LanguageContext)!;
   return (

@@ -1789,3 +1789,49 @@ html[lang='en'] .metric p {
     align-self: flex-start;
   }
 }
+/* Neural experiment: same monochrome palette and Yu Mincho as the lab. */
+[hidden] { display: none !important; }
+.neural-page { display: grid; gap: 24px; }
+.neural-intro { padding: 30px 4px 12px; }
+.neural-intro h2 { font-size: clamp(25px, 3vw, 42px); font-weight: 500; margin: 14px 0; letter-spacing: .05em; }
+.neural-intro > p { max-width: 850px; color: #aaa; line-height: 1.9; }
+.neural-flow { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid #333; border-bottom: 1px solid #333; margin-top: 28px; }
+.neural-flow > span { display: flex; align-items: center; gap: 12px; padding: 18px 12px; font-size: 13px; }
+.neural-flow b { font-size: 11px; color: #888; font-weight: 400; }
+.neural-flow svg { margin-left: auto; flex-shrink: 0; }
+.neural-workspace { display: grid; grid-template-columns: minmax(280px, .9fr) minmax(0, 1.6fr); gap: 22px; align-items: start; }
+.neural-settings, .neural-results, .neural-trace, .neural-field-guide { padding: 24px; min-width: 0; }
+.neural-settings .panel-head, .neural-results .panel-head { padding: 0 0 18px; margin-bottom: 15px; }
+.neural-page .panel-head > span { font-size: 10px; letter-spacing: .08em; color: #888; }
+.neural-settings fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.neural-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 17px; }
+.neural-field { display: grid; gap: 8px; font-size: 13px; }
+.neural-field select, .neural-field input { width: 100%; min-width: 0; }
+.neural-check { display: flex; align-items: start; gap: 10px; font-size: 13px; line-height: 1.6; margin: 16px 0; }
+.neural-check input { flex-shrink: 0; }
+.neural-small { font-size: 12px; color: #aaa; line-height: 1.85; overflow-wrap: anywhere; }
+.neural-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0 10px; }
+.neural-progress { display: grid; gap: 8px; margin: 18px 0; font-size: 12px; }
+.neural-progress progress { width: 100%; height: 3px; accent-color: #fff; }
+.neural-empty { text-align: center; padding: 75px 18px; }
+.neural-empty > span { font-size: 90px; color: #555; font-style: italic; }
+.neural-empty h3 { font-weight: 400; font-size: 21px; }
+.neural-empty p { max-width: 430px; margin: 15px auto; color: #999; line-height: 1.9; font-size: 14px; }
+.neural-result-caption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 11px; color: #aaa; margin: 18px 0; }
+.neural-comparison { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid #333; border-bottom: 1px solid #333; }
+.neural-comparison > div { padding: 25px 12px; }
+.neural-comparison > div + div { border-left: 1px solid #333; }
+.neural-comparison span { font-size: 12px; color: #aaa; }
+.neural-comparison strong { display: block; font-size: clamp(24px, 3vw, 40px); font-weight: 400; margin-top: 20px; }
+.neural-comparison small { font-size: 13px; }
+.neural-comparison p { font-size: 11px; color: #999; line-height: 1.7; }
+.neural-verdict { font-size: 13px; line-height: 1.9; padding: 12px 0; }
+.neural-trace details { margin-top: 22px; border-top: 1px solid #333; padding-top: 18px; }
+.neural-page summary { cursor: pointer; font-size: 14px; }
+.neural-step-table { max-height: 320px; overflow: auto; margin-top: 14px; }
+.neural-hash { font-size: 11px; overflow-wrap: anywhere; line-height: 1.9; color: #aaa; }
+.neural-field-guide ol { padding-left: 22px; max-width: 960px; }
+.neural-field-guide li { padding-left: 10px; margin: 16px 0; font-size: 14px; line-height: 1.9; }
+.neural-field-guide > p { font-size: 14px; line-height: 1.9; color: #aaa; }
+@media (max-width: 1150px) { .neural-workspace { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .neural-flow { grid-template-columns: 1fr 1fr; } .neural-settings, .neural-results, .neural-trace, .neural-field-guide { padding: 17px; } .neural-comparison strong { font-size: 29px; } }

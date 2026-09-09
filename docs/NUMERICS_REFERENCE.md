@@ -1,10 +1,12 @@
+For the separately implemented small-prior diffusion experiment, see [NEURAL_PROTOCOL.md](NEURAL_PROTOCOL.md).
+
 # ADEPS-test: independent numerical reference
 
 ## Scope and provenance
 
 `backend/numerics.py` is a NumPy-only numerical reference. It implements a
 conventional frequency-domain loudspeaker pressure-matching experiment.
-**It does not implement or reproduce the ADEPS neural model or its microphone
+**The linear and playback paths described below do not implement or reproduce the ADEPS neural model or its microphone
 array reconstruction results.** The public preset is fully synthetic:
 a 12 × 9 × 4 m shoebox, 12 omnidirectional sources, 9 fitting points, and
 6 separate held-out points. Coordinates, reflections and electronics faults

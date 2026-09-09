@@ -9,7 +9,7 @@ const REPO =
 const citation =
   'Amit Milstein, Nir Shlezinger, and Boaz Rafaely. “Array-Agnostic Ambisonics Encoding via Diffusion Posterior Sampling.” arXiv:2608.24558v2, 27 August 2026. https://doi.org/10.48550/arXiv.2608.24558';
 const application =
-  '本デモはMilstein, Shlezinger, and Rafaely（2026, arXiv:2608.24558v2）が示す、信号表現と物理取得モデルを分ける考え方を参照した。マイクからFOAへの経路には同論文の式(5)に示される線形符号化を独自実装し、チャンネル規約と正則化の設定を明示した。スピーカー再生側には別途、正則化した線形音圧マッチングによる合成実験を実装した。ADEPSの学習済み拡散モデルや推論ループの再現、および実際の音響システムでの性能検証は行っていない。';
+  '本デモはMilstein, Shlezinger, and Rafaely（2026, arXiv:2608.24558v2）が示す、信号表現と物理取得モデルを分ける考え方を参照した。マイクからFOAへの経路には同論文の式(5)に示される線形符号化を独自実装し、チャンネル規約と正則化の設定を明示した。スピーカー再生側には別途、正則化した線形音圧マッチングによる合成実験を実装した。さらに式(10)・式(11)・Algorithm 1に基づく拡散推論を独自実装し、合成空間係数で学習した小型MLPを接続した。著者のネットワーク・学習データ・重み、および論文の公表性能や実際の音響システムでの性能は再現・検証していない。';
 function Cite({ at, children }: { at: string; children: ReactNode }) {
   return (
     <a
@@ -65,20 +65,20 @@ export default function ResearchInfo({
     <article className="research-info">
       <div className="context-line">
         <span className="badge">{t('研究・実装ノート')}</span>
-        <p>{t('参照版：arXiv v2 · 原典と実装の照合：2026.09.09')}</p>
+        <p>{t('参照版：arXiv v2 · 原典と実装の照合：2026.09.10')}</p>
       </div>
       <div className="info-intro">
         <h2>{t('何を参照し、何を実装したか。')}</h2>
         <p>
           {t(
-            'ADEPS-testは、空間音響の物理モデルと線形推定を調べる独立した研究デモです。',
+            'ADEPS-testは、空間音響の線形推定と、独自の小型priorを使う拡散推論を調べる研究デモです。',
           )}{' '}
           {t('このページでは、参照論文の数式と本デモの処理の対応を示します。')}{' '}
           {t(
             'マイクからFOAへの経路では式(5)と同じ形式の線形符号化を実装し、再生側では別の正則化した音圧マッチングを検証します。',
           )}{' '}
           {t(
-            'ADEPSの学習済み拡散モデルと推論ループは未接続で、著者による公式実装ではありません。',
+            '圧縮・観測整合性・denoiserを通る勾配・反復更新を独自実装しました。著者のNCSN++Mと学習済み重みは未公開で、論文の性能を再現したとは扱いません。',
           )}
         </p>
       </div>
@@ -110,17 +110,17 @@ export default function ResearchInfo({
           </button>
         </div>
         <div>
-          <span>{t('03 / 今後の接続')}</span>
+          <span>{t('03 / 独自モデルで実行')}</span>
           <h3>{t('ADEPSの拡散推論')}</h3>
           <p>
             {t(
-              'denoiser・事前分布・反復推論は未接続。論文の性能を再現したとは扱わない。',
+              '合成空間係数で学習した小型MLPと拡散推論式を接続。線形との比較、反復履歴、FOA WAVを書き出します。',
             )}
           </p>
-          <a href="#info-status">
-            {t('必要な条件を読む')}
+          <button onClick={() => onNavigate('neural')}>
+            {t('ニューラル推論へ')}
             <ArrowRight size={14} />
-          </a>
+          </button>
         </div>
       </div>
       <div className="info-toc" aria-label={t('研究ノートの目次')}>
@@ -265,15 +265,15 @@ export default function ResearchInfo({
                   <Cite at="algorithm1">Algorithm 1</Cite>
                 </td>
                 <td>
-                  <b>{t('接続条件の設計に参照。')}</b>
+                  <b>{t('式を独自実装。')}</b>
                   {t(
-                    '圧縮領域の観測整合性とdenoiserを通る勾配が必要。現在のマイク残差表示をその代わりにはしていない。',
+                    '圧縮領域の観測整合性を計算し、denoiserを含む全経路を微分。勾配を有限差分で検証しました。マイク領域の残差とは別に表示します。',
                   )}
                 </td>
                 <td>
-                  {t('ADEPSアダプター要件')}
+                  {t('backend/neural.py / consistency, sample')}
                   <br />
-                  {t('拡散モデル・反復処理は未接続')}
+                  {t('独自学習MLP・150回のEuler更新')}
                 </td>
               </tr>
               <tr>
@@ -439,7 +439,7 @@ export default function ResearchInfo({
           </table>
         </div>
         <details>
-          <summary>{t('ADEPSを接続すると、ここに何が加わるか')}</summary>
+          <summary>{t('独自のニューラル推論で加えた処理')}</summary>
           <div className="formula">
             𝓗(z) = β |z|ᵅ exp(i arg z)
             <br />y = 𝓗(Ẽp),　𝓐(x) = 𝓗(Ẽ V 𝓗⁻¹(x))
@@ -451,12 +451,12 @@ export default function ResearchInfo({
             <Cite at="S3.E10">{t('式(10)')}</Cite>
             <Cite at="algorithm1">Algorithm 1</Cite>
             {t(
-              '現在のコードには𝓗・𝓐・denoiser・拡散の反復更新を接続していません。',
+              'ニューラル推論のページでは𝓗・𝓐・独自学習MLP・拡散の反復更新を接続しています。小型モデルは論文の音声学習priorとは異なります。',
             )}
           </p>
           <p>
             {t(
-              '表示中の残差は ‖Vâ−p‖ / ‖p‖。将来のADEPSでは、圧縮領域の y−𝓐(Dθ(x,σ)) と、そのdenoiserを通る勾配を扱います。',
+              '線形ページの残差は ‖Vâ−p‖ / ‖p‖。ニューラルページは圧縮領域の y−𝓐(Dθ(x,σ)) と、denoiserを通る勾配で反復更新します。両方の残差を区別して保存します。',
             )}
             <Cite at="S2.E9">{t('式(9)')}</Cite>
             {t(
@@ -804,7 +804,7 @@ export default function ResearchInfo({
       >
         <p>
           {t(
-            '2026年9月9日に再確認した公式ADEUPSリポジトリはREADMEのみで、コードを準備中と記載されています。確認したツリーに、実行可能なADEPS実装や学習済み重みはありません。',
+            '2026年9月10日に再確認した公式ADEUPSリポジトリはREADMEのみで、コードを準備中と記載されています。確認したツリーに、実行可能なADEPS実装や学習済み重みはありません。',
           )}
           <a className="citation" href={REPO} target="_blank" rel="noreferrer">
             {t('[2 · 確認したcommit]')}
@@ -894,7 +894,7 @@ export default function ResearchInfo({
             {t('学習目的は')}
             <Cite at="S3.E12">{t('§3.3・式(12)')}</Cite>
             {t(
-              'に示されます。現在のADEPS-testでは、モデル学習もこの損失の最適化も実行していません。150ステップという回数だけからリアルタイム性能を推定せず、将来の実行環境で時間とメモリを実測します。',
+              'に示されます。本試作では独自の合成空間係数と小型MLPにEDM型の重み付き二乗損失を適用し、学習済み重みと検証記録を同梱しました。論文の音声・残響データやネットワークは再現していません。各推論の時間を計測し、実時間動作は保証しません。',
             )}
           </p>
         </details>

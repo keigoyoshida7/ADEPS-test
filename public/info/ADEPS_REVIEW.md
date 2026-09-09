@@ -1,6 +1,6 @@
 # ADEPS v2: implementation notes for ADEPS-test
 
-Verified 2026-09-08. Scope: arXiv 2608.24558v2, all five PDF pages (body, equations, Tables 1–3, Figure 1, references) downloaded and visually inspected. Page references below are physical PDF pages, 1-based.
+Paper reviewed 2026-09-08; official repository rechecked 2026-09-10. Scope: arXiv 2608.24558v2, all five PDF pages (body, equations, Tables 1–3, Figure 1, references) downloaded and visually inspected. Page references below are physical PDF pages, 1-based.
 
 ## Source status
 
@@ -44,7 +44,7 @@ Linear encoder (p. 2 Eq. 5):
 
 Linear baseline target output uses the first `(Nenc+1)^2` rows. The paper requires `(Nenc+1)^2 <= Q` for spatial resolvability; the count is necessary and does not make a poorly placed/coplanar array well-conditioned. Show singular values/conditioning and rank in a diagnostic UI.
 
-## ADEPS inference, not executable without the trained prior
+## ADEPS inference and the independent small-prior experiment
 
 The prior has order `Np > Nenc`. The compression (p. 3, Sec. 3.1) is:
 
@@ -135,10 +135,14 @@ Independent source ingredients do exist:
 
 Keep three clearly labeled paths:
 
-1. Capture research: microphone WAV + measured/modelled V -> linear encoding -> optional future ADEPS adapter -> reconstructed FOA -> reference comparison. ADEPS status stays unavailable until compatible trained weights/code/config are present.
+1. Capture research: microphone WAV + measured/modelled V -> linear encoding -> independent equation sampler with a trained small synthetic prior -> reconstructed FOA -> reference comparison. The official-model path remains unavailable until compatible author weights/code/config are present. The independent path is runnable; see NEURAL_PROTOCOL.md for every implementation choice and its limits.
 2. Measurement and commissioning: playback channel map -> known test/sweep -> capture -> deterministic IR/transfer response -> gain/delay/response/routing diagnostics. Preserve phase and amplitude of calibration signals; a learned speech prior should not process calibration IRs as if they were speech.
 3. Playback: SPAT/Max/rendered tracks -> a separately verified audio interface and playback chain -> speakers. The UI is a controller and visualizer; model-based reconstruction is offline unless actual measured runtime establishes live suitability.
 
 A WebGL view should explain geometry/channel selection and measured point coverage. Without measured spatial transfer data it must not display an attractive animated pressure field as a measurement. A demo can be simulated and marked as such.
 
 The public examples are synthetic. The test system does not establish hardware routing, measured acoustics, or a successful ADEPS reproduction.
+
+## Implementation update — 2026-09-10
+
+The independent MLP, training record, full denoiser-through-likelihood derivative, Euler sampler, waveform input/export and comparative UI now run. [NEURAL_PROTOCOL.md](NEURAL_PROTOCOL.md) specifies the implemented equations, endpoint, normalization, training distribution, conventions and validation. The official model and reported paper performance remain unreproduced.

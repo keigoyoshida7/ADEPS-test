@@ -1,4 +1,4 @@
-// Browser adapter. Copy only the three reviewed Python modules next to the worker
+// Browser adapter. Copy only reviewed scientific Python modules next to the worker
 // in ./python/. No server.py or venue/reference files are required or loaded.
 export const PYODIDE_VERSION = "314.0.6";
 export const MAX_REQUEST_BYTES = 32_000_000;
@@ -8,6 +8,9 @@ import sys, json
 from pathlib import Path
 sys.path.insert(0, "/app/backend")
 from numerics import run_demo, to_jsonable
+
+def _adeps_report(row):
+    _adeps_progress(json.dumps(row))
 
 def _adeps_dispatch_json(operation, config_json):
     try:
@@ -27,6 +30,18 @@ def _adeps_dispatch_json(operation, config_json):
         elif operation == "capture":
             from capture import run_capture
             result = run_capture(config)
+        elif operation == "neural":
+            from neural import run_neural
+            result = run_neural(config, progress=_adeps_report)
+        elif operation == "neural-audio":
+            from neural_audio import run_audio
+            result, archive = run_audio(Path("/tmp/adeps-test-input.zip").read_bytes(), config, progress=_adeps_report)
+            Path("/tmp/adeps-test-neural-output.zip").write_bytes(archive)
+            result.update(filename="ADEPS_test_FOA_comparison.zip", mime="application/zip")
+        elif operation == "neural-example":
+            from neural_audio import example_zip
+            Path("/tmp/adeps-test-example.zip").write_bytes(example_zip())
+            result = {"filename": "ADEPS_test_array_audio_example.zip", "mime": "application/zip"}
         elif operation == "ir":
             from measurements import analyze_bundle
             result = analyze_bundle(Path("/tmp/adeps-test-input.zip").read_bytes())
@@ -41,9 +56,10 @@ def _adeps_dispatch_json(operation, config_json):
         return json.dumps({"ok": False, "error": {"name": type(exc).__name__, "message": str(exc)}}, ensure_ascii=False)
 `;
 
-export function createAnalysisEngine({ loadPyodide, loadSource, progress = () => {} }) {
+export function createAnalysisEngine({ loadPyodide, loadSource, loadModel, progress = () => {} }) {
   let ready;
   let scipyReady;
+  let modelReady;
   let queue = Promise.resolve();
 
   async function boot() {
@@ -52,33 +68,44 @@ export function createAnalysisEngine({ loadPyodide, loadSource, progress = () =>
     progress("numpy");
     await py.loadPackage("numpy");
     py.FS.mkdirTree("/app/backend");
-    const names = ["numerics", "capture", "measurements"];
+    const names = ["numerics", "capture", "measurements", "neural", "neural_audio"];
     const sources = await Promise.all(names.map(name => loadSource(name)));
     names.forEach((name, i) => py.FS.writeFile(`/app/backend/${name}.py`, sources[i], { encoding: "utf8" }));
     py.runPython(PYTHON_ADAPTER);
+    py.globals.set("_adeps_progress", json => progress(JSON.parse(json)));
     progress("ready");
     return py;
   }
 
   async function execute({ operation, config = {}, bytes }) {
-    if (!["status", "playback", "capture", "ir", "example-ir"].includes(operation)) {
+    if (!["status", "playback", "capture", "ir", "example-ir", "neural", "neural-audio", "neural-example"].includes(operation)) {
       throw new Error("This hosted version has no Max, Dante, or audio-device connection");
     }
     const configJson = JSON.stringify(config);
     if (!configJson || new TextEncoder().encode(configJson).byteLength > MAX_REQUEST_BYTES) {
       throw new Error("JSON request limit: 32 MB");
     }
-    if (operation === "ir" && (!(bytes instanceof ArrayBuffer) || !bytes.byteLength || bytes.byteLength > MAX_REQUEST_BYTES)) {
+    if (["ir", "neural-audio"].includes(operation) && (!(bytes instanceof ArrayBuffer) || !bytes.byteLength || bytes.byteLength > MAX_REQUEST_BYTES)) {
       throw new Error("Choose an IR ZIP no larger than 32 MB");
     }
     ready ||= boot();
     const py = await ready;
-    if (["capture", "ir", "example-ir"].includes(operation)) {
+    if (["capture", "ir", "example-ir", "neural", "neural-audio", "neural-example"].includes(operation)) {
       if (!scipyReady) {
         progress("scipy");
         scipyReady = py.loadPackage("scipy");
       }
       await scipyReady;
+    }
+    if (["neural", "neural-audio"].includes(operation)) {
+      modelReady ||= (async () => {
+        progress("model");
+        py.FS.mkdirTree("/app/public/models");
+        for (const name of ["tiny-spatial-v1.json", "tiny-spatial-v1.npz"]) {
+          py.FS.writeFile(`/app/public/models/${name}`, await loadModel(name));
+        }
+      })().catch(error => { modelReady = undefined; throw error; });
+      await modelReady;
     }
     if (operation === "status") {
       return {
@@ -94,7 +121,7 @@ export function createAnalysisEngine({ loadPyodide, loadSource, progress = () =>
       };
     }
     try {
-      if (operation === "ir") py.FS.writeFile("/tmp/adeps-test-input.zip", new Uint8Array(bytes));
+      if (["ir", "neural-audio"].includes(operation)) py.FS.writeFile("/tmp/adeps-test-input.zip", new Uint8Array(bytes));
       py.globals.set("_adeps_operation", operation);
       py.globals.set("_adeps_config_json", configJson);
       progress("computing");
@@ -106,15 +133,16 @@ export function createAnalysisEngine({ loadPyodide, loadSource, progress = () =>
         error.name = envelope.error.name;
         throw error;
       }
-      if (operation === "example-ir") {
-        const zip = py.FS.readFile("/tmp/adeps-test-example.zip").slice();
+      if (["example-ir", "neural-example", "neural-audio"].includes(operation)) {
+        const path = operation === "neural-audio" ? "/tmp/adeps-test-neural-output.zip" : "/tmp/adeps-test-example.zip";
+        const zip = py.FS.readFile(path).slice();
         return { ...envelope.result, bytes: zip.buffer };
       }
       return envelope.result;
     } finally {
       py.globals.delete("_adeps_operation");
       py.globals.delete("_adeps_config_json");
-      for (const path of ["/tmp/adeps-test-input.zip", "/tmp/adeps-test-example.zip"]) {
+      for (const path of ["/tmp/adeps-test-input.zip", "/tmp/adeps-test-example.zip", "/tmp/adeps-test-neural-output.zip"]) {
         if (py.FS.analyzePath(path).exists) py.FS.unlink(path);
       }
       progress("ready");

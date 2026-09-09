@@ -17,12 +17,14 @@ export function Plot({
   label,
   unit = 'dB',
   log = true,
+  xLabel,
 }: {
   x: number[];
   series: Series[];
   label: string;
   unit?: string;
   log?: boolean;
+  xLabel?: string;
 }) {
   const t = useT();
 
@@ -143,7 +145,7 @@ export function Plot({
         {index != null ? (
           <>
             <strong>
-              {fmt(x[index], 0)} {log ? 'Hz' : ''}
+              {fmt(x[index], 0)} {xLabel || (log ? 'Hz' : '')}
             </strong>
             {series.map((s) => (
               <span key={s.name} style={{ color: s.color }}>
@@ -153,8 +155,8 @@ export function Plot({
           </>
         ) : (
           <span>
-            {t('グラフ上で周波数ごとの値を確認できます。横軸：')}
-            {log ? t('周波数 / Hz（対数）') : 'index'}
+            {t('グラフ上で各点の値を確認できます。横軸：')}
+            {xLabel || (log ? t('周波数 / Hz（対数）') : 'index')}
             {t('縦軸：')}
             {unit}
           </span>

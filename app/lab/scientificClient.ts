@@ -1,5 +1,12 @@
 import { asset } from './assets';
 export const isLocalEngine = import.meta.env.VITE_ANALYSIS_MODE === 'local';
+export type AnalysisProgress = { stage: string; step?: number; total?: number; encoded_residual?: number; elapsed_seconds?: number };
+const progressListeners = new Set<(value: AnalysisProgress) => void>();
+export function onAnalysisProgress(listener: (value: AnalysisProgress) => void) {
+  progressListeners.add(listener);
+  return () => { progressListeners.delete(listener); };
+}
+export function cancelAnalysis() { stop(new Error('計算を中止しました。')); }
 let worker: Worker | undefined;
 let sequence = 0;
 let statusPromise: Promise<Record<string, any>> | undefined;
@@ -21,11 +28,14 @@ function request(
 ): Promise<Record<string, any>> {
   if (!worker) {
     worker = new Worker(
-      new URL(asset('/analysis-worker.mjs'), document.baseURI),
+      new URL(asset('/analysis-worker.mjs?v=0.3.0'), document.baseURI),
       { type: 'module' },
     );
     worker.onmessage = ({ data }) => {
-      if (data.kind === 'progress') return;
+      if (data.kind === 'progress') {
+        progressListeners.forEach(listener => listener(data));
+        return;
+      }
       const item = pending.get(data.id);
       if (!item) return;
       pending.delete(data.id);
@@ -61,6 +71,7 @@ export async function analysisApi(
             method: 'POST',
             headers: {
               'Content-Type': binary ? 'application/zip' : 'application/json',
+              ...(binary && data ? { 'X-ADEPS-Config': JSON.stringify(data) } : {}),
             },
             body: binary || JSON.stringify(data),
           }
@@ -68,6 +79,10 @@ export async function analysisApi(
     );
     const value = await response.json();
     if (!response.ok) throw new Error(value.error || `HTTP ${response.status}`);
+    if (value.zip_base64) {
+      value.bytes = Uint8Array.from(atob(value.zip_base64), c => c.charCodeAt(0)).buffer;
+      delete value.zip_base64;
+    }
     return value;
   }
   if (path === 'max') throw new Error('Web版では実機を制御できません。');

@@ -43,8 +43,8 @@ OSC型・範囲・不正パケット、ローカルUDP往復、ポート競合�
 
 ## 未実装・実機未検証
 
-- ニューラルADEPSのモデル学習、学習済み重み、拡散推論。
-- SI-SDR、ILD、ICの評価、論文の公表結果の完全再計算。
+- 著者のニューラルADEPSモデル・重み・音声/残響学習条件の再現（独自の小型モデルと推論式は実装済み）。
+- ILD・ICの評価と論文の公表結果の完全再計算。WAV経路では独自の明示したSI-SDR集計を実装。
 - 測定スイープの出力、マイク収録、逆畳み込み。
 - 連続帯域の因果FIRフィルター生成、実時間適用、遅延・ヘッドルーム・バイパスの検証。
 - 特定の施設の測量、機器設定、測定音響、音質改善。
@@ -59,3 +59,13 @@ OSC型・範囲・不正パケット、ローカルUDP往復、ポート競合�
 - TypeScript check and production build pass.
 - Native: Python 3.11.8, NumPy 2.4.6, SciPy 1.17.1. WASM: Pyodide 314.0.6, NumPy 2.4.6, SciPy 1.18.0.
 - WASM comparison does not by itself verify browser delivery, WebGL rendering, or physical audio.
+
+## 2026-09-10 neural extension verification
+
+- 53 native scientific tests pass, including 14 new neural/audio checks; the 5 existing Max tests also pass without audio output.
+- Full denoiser-through-likelihood derivative agrees with finite differences at sigma .05/.7/20; an additional independent PyTorch autograd comparison differs by at most 1.34e-15.
+- Actual Chrome WebAssembly inference is compared with native Python for the same default 150-step run: 9,736 numbers, maximum absolute difference 4.37e-11. Timing and input hashes of platform-specific floating-point observations are excluded. Full record: [neural-verification.json](neural-verification.json).
+- Default 512-bin synthetic inference took 2.51 s in this browser test. A .4 s / 16 kHz WAV segment with 150 iterations took 31.51 s. These measurements support offline testing, not live operation.
+- The browser-exported comparison ZIP was reopened: all six WAVs have 6,400 samples, four channels, 16 kHz, explicit ACN/N3D or ACN/SN3D, and a common export gain. The result includes checkpoint hash, settings, trace and reference-conditional metrics.
+- The synthetic default is worse than linear encoding: complex FOA NRMSE −6.29 dB linear vs −4.44 dB diffusion, coherence .820 vs .714. This is shown as degradation in the UI. It is not a reproduction of the paper's gains.
+- JP/EN switching, reference-free STFT import, cancellation/restart and third-position paper-tab navigation pass in Chrome. At 390 px, the page has no horizontal overflow. The local API neural JSON and WAV ZIP routes also pass; the pinned NumPy/SciPy environment passes all 53 scientific tests.
