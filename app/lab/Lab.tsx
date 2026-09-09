@@ -343,7 +343,7 @@ function LabContent() {
         {
           export_schema: 'adeps-test-lab-run/1',
           exported_at: new Date().toISOString(),
-          app_version: '0.3.0',
+          app_version: '0.3.1',
           result,
         },
       );
@@ -734,7 +734,7 @@ function LabContent() {
                           CSV
                         </button>
                       </ResultHeader>
-                      <Plot
+                      <Plot frequency
                         x={play.frequencies_hz}
                         label={t('誤差が低いほど良好')}
                         series={[
@@ -829,7 +829,7 @@ function LabContent() {
                           </table>
                         </div>
                       </div>
-                      <Plot
+                      <Plot frequency
                         x={play.frequencies_hz}
                         label={t('入力ch ${selected + 1} / 未使用点', [
                           selected + 1,
@@ -1197,7 +1197,7 @@ function LabContent() {
                         }
                       />
                     </div>
-                    <Plot
+                    <Plot frequency
                       x={capture.curves.frequency_hz}
                       label={t('線形符号化の診断')}
                       series={[
@@ -1516,7 +1516,7 @@ function LabContent() {
                       </select>
                     </label>
                   </div>
-                  <Plot
+                  <Plot frequency
                     x={ir.frequencies_hz}
                     label={t(
                       'S${irSpeaker + 1} → M${irPoint + 1} / WAVのデジタル振幅基準（SPLではありません）',

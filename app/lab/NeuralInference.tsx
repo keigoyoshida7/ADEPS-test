@@ -163,11 +163,11 @@ export default function NeuralInference() {
           {neural.si_sdr && <p>{l('時間信号のSI-SDR：線形', 'Waveform SI-SDR: linear')} {fmt(linear.si_sdr?.mean_valid_channels_db)} → {fmt(neural.si_sdr?.mean_valid_channels_db)} dB</p>}
           {result.rank_deficient_bins > 0 && <div className="note">{l('FOAを識別するランクが不足する周波数があります。DCや同一平面の配置も確認してください。',
             'Some frequencies do not have full FOA rank. Check DC and coplanar geometry.')}{' '}{result.rank_deficient_bins} / {result.frequencies_hz.length}</div>}
-          {linear.reference_available && <Plot x={result.frequencies_hz} log={result.frequencies_hz[0] > 0} xLabel="Hz"
+          {linear.reference_available && <Plot frequency x={result.frequencies_hz} xLabel="Hz"
             series={[{ name:l('線形','Linear'), values:linear.error_db_by_frequency, color:'#999', dash:true },
               { name:l('拡散推論','Diffusion'), values:neural.error_db_by_frequency, color:'#f5f5f5' }]}
             label={l('周波数ごとのFOA誤差・小さいほど良い', 'FOA error by frequency · lower is better')}/>}
-          {linear.reference_available && <details><summary>{l('周波数ごとのcoherenceを見る', 'Inspect coherence by frequency')}</summary><Plot x={result.frequencies_hz} log={result.frequencies_hz[0] > 0} xLabel="Hz" unit=""
+          {linear.reference_available && <details><summary>{l('周波数ごとのcoherenceを見る', 'Inspect coherence by frequency')}</summary><Plot frequency x={result.frequencies_hz} xLabel="Hz" unit=""
             series={[{ name:l('線形','Linear'), values:linear.coherence_by_frequency, color:'#999', dash:true },
               { name:l('拡散推論','Diffusion'), values:neural.coherence_by_frequency, color:'#f5f5f5' }]}
             label={l('Coherence・大きいほど良い', 'Coherence · higher is better')}/></details>}

@@ -1835,3 +1835,5 @@ html[lang='en'] .metric p {
 .neural-field-guide > p { font-size: 14px; line-height: 1.9; color: #aaa; }
 @media (max-width: 1150px) { .neural-workspace { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .neural-flow { grid-template-columns: 1fr 1fr; } .neural-settings, .neural-results, .neural-trace, .neural-field-guide { padding: 17px; } .neural-comparison strong { font-size: 29px; } }
+
+.plot-coverage { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 8px 0 18px; color: #a5a5a5; font-size: 11px; line-height: 1.8; }

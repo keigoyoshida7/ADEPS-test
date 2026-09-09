@@ -665,5 +665,8 @@
   "さらに式(10)・式(11)・Algorithm 1に基づく拡散推論を独自実装し、合成空間係数で学習した小型MLPを接続した。著者のネットワーク・学習データ・重み、および論文の公表性能や実際の音響システムでの性能は再現・検証していない。": "We also independently implemented diffusion inference based on Eqs. (10), (11) and Algorithm 1, using a small MLP trained on synthetic spatial coefficients. The authors’ network, training data, weights, reported performance, and physical-system performance have not been reproduced or validated.",
   "ニューラル推論へ": "Open neural inference",
   "本デモはMilstein, Shlezinger, and Rafaely（2026, arXiv:2608.24558v2）が示す、信号表現と物理取得モデルを分ける考え方を参照した。マイクからFOAへの経路には同論文の式(5)に示される線形符号化を独自実装し、チャンネル規約と正則化の設定を明示した。スピーカー再生側には別途、正則化した線形音圧マッチングによる合成実験を実装した。さらに式(10)・式(11)・Algorithm 1に基づく拡散推論を独自実装し、合成空間係数で学習した小型MLPを接続した。著者のネットワーク・学習データ・重み、および論文の公表性能や実際の音響システムでの性能は再現・検証していない。": "This demo draws on the separation of signal representation from the physical acquisition model in Milstein, Shlezinger, and Rafaely (2026, arXiv:2608.24558v2). We independently implement Eq. (5) for linear microphone-to-FOA encoding with explicit conventions and regularization, and separate regularized pressure-matching experiments for loudspeaker playback. We also implement Eqs. (10), (11) and Algorithm 1 with a small MLP trained on synthetic spatial coefficients. The authors’ network, speech/room training data, weights, reported performance, and physical-system performance have not been reproduced or validated.",
-  "グラフ上で各点の値を確認できます。横軸：": "Inspect values at each point on the graph. Horizontal axis: "
+  "グラフ上で各点の値を確認できます。横軸：": "Inspect values at each point on the graph. Horizontal axis: ",
+  "表示：1 Hz〜20 kHz（対数）": "Display: 1 Hz–20 kHz (logarithmic)",
+  "表示帯域内のデータ：": "Data within the display range: ",
+  "データのない帯域には曲線を描きません。": "No curve is drawn where data are unavailable."
 }
