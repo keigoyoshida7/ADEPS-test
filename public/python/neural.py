@@ -17,6 +17,10 @@ ALPHA = .67
 BETA = 3.
 EPS = 1e-8
 MAX_BINS = 8192
+SYNTHETIC_MIN_HZ = 1.
+SYNTHETIC_MAX_HZ = 20_000.
+SYNTHETIC_FREQUENCIES = 128
+SYNTHETIC_FRAMES = 16
 MODEL_DIR = Path(__file__).resolve().parents[1] / 'public' / 'models'
 
 
@@ -168,11 +172,12 @@ def synthetic_bundle(config):
     theta = np.arange(q) * np.pi * (3 - np.sqrt(5))
     z = np.zeros(q) if config.get('coplanar') else 1 - 2 * (np.arange(q) + .5) / q
     positions = np.c_[np.sqrt(1-z*z)*np.cos(theta), np.sqrt(1-z*z)*np.sin(theta), z] * radius
-    frequencies = np.geomspace(100, 8000, 32)
+    frequencies = np.geomspace(SYNTHETIC_MIN_HZ, SYNTHETIC_MAX_HZ, SYNTHETIC_FREQUENCIES)
     effective_order = 15 if config.get('mismatch') else ORDER
     directions = rng.normal(size=(5, 3))
     harmonics = real_n3d(effective_order, directions)
-    signals = (rng.normal(size=(32, 5, 16)) + 1j*rng.normal(size=(32, 5, 16))) / np.sqrt(2)
+    signal_shape = (len(frequencies), 5, SYNTHETIC_FRAMES)
+    signals = (rng.normal(size=signal_shape) + 1j*rng.normal(size=signal_shape)) / np.sqrt(2)
     signals *= np.array([1., .7, .22, .15, .1])[None, :, None]
     truth = np.einsum('sc,fst->fct', harmonics, signals)
     physical = modal_matrix(frequencies, positions, effective_order)
@@ -291,9 +296,14 @@ def run_neural(config, progress=None, model=None):
                               'observation_rms_scale': scale, 'gamma_squared_by_frequency': gamma2,
                               'gradient_normalization': 'one L2 norm across all real and imaginary F,C,T coordinates',
                               'input_kind': 'imported' if 'bundle' in config else 'synthetic',
-                              'synthetic_settings': {k: config.get(k, default) for k, default in
+                              'synthetic_settings': {**{k: config.get(k, default) for k, default in
                                 [('microphones', 6), ('radius_m', .06), ('snr_db', 50), ('data_seed', 2026),
-                                 ('coplanar', False), ('mismatch', False)]} if 'bundle' not in config else None},
+                                 ('coplanar', False), ('mismatch', False)]},
+                                'frequency_min_hz': float(data['frequencies'][0]),
+                                'frequency_max_hz': float(data['frequencies'][-1]),
+                                'frequency_count': len(data['frequencies']),
+                                'frequency_spacing': 'logarithmic',
+                                'frames': p.shape[2]} if 'bundle' not in config else None},
             'frequencies_hz': data['frequencies'], 'microphones': v.shape[1],
             'frames': p.shape[2], 'prior_order': ORDER, 'output_order': 1,
             'effective_order': data['effective_order'], 'microphone_positions_m': data['positions'],

@@ -1,6 +1,6 @@
 # Neural experiment — implementation and field-test protocol
 
-Version 0.3, 10 September 2026. This is an **independent equation test with a small trained prior**, not the authors' implementation or a reproduction of their reported results.
+Version 0.3.2, 10 September 2026. This is an **independent equation test with a small trained prior**, not the authors' implementation or a reproduction of their reported results.
 
 ## 日本語：最初の使い方
 
@@ -12,6 +12,24 @@ Version 0.3, 10 September 2026. This is an **independent equation test with a sm
 6. 線形・推論を同じAmbisonicsデコーダと同じ再生ゲインで比較します。FOAの4chは4台のスピーカー出力ではありません。スピーカーのIR計測や音場補正とは別の実験です。
 
 同梱モデルは48,000個の合成空間係数で学習した24,072パラメータのMLPです。論文の30.8MパラメータNCSN++M、HARP/VCTK音声学習、WSJ0評価は再現していません。実際の発話・残響・機器で改善する保証はありません。著者の公開リポジトリは2026-09-10の確認時点でREADMEのみです。
+
+### 合成データの計算帯域
+
+v0.3.2の「合成データで試す」は、**1 Hz〜20 kHzの128周波数（対数間隔）×16フレーム**を生成し、各周波数のマイク応答V・観測・線形推定・拡散推論・参照誤差を計算します。以前の100 Hz〜8 kHzの結果を補間・外挿したものではありません。結果JSONには周波数範囲・点数・間隔・フレーム数を保存します。
+
+これは有限次数の合成モデルの計算範囲です。低域では小型アレイのマイク間の音圧差が小さくなり、復元が不安定になり得ます。高域では真の音場を5次／15次で打ち切る影響が大きくなります。例えば半径6 cm・20 kHzではkr≈22なので、15次の条件も実際の平面波への収束を保証しません。表示される誤差は指定した有限次数の参照に対する値で、1 Hz〜20 kHzでの実測性能を示しません。
+
+旧版より周波数点数が増え、観測全体で行うRMS正規化と勾配正規化も変わるため、集計スコアを旧版と直接比較して改善と判断できません。推論の式・重み・η′の既定値・音場次数は同じです。
+
+録音WAVは引き続き入力と解析サンプルレートに従います。既定の16 kHz解析は上限8 kHzです。20 kHzまで含める場合は録音と解析を48 kHzにし、8192周波数時間点の上限内に区間を収めます。合成データの対数周波数点はWAVのFFTビンではなく、1 Hzの解析分解能を意味しません。
+
+### Synthetic frequency coverage
+
+From v0.3.2, the neural synthetic demo generates and evaluates **128 logarithmically spaced frequencies from 1 Hz through 20 kHz, with 16 frames each**. Transfer matrices, observations, both estimators and reference scores are computed at every frequency; existing scores are not interpolated or extrapolated. The exported settings record the grid and frame count.
+
+This is a finite-order model experiment, not validated physical bandwidth. Low-frequency pressure differences across a compact array become small; at high frequencies, truncating the true field to order 5 or 15 matters. At a 6 cm radius and 20 kHz, kr is about 22, so even the order-15 setting does not guarantee convergence to a physical plane wave. Errors are measured against the specified truncated reference.
+
+More bins also change observation-wide RMS and gradient normalization; aggregate scores are not directly comparable with the former 100 Hz–8 kHz, 32-frequency demo. Inference equations, weights, default guidance and field orders are unchanged. WAV analysis retains its separate sample-rate and FFT settings: 16 kHz defaults stop at 8 kHz, while 48 kHz recording and analysis can include 20 kHz within the existing bin limit. A 1 Hz point in the synthetic grid does not imply 1 Hz FFT resolution.
 
 ## 1. Source and status
 

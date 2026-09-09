@@ -60,7 +60,7 @@ OSC型・範囲・不正パケット、ローカルUDP往復、ポート競合�
 - Native: Python 3.11.8, NumPy 2.4.6, SciPy 1.17.1. WASM: Pyodide 314.0.6, NumPy 2.4.6, SciPy 1.18.0.
 - WASM comparison does not by itself verify browser delivery, WebGL rendering, or physical audio.
 
-## 2026-09-10 neural extension verification
+## 2026-09-10 neural extension verification (v0.3.0, 100 Hz–8 kHz)
 
 - 53 native scientific tests pass, including 14 new neural/audio checks; the 5 existing Max tests also pass without audio output.
 - Full denoiser-through-likelihood derivative agrees with finite differences at sigma .05/.7/20; an additional independent PyTorch autograd comparison differs by at most 1.34e-15.
@@ -69,3 +69,12 @@ OSC型・範囲・不正パケット、ローカルUDP往復、ポート競合�
 - The browser-exported comparison ZIP was reopened: all six WAVs have 6,400 samples, four channels, 16 kHz, explicit ACN/N3D or ACN/SN3D, and a common export gain. The result includes checkpoint hash, settings, trace and reference-conditional metrics.
 - The synthetic default is worse than linear encoding: complex FOA NRMSE −6.29 dB linear vs −4.44 dB diffusion, coherence .820 vs .714. This is shown as degradation in the UI. It is not a reproduction of the paper's gains.
 - JP/EN switching, reference-free STFT import, cancellation/restart and third-position paper-tab navigation pass in Chrome. At 390 px, the page has no horizontal overflow. The local API neural JSON and WAV ZIP routes also pass; the pinned NumPy/SciPy environment passes all 53 scientific tests.
+
+## 2026-09-10 full-band synthetic verification (v0.3.2)
+
+- The neural synthetic demo computes 128 logarithmically spaced frequencies from 1 Hz to 20 kHz, with 16 frames at every frequency. Both endpoints have finite linear/neural outputs and reference-quality scores after the default 150 iterations.
+- All 55 scientific tests and the 5 Max tests pass. Added regressions cover full-band output/metadata and coplanar, order-mismatched arrays at the minimum/maximum allowed radius. TypeScript checking and the production build pass.
+- Native Python and actual Chrome WebAssembly agree on 34,988 numeric values within 1e-8 + 1e-7 × abs(native); the maximum absolute difference is 3.06e-10. Elapsed times and platform-dependent input hashes are excluded. [Full-band comparison record](neural-full-band-verification.json).
+- The browser run took 9.80 s on the test machine. Its aggregate complex FOA NRMSE is −3.79 dB linear vs −1.40 dB diffusion, with coherence .772 vs .389. This is degradation, not evidence of neural improvement.
+- JP/EN range labels, both frequency plots and the exported result JSON show the full computed range. The 390 px layout has no horizontal overflow; no browser page errors occurred.
+- These are truncated synthetic fields, not full-band acoustical measurements. The new grid also changes whole-input normalization and aggregation, so its scores must not be treated as a before/after quality comparison with the former grid. WAV input retains its separate sample-rate/FFT limits.

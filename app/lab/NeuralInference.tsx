@@ -115,7 +115,10 @@ export default function NeuralInference() {
             </div>
             <label className="neural-check"><input type="checkbox" checked={config.mismatch} onChange={e => update('mismatch',e.target.checked)}/>{l('モデル不一致：真の音場15次 / 推論5次', 'Model mismatch: true field order 15 / prior order 5')}</label>
             <label className="neural-check"><input type="checkbox" checked={config.coplanar} onChange={e => update('coplanar',e.target.checked)}/>{l('マイクを同一平面に置く', 'Place microphones in one plane')}</label>
-            <p className="neural-small">{l('32周波数 × 16フレーム。ランダムな平面波の複素係数で、録音や発話ではありません。', '32 frequencies × 16 frames of random plane-wave complex spectra, not recordings or speech.')}</p>
+            <p className="neural-small">{l('計算帯域：1 Hz〜20 kHz。対数間隔の128周波数 × 16フレームで、ランダムな平面波の複素係数を合成します。',
+              'Computed range: 1 Hz–20 kHz. 128 logarithmically spaced frequencies × 16 frames of synthetic random plane-wave coefficients.')}</p>
+            <p className="neural-small">{l('有限次数の合成音場を使う実験です。実測の帯域や、全帯域での復元精度を保証するものではありません。',
+              'This experiment uses a finite-order synthetic field. The computed range does not establish measured bandwidth or reconstruction accuracy across that range.')}</p>
           </> : <>
             <input ref={selectedFile} aria-label={l('入力ファイル', 'Input file')} type="file" accept={mode === 'audio' ? '.zip' : '.json'} onChange={e => { setFile(e.target.files?.[0] || null); setDirty(!!result); }}/>
             {file && <p className="neural-small">{file.name} · {(file.size/1e6).toFixed(2)} MB</p>}

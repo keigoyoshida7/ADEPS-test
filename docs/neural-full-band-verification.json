@@ -1,0 +1,31 @@
+{
+  "version": "0.3.2",
+  "frequencies_hz": [
+    1,
+    20000
+  ],
+  "frequency_count": 128,
+  "frames": 16,
+  "iterations": 150,
+  "numeric_values_compared": 34988,
+  "maximum_absolute_difference": 3.055902197957039e-10,
+  "maximum_difference_path": "trace[133].loss",
+  "tolerance": "1e-8 + 1e-7*abs(native)",
+  "excluded": [
+    "elapsed_seconds",
+    "input_sha256 (platform floating-point roundoff)"
+  ],
+  "failures": [],
+  "browser_seconds": 9.7984,
+  "native_seconds": 2.0495342089998303,
+  "quality": {
+    "linear": {
+      "nrmse_db": -3.7866488488534493,
+      "coherence": 0.7717105781976614
+    },
+    "neural": {
+      "nrmse_db": -1.4005076222840838,
+      "coherence": 0.3894526910932567
+    }
+  }
+}

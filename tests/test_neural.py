@@ -128,6 +128,40 @@ class NeuralMathTests(unittest.TestCase):
         b=neural.run_neural({**config,'seed':2},model=self.model)
         self.assertFalse(np.allclose(a['output']['neural_real'],b['output']['neural_real']))
 
+    def test_full_band_synthetic_inference_computes_finite_endpoint_results(self):
+        result = neural.run_neural({}, model=self.model)
+        frequencies = result['frequencies_hz']
+        self.assertEqual((frequencies[0], frequencies[-1]), (1, 20_000))
+        self.assertEqual((len(frequencies), result['frames']), (128, 16))
+        self.assertTrue(np.all(np.diff(frequencies) > 0))
+        np.testing.assert_allclose(np.diff(np.log(frequencies)), np.log(20_000)/127)
+        self.assertEqual(len(result['trace']), 150)
+        for method in ('linear', 'neural'):
+            for metric in ('error_db_by_frequency', 'coherence_by_frequency'):
+                values = result['quality'][method][metric]
+                self.assertEqual(values.shape, (128,))
+                self.assertTrue(np.all(np.isfinite(values)))
+            for part in ('real', 'imag'):
+                output = result['output'][f'{method}_{part}']
+                self.assertEqual(output.shape, (128, 4, 16))
+                self.assertTrue(np.all(np.isfinite(output)))
+        settings = result['configuration']['synthetic_settings']
+        self.assertEqual(settings['frequency_min_hz'], frequencies[0])
+        self.assertEqual(settings['frequency_max_hz'], frequencies[-1])
+        self.assertEqual(settings['frequency_count'], len(frequencies))
+        json.dumps(to_jsonable(result), allow_nan=False)
+
+    def test_full_band_handles_mismatch_and_coplanar_radius_extremes(self):
+        for radius in (.01, .25):
+            with self.subTest(radius=radius):
+                result = neural.run_neural({'radius_m': radius, 'mismatch': True,
+                                            'coplanar': True, 'steps': 3}, model=self.model)
+                self.assertEqual(result['effective_order'], 15)
+                self.assertEqual(result['rank_deficient_bins'], len(result['frequencies_hz']))
+                for method in ('linear', 'neural'):
+                    self.assertTrue(np.all(np.isfinite(result['quality'][method]['error_db_by_frequency'])))
+                json.dumps(to_jsonable(result), allow_nan=False)
+
 
 class NeuralAudioTests(unittest.TestCase):
     @classmethod
