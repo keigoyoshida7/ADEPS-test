@@ -1,0 +1,1390 @@
+{
+  "id": "spatial-v1",
+  "schema": "adeps-test-physics-residual/1",
+  "name": "Physics-conditioned residual spatial estimator",
+  "official_model": false,
+  "paper_performance_reproduced": false,
+  "paper_superiority_demonstrated": false,
+  "architecture": "Four-hidden-layer SiLU MLP; complex identity residual; 465 input features: 72 observed real/imag coefficients, 288 real/imag entries in the first 4 rows of E@V, 36 real diagonal entries, 1 logarithmic frequency, 32 real/imag entries of first-4 temporal covariance, and 36 observed channel powers. One deterministic forward pass, no diffusion sampling.",
+  "hidden_channels": 512,
+  "hidden_layers": 4,
+  "parameter_count": 1063496,
+  "input_channels": 36,
+  "output_channels": 36,
+  "prior_order": 5,
+  "sh_ordering": "real ACN",
+  "sh_normalization": "N3D",
+  "normalization": "Per-frequency RMS of the first four LINEAR input coefficients over supplied time frames; floor 1e-12; target never used to normalize inputs.",
+  "weights_sha256": "4ce8deee16af297b3a3557b827438e469798c00e9c4aa936172cb8a7475b046c",
+  "training": {
+    "seed": 38741,
+    "steps": 12000,
+    "selected_step": 10400,
+    "batch_size": 512,
+    "samples": 1572864,
+    "chunk_scenes": 512,
+    "chunk_steps": 2000,
+    "training_scene_seeds": [
+      10000,
+      13071
+    ],
+    "validation_scene_seeds": [
+      20000,
+      20063
+    ],
+    "reserved_final_test_seed_start": 90000,
+    "validation_samples": 32768,
+    "data": "Independent procedural 1--5 plane waves plus diffuse modal energy; real ACN/N3D; 64 geometric frequencies 1 Hz--20 kHz, 8 correlated complex frames. Ideal omnidirectional free-field arrays, random 3D rotation, 4/5/6/8/12 capsules, radii .04--.10 m, 10--50 dB SNR, order 5 or order 15 soundfield. Not audio speech STFTs, not VCTK, not HARP, and no field recordings.",
+    "augmentation": "Random common complex phase per training bin. Directions, array orientation/radius, source strengths, spectral tilt, diffuse energy, noise and regularization vary across synthetic scenes.",
+    "optimizer": "AdamW lr=.0008 weight_decay=.0001; cosine decay to .00004; gradient-norm cap 2.",
+    "objective": "Normalized complex squared residual error; first 4 coefficients weight 1, remaining 32 weight .025; select checkpoint by held-out-scene normalized FOA MSE.",
+    "selection": "Minimum validation FOA MSE at 200-step intervals; no final-test data consulted.",
+    "generation_seconds": 3.491,
+    "training_seconds": 80.338,
+    "runtime": "PyTorch 2.9.0, mps, CPU threads 3",
+    "validation_before": {
+      "linear": {
+        "normalized_foa_mse": 1.6006338596343994,
+        "foa_nrmse_db": -0.9347420334815979,
+        "all36_nrmse_db": -0.3235519528388977
+      },
+      "learned": {
+        "normalized_foa_mse": 1.6006338596343994,
+        "foa_nrmse_db": -0.9347420334815979,
+        "all36_nrmse_db": -0.3235519528388977
+      }
+    },
+    "validation_after": {
+      "linear": {
+        "normalized_foa_mse": 1.6006338596343994,
+        "foa_nrmse_db": -0.9347420334815979,
+        "all36_nrmse_db": -0.3235519528388977
+      },
+      "learned": {
+        "normalized_foa_mse": 1.4609925746917725,
+        "foa_nrmse_db": -1.3311817646026611,
+        "all36_nrmse_db": -0.466677725315094
+      }
+    },
+    "log": [
+      {
+        "step": 200,
+        "training_loss": 1.4327175617218018,
+        "seconds": 1.401,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.599236011505127,
+            "foa_nrmse_db": -0.938536524772644,
+            "all36_nrmse_db": -0.3203566074371338
+          }
+        }
+      },
+      {
+        "step": 400,
+        "training_loss": 1.328242540359497,
+        "seconds": 2.253,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5816187858581543,
+            "foa_nrmse_db": -0.9866437315940857,
+            "all36_nrmse_db": -0.32181042432785034
+          }
+        }
+      },
+      {
+        "step": 600,
+        "training_loss": 1.4051463603973389,
+        "seconds": 3.34,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5783947706222534,
+            "foa_nrmse_db": -0.9955055117607117,
+            "all36_nrmse_db": -0.31918466091156006
+          }
+        }
+      },
+      {
+        "step": 800,
+        "training_loss": 1.5500233173370361,
+        "seconds": 4.182,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.6218571662902832,
+            "foa_nrmse_db": -0.8775359392166138,
+            "all36_nrmse_db": -0.2908460795879364
+          }
+        }
+      },
+      {
+        "step": 1000,
+        "training_loss": 1.4918551445007324,
+        "seconds": 5.438,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.597119688987732,
+            "foa_nrmse_db": -0.9442872405052185,
+            "all36_nrmse_db": -0.3106261193752289
+          }
+        }
+      },
+      {
+        "step": 1200,
+        "training_loss": 1.3155779838562012,
+        "seconds": 6.32,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.6144449710845947,
+            "foa_nrmse_db": -0.8974295258522034,
+            "all36_nrmse_db": -0.2872423827648163
+          }
+        }
+      },
+      {
+        "step": 1400,
+        "training_loss": 1.6255074739456177,
+        "seconds": 7.138,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.6080623865127563,
+            "foa_nrmse_db": -0.91463303565979,
+            "all36_nrmse_db": -0.3048039674758911
+          }
+        }
+      },
+      {
+        "step": 1600,
+        "training_loss": 1.4274314641952515,
+        "seconds": 8.479,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.604857325553894,
+            "foa_nrmse_db": -0.9232977628707886,
+            "all36_nrmse_db": -0.3016931414604187
+          }
+        }
+      },
+      {
+        "step": 1800,
+        "training_loss": 1.4342303276062012,
+        "seconds": 9.597,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.6408478021621704,
+            "foa_nrmse_db": -0.8269789218902588,
+            "all36_nrmse_db": -0.28354084491729736
+          }
+        }
+      },
+      {
+        "step": 2000,
+        "training_loss": 1.2722876071929932,
+        "seconds": 10.969,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.6372079849243164,
+            "foa_nrmse_db": -0.8366235494613647,
+            "all36_nrmse_db": -0.28427812457084656
+          }
+        }
+      },
+      {
+        "step": 2200,
+        "training_loss": 1.536657452583313,
+        "seconds": 14.65,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5166759490966797,
+            "foa_nrmse_db": -1.168734073638916,
+            "all36_nrmse_db": -0.3332064151763916
+          }
+        }
+      },
+      {
+        "step": 2400,
+        "training_loss": 1.232252597808838,
+        "seconds": 15.556,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.514493703842163,
+            "foa_nrmse_db": -1.1749873161315918,
+            "all36_nrmse_db": -0.3338700234889984
+          }
+        }
+      },
+      {
+        "step": 2600,
+        "training_loss": 1.2960468530654907,
+        "seconds": 16.487,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.513939619064331,
+            "foa_nrmse_db": -1.1765764951705933,
+            "all36_nrmse_db": -0.34205859899520874
+          }
+        }
+      },
+      {
+        "step": 2800,
+        "training_loss": 1.1155495643615723,
+        "seconds": 17.627,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5259021520614624,
+            "foa_nrmse_db": -1.1423951387405396,
+            "all36_nrmse_db": -0.3457753360271454
+          }
+        }
+      },
+      {
+        "step": 3000,
+        "training_loss": 1.275546669960022,
+        "seconds": 18.683,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5597237348556519,
+            "foa_nrmse_db": -1.0471853017807007,
+            "all36_nrmse_db": -0.3313578963279724
+          }
+        }
+      },
+      {
+        "step": 3200,
+        "training_loss": 1.3490041494369507,
+        "seconds": 19.596,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5676499605178833,
+            "foa_nrmse_db": -1.0251710414886475,
+            "all36_nrmse_db": -0.33264800906181335
+          }
+        }
+      },
+      {
+        "step": 3400,
+        "training_loss": 1.6006114482879639,
+        "seconds": 20.456,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5538368225097656,
+            "foa_nrmse_db": -1.0636078119277954,
+            "all36_nrmse_db": -0.33923864364624023
+          }
+        }
+      },
+      {
+        "step": 3600,
+        "training_loss": 1.3500488996505737,
+        "seconds": 21.319,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.6258927583694458,
+            "foa_nrmse_db": -0.8667430877685547,
+            "all36_nrmse_db": -0.3133231997489929
+          }
+        }
+      },
+      {
+        "step": 3800,
+        "training_loss": 1.3101636171340942,
+        "seconds": 22.225,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5939388275146484,
+            "foa_nrmse_db": -0.9529455900192261,
+            "all36_nrmse_db": -0.3257266879081726
+          }
+        }
+      },
+      {
+        "step": 4000,
+        "training_loss": 1.0775997638702393,
+        "seconds": 23.177,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5765159130096436,
+            "foa_nrmse_db": -1.000678300857544,
+            "all36_nrmse_db": -0.34290534257888794
+          }
+        }
+      },
+      {
+        "step": 4200,
+        "training_loss": 1.6262041330337524,
+        "seconds": 26.869,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4806492328643799,
+            "foa_nrmse_db": -1.27314031124115,
+            "all36_nrmse_db": -0.3914368748664856
+          }
+        }
+      },
+      {
+        "step": 4400,
+        "training_loss": 1.1434794664382935,
+        "seconds": 27.754,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.495983362197876,
+            "foa_nrmse_db": -1.2283942699432373,
+            "all36_nrmse_db": -0.3715030550956726
+          }
+        }
+      },
+      {
+        "step": 4600,
+        "training_loss": 1.409650206565857,
+        "seconds": 29.045,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.502791166305542,
+            "foa_nrmse_db": -1.208675503730774,
+            "all36_nrmse_db": -0.3862450122833252
+          }
+        }
+      },
+      {
+        "step": 4800,
+        "training_loss": 1.5578944683074951,
+        "seconds": 29.905,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5288010835647583,
+            "foa_nrmse_db": -1.1341522932052612,
+            "all36_nrmse_db": -0.37325677275657654
+          }
+        }
+      },
+      {
+        "step": 5000,
+        "training_loss": 1.3047256469726562,
+        "seconds": 30.78,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5271532535552979,
+            "foa_nrmse_db": -1.1388359069824219,
+            "all36_nrmse_db": -0.37242013216018677
+          }
+        }
+      },
+      {
+        "step": 5200,
+        "training_loss": 1.1906237602233887,
+        "seconds": 31.611,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5362420082092285,
+            "foa_nrmse_db": -1.1130657196044922,
+            "all36_nrmse_db": -0.3788779675960541
+          }
+        }
+      },
+      {
+        "step": 5400,
+        "training_loss": 1.1070873737335205,
+        "seconds": 32.47,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.553682565689087,
+            "foa_nrmse_db": -1.0640389919281006,
+            "all36_nrmse_db": -0.37742242217063904
+          }
+        }
+      },
+      {
+        "step": 5600,
+        "training_loss": 1.1300569772720337,
+        "seconds": 33.335,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.548911690711975,
+            "foa_nrmse_db": -1.0773954391479492,
+            "all36_nrmse_db": -0.38040801882743835
+          }
+        }
+      },
+      {
+        "step": 5800,
+        "training_loss": 1.2238329648971558,
+        "seconds": 34.195,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.581595540046692,
+            "foa_nrmse_db": -0.9867077469825745,
+            "all36_nrmse_db": -0.36437657475471497
+          }
+        }
+      },
+      {
+        "step": 6000,
+        "training_loss": 1.5217108726501465,
+        "seconds": 34.993,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5750582218170166,
+            "foa_nrmse_db": -1.0046957731246948,
+            "all36_nrmse_db": -0.36622878909111023
+          }
+        }
+      },
+      {
+        "step": 6200,
+        "training_loss": 1.4155032634735107,
+        "seconds": 38.496,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.472952127456665,
+            "foa_nrmse_db": -1.2957757711410522,
+            "all36_nrmse_db": -0.43784159421920776
+          }
+        }
+      },
+      {
+        "step": 6400,
+        "training_loss": 1.2273335456848145,
+        "seconds": 39.521,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.478821039199829,
+            "foa_nrmse_db": -1.278505563735962,
+            "all36_nrmse_db": -0.43966126441955566
+          }
+        }
+      },
+      {
+        "step": 6600,
+        "training_loss": 1.6444097757339478,
+        "seconds": 40.557,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4859776496887207,
+            "foa_nrmse_db": -1.2575390338897705,
+            "all36_nrmse_db": -0.4369807243347168
+          }
+        }
+      },
+      {
+        "step": 6800,
+        "training_loss": 1.3883827924728394,
+        "seconds": 41.998,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4915865659713745,
+            "foa_nrmse_db": -1.2411772012710571,
+            "all36_nrmse_db": -0.4319300055503845
+          }
+        }
+      },
+      {
+        "step": 7000,
+        "training_loss": 1.3656985759735107,
+        "seconds": 43.211,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5095793008804321,
+            "foa_nrmse_db": -1.1891026496887207,
+            "all36_nrmse_db": -0.42511481046676636
+          }
+        }
+      },
+      {
+        "step": 7200,
+        "training_loss": 1.2978973388671875,
+        "seconds": 44.11,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.510914921760559,
+            "foa_nrmse_db": -1.1852617263793945,
+            "all36_nrmse_db": -0.42532920837402344
+          }
+        }
+      },
+      {
+        "step": 7400,
+        "training_loss": 1.4035547971725464,
+        "seconds": 45.067,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.535682201385498,
+            "foa_nrmse_db": -1.114648461341858,
+            "all36_nrmse_db": -0.4151860475540161
+          }
+        }
+      },
+      {
+        "step": 7600,
+        "training_loss": 1.2602605819702148,
+        "seconds": 45.988,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5444629192352295,
+            "foa_nrmse_db": -1.0898873805999756,
+            "all36_nrmse_db": -0.4111174941062927
+          }
+        }
+      },
+      {
+        "step": 7800,
+        "training_loss": 1.3625822067260742,
+        "seconds": 46.937,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5539278984069824,
+            "foa_nrmse_db": -1.0633535385131836,
+            "all36_nrmse_db": -0.405622661113739
+          }
+        }
+      },
+      {
+        "step": 8000,
+        "training_loss": 1.2971338033676147,
+        "seconds": 48.404,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5687841176986694,
+            "foa_nrmse_db": -1.022029995918274,
+            "all36_nrmse_db": -0.40205711126327515
+          }
+        }
+      },
+      {
+        "step": 8200,
+        "training_loss": 1.2301647663116455,
+        "seconds": 52.281,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4679595232009888,
+            "foa_nrmse_db": -1.3105213642120361,
+            "all36_nrmse_db": -0.45743122696876526
+          }
+        }
+      },
+      {
+        "step": 8400,
+        "training_loss": 1.3202072381973267,
+        "seconds": 53.09,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4646351337432861,
+            "foa_nrmse_db": -1.3203675746917725,
+            "all36_nrmse_db": -0.45906946063041687
+          }
+        }
+      },
+      {
+        "step": 8600,
+        "training_loss": 1.3417797088623047,
+        "seconds": 53.962,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4769244194030762,
+            "foa_nrmse_db": -1.2840793132781982,
+            "all36_nrmse_db": -0.45195820927619934
+          }
+        }
+      },
+      {
+        "step": 8800,
+        "training_loss": 1.7030538320541382,
+        "seconds": 55.46,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4927504062652588,
+            "foa_nrmse_db": -1.2377901077270508,
+            "all36_nrmse_db": -0.4422895312309265
+          }
+        }
+      },
+      {
+        "step": 9000,
+        "training_loss": 1.4010010957717896,
+        "seconds": 56.7,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4959875345230103,
+            "foa_nrmse_db": -1.2283823490142822,
+            "all36_nrmse_db": -0.44162407517433167
+          }
+        }
+      },
+      {
+        "step": 9200,
+        "training_loss": 1.3836637735366821,
+        "seconds": 57.765,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5046712160110474,
+            "foa_nrmse_db": -1.203245997428894,
+            "all36_nrmse_db": -0.4366721510887146
+          }
+        }
+      },
+      {
+        "step": 9400,
+        "training_loss": 1.1434872150421143,
+        "seconds": 58.923,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5179615020751953,
+            "foa_nrmse_db": -1.1650545597076416,
+            "all36_nrmse_db": -0.4304700493812561
+          }
+        }
+      },
+      {
+        "step": 9600,
+        "training_loss": 1.1776776313781738,
+        "seconds": 60.017,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.5354793071746826,
+            "foa_nrmse_db": -1.1152223348617554,
+            "all36_nrmse_db": -0.4210389256477356
+          }
+        }
+      },
+      {
+        "step": 9800,
+        "training_loss": 1.1348762512207031,
+        "seconds": 61.481,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.536362886428833,
+            "foa_nrmse_db": -1.1127238273620605,
+            "all36_nrmse_db": -0.4185258150100708
+          }
+        }
+      },
+      {
+        "step": 10000,
+        "training_loss": 1.3821580410003662,
+        "seconds": 62.793,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.532829999923706,
+            "foa_nrmse_db": -1.1227221488952637,
+            "all36_nrmse_db": -0.42138320207595825
+          }
+        }
+      },
+      {
+        "step": 10200,
+        "training_loss": 1.551334261894226,
+        "seconds": 67.971,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4616138935089111,
+            "foa_nrmse_db": -1.3293352127075195,
+            "all36_nrmse_db": -0.46326589584350586
+          }
+        }
+      },
+      {
+        "step": 10400,
+        "training_loss": 1.4914512634277344,
+        "seconds": 69.245,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4609925746917725,
+            "foa_nrmse_db": -1.3311817646026611,
+            "all36_nrmse_db": -0.466677725315094
+          }
+        }
+      },
+      {
+        "step": 10600,
+        "training_loss": 1.6055151224136353,
+        "seconds": 70.545,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4654173851013184,
+            "foa_nrmse_db": -1.318048357963562,
+            "all36_nrmse_db": -0.4663800001144409
+          }
+        }
+      },
+      {
+        "step": 10800,
+        "training_loss": 0.972114086151123,
+        "seconds": 72.212,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4635859727859497,
+            "foa_nrmse_db": -1.3234795331954956,
+            "all36_nrmse_db": -0.46765175461769104
+          }
+        }
+      },
+      {
+        "step": 11000,
+        "training_loss": 1.4553289413452148,
+        "seconds": 73.296,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.469301462173462,
+            "foa_nrmse_db": -1.3065530061721802,
+            "all36_nrmse_db": -0.4656543731689453
+          }
+        }
+      },
+      {
+        "step": 11200,
+        "training_loss": 1.287760853767395,
+        "seconds": 74.753,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4730418920516968,
+            "foa_nrmse_db": -1.29551100730896,
+            "all36_nrmse_db": -0.4654589593410492
+          }
+        }
+      },
+      {
+        "step": 11400,
+        "training_loss": 1.7579500675201416,
+        "seconds": 76.508,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4727591276168823,
+            "foa_nrmse_db": -1.2963448762893677,
+            "all36_nrmse_db": -0.46684232354164124
+          }
+        }
+      },
+      {
+        "step": 11600,
+        "training_loss": 1.5111287832260132,
+        "seconds": 77.779,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4778075218200684,
+            "foa_nrmse_db": -1.2814831733703613,
+            "all36_nrmse_db": -0.46408677101135254
+          }
+        }
+      },
+      {
+        "step": 11800,
+        "training_loss": 1.5316320657730103,
+        "seconds": 78.753,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.4787095785140991,
+            "foa_nrmse_db": -1.278833031654358,
+            "all36_nrmse_db": -0.4644981324672699
+          }
+        }
+      },
+      {
+        "step": 12000,
+        "training_loss": 1.2972103357315063,
+        "seconds": 80.209,
+        "validation": {
+          "linear": {
+            "normalized_foa_mse": 1.6006338596343994,
+            "foa_nrmse_db": -0.9347420334815979,
+            "all36_nrmse_db": -0.3235519528388977
+          },
+          "learned": {
+            "normalized_foa_mse": 1.483128309249878,
+            "foa_nrmse_db": -1.2658748626708984,
+            "all36_nrmse_db": -0.46206799149513245
+          }
+        }
+      }
+    ],
+    "training_scenes_sha256": "1b97b3baef12957182290013bc89a2e11b8eec66b4c70c863dcb9664deeb16e0",
+    "validation_scenes_sha256": "28e0f2fdfeaebf0bce24d2effc4b2df273b6434bfe837e05e2903809cf6dbf40",
+    "selected_checkpoint_scene_seeds": [
+      10000,
+      13071
+    ],
+    "selected_checkpoint_unique_scenes": 3072,
+    "generation_seconds_note": "Initial training chunk plus validation only; later chunk generation is included in training_seconds.",
+    "selection_is_validation_not_final_test": true,
+    "validation_foa_improvement_db": 0.39643973112106323
+  },
+  "limits": [
+    "An independently trained proposal, not the paper 30.8M-parameter diffusion network and not an official checkpoint.",
+    "Model size or synthetic validation cannot establish superiority to ADEPS, speech reconstruction quality, or venue performance.",
+    "No explicit reverberant-room or microphone directivity response training; measured arrays and real speech are distribution shifts.",
+    "Temporal covariance uses the entire supplied window (offline/noncausal); no learned long-range speech or adjacent-frequency structure.",
+    "Underdetermined spatial modes cannot be uniquely recovered; learned outputs can hallucinate spatial structure.",
+    "1 Hz--20 kHz is a simulated evaluation/display range, not a certified physical microphone bandwidth.",
+    "Inference has no reference-driven selection. Physical projection and ON/OFF mixing, if used, belong to the calling application."
+  ],
+  "sources": [
+    "https://arxiv.org/abs/2608.24558"
+  ],
+  "license": "MIT (independently authored code and procedurally trained weights)",
+  "development_trials": [
+    {
+      "weights_sha256": "7437070d41d540094be3ddb040b1adbf15824974547538189174157b3f8af70c",
+      "parameter_count": 1028680,
+      "features": "Four-hidden-layer SiLU MLP; complex identity residual; 397 input features: 72 observed real/imag coefficients, 288 real/imag entries in the first 4 rows of E@V, 36 real diagonal entries, 1 logarithmic frequency. One deterministic forward pass, no diffusion sampling.",
+      "training": {
+        "seed": 38741,
+        "steps": 2400,
+        "selected_step": 200,
+        "batch_size": 512,
+        "samples": 196608,
+        "training_scene_seeds": [
+          10000,
+          10383
+        ],
+        "validation_scene_seeds": [
+          20000,
+          20031
+        ],
+        "reserved_final_test_seed_start": 90000,
+        "validation_samples": 16384,
+        "data": "Independent procedural 1--5 plane waves plus diffuse modal energy; real ACN/N3D; 64 geometric frequencies 1 Hz--20 kHz, 8 correlated complex frames. Ideal omnidirectional free-field arrays, random 3D rotation, 4/5/6/8/12 capsules, radii .04--.10 m, 10--50 dB SNR, order 5 or order 15 soundfield. Not audio speech STFTs, not VCTK, not HARP, and no field recordings.",
+        "augmentation": "Random common complex phase per training bin. Directions, array orientation/radius, source strengths, spectral tilt, diffuse energy, noise and regularization vary across synthetic scenes.",
+        "optimizer": "AdamW lr=.0008 weight_decay=.0001; cosine decay to .00004; gradient-norm cap 2.",
+        "objective": "Normalized complex squared residual error; first 4 coefficients weight 1, remaining 32 weight .025; select checkpoint by held-out-scene normalized FOA MSE.",
+        "selection": "Minimum validation FOA MSE at 200-step intervals; no final-test data consulted.",
+        "generation_seconds": 2.149,
+        "training_seconds": 13.978,
+        "runtime": "PyTorch 2.9.0, mps, CPU threads 3",
+        "validation_before": {
+          "linear": {
+            "normalized_foa_mse": 1.79157292842865,
+            "foa_nrmse_db": -0.9114720821380615,
+            "all36_nrmse_db": -0.3015993535518646
+          },
+          "learned": {
+            "normalized_foa_mse": 1.79157292842865,
+            "foa_nrmse_db": -0.9114720821380615,
+            "all36_nrmse_db": -0.3015993535518646
+          }
+        },
+        "validation_after": {
+          "linear": {
+            "normalized_foa_mse": 1.79157292842865,
+            "foa_nrmse_db": -0.9114720821380615,
+            "all36_nrmse_db": -0.3015993535518646
+          },
+          "learned": {
+            "normalized_foa_mse": 1.806535005569458,
+            "foa_nrmse_db": -0.8753532767295837,
+            "all36_nrmse_db": -0.29205137491226196
+          }
+        },
+        "log": [
+          {
+            "step": 200,
+            "training_loss": 1.6168794631958008,
+            "seconds": 2.706,
+            "validation": {
+              "linear": {
+                "normalized_foa_mse": 1.79157292842865,
+                "foa_nrmse_db": -0.9114720821380615,
+                "all36_nrmse_db": -0.3015993535518646
+              },
+              "learned": {
+                "normalized_foa_mse": 1.806535005569458,
+                "foa_nrmse_db": -0.8753532767295837,
+                "all36_nrmse_db": -0.29205137491226196
+              }
+            }
+          },
+          {
+            "step": 400,
+            "training_loss": 1.4622830152511597,
+            "seconds": 3.891,
+            "validation": {
+              "linear": {
+                "normalized_foa_mse": 1.79157292842865,
+                "foa_nrmse_db": -0.9114720821380615,
+                "all36_nrmse_db": -0.3015993535518646
+              },
+              "learned": {
+                "normalized_foa_mse": 1.815446138381958,
+                "foa_nrmse_db": -0.8539832234382629,
+                "all36_nrmse_db": -0.2852613031864166
+              }
+            }
+          },
+          {
+            "step": 600,
+            "training_loss": 1.5634056329727173,
+            "seconds": 4.779,
+            "validation": {
+              "linear": {
+                "normalized_foa_mse": 1.79157292842865,
+                "foa_nrmse_db": -0.9114720821380615,
+                "all36_nrmse_db": -0.3015993535518646
+              },
+              "learned": {
+                "normalized_foa_mse": 1.8093950748443604,
+                "foa_nrmse_db": -0.8684829473495483,
+                "all36_nrmse_db": -0.2739422917366028
+              }
+            }
+          },
+          {
+            "step": 800,
+            "training_loss": 1.870891809463501,
+            "seconds": 5.541,
+            "validation": {
+              "linear": {
+                "normalized_foa_mse": 1.79157292842865,
+                "foa_nrmse_db": -0.9114720821380615,
+                "all36_nrmse_db": -0.3015993535518646
+              },
+              "learned": {
+                "normalized_foa_mse": 1.8179066181182861,
+                "foa_nrmse_db": -0.8481013178825378,
+                "all36_nrmse_db": -0.27988550066947937
+              }
+            }
+          },
+          {
+            "step": 1000,
+            "training_loss": 1.8767247200012207,
+            "seconds": 6.325,
+            "validation": {
+              "linear": {
+                "normalized_foa_mse": 1.79157292842865,
+                "foa_nrmse_db": -0.9114720821380615,
+                "all36_nrmse_db": -0.3015993535518646
+              },
+              "learned": {
+                "normalized_foa_mse": 1.8256940841674805,
+                "foa_nrmse_db": -0.8295369148254395,
+                "all36_nrmse_db": -0.28310924768447876
+              }
+            }
+          },
+          {
+            "step": 1200,
+            "training_loss": 1.9342838525772095,
+            "seconds": 7.09,
+            "validation": {
+              "linear": {
+                "normalized_foa_mse": 1.79157292842865,
+                "foa_nrmse_db": -0.9114720821380615,
+                "all36_nrmse_db": -0.3015993535518646
+              },
+              "learned": {
+                "normalized_foa_mse": 1.8219738006591797,
+                "foa_nrmse_db": -0.8383956551551819,
+                "all36_nrmse_db": -0.2880309224128723
+              }
+            }
+          },
+          {
+            "step": 1400,
+            "training_loss": 1.2345458269119263,
+            "seconds": 7.846,
+            "validation": {
+              "linear": {
+                "normalized_foa_mse": 1.79157292842865,
+                "foa_nrmse_db": -0.9114720821380615,
+                "all36_nrmse_db": -0.3015993535518646
+              },
+              "learned": {
+                "normalized_foa_mse": 1.8188802003860474,
+                "foa_nrmse_db": -0.8457760810852051,
+                "all36_nrmse_db": -0.2825760245323181
+              }
+            }
+          },
+          {
+            "step": 1600,
+            "training_loss": 1.2805088758468628,
+            "seconds": 8.623,
+            "validation": {
+              "linear": {
+                "normalized_foa_mse": 1.79157292842865,
+                "foa_nrmse_db": -0.9114720821380615,
+                "all36_nrmse_db": -0.3015993535518646
+              },
+              "learned": {
+                "normalized_foa_mse": 1.8352131843566895,
+                "foa_nrmse_db": -0.8069517612457275,
+                "all36_nrmse_db": -0.2745378613471985
+              }
+            }
+          },
+          {
+            "step": 1800,
+            "training_loss": 1.644122838973999,
+            "seconds": 9.64,
+            "validation": {
+              "linear": {
+                "normalized_foa_mse": 1.79157292842865,
+                "foa_nrmse_db": -0.9114720821380615,
+                "all36_nrmse_db": -0.3015993535518646
+              },
+              "learned": {
+                "normalized_foa_mse": 1.8360546827316284,
+                "foa_nrmse_db": -0.8049606680870056,
+                "all36_nrmse_db": -0.2716894745826721
+              }
+            }
+          },
+          {
+            "step": 2000,
+            "training_loss": 1.3055706024169922,
+            "seconds": 10.611,
+            "validation": {
+              "linear": {
+                "normalized_foa_mse": 1.79157292842865,
+                "foa_nrmse_db": -0.9114720821380615,
+                "all36_nrmse_db": -0.3015993535518646
+              },
+              "learned": {
+                "normalized_foa_mse": 1.8331096172332764,
+                "foa_nrmse_db": -0.8119324445724487,
+                "all36_nrmse_db": -0.278433233499527
+              }
+            }
+          },
+          {
+            "step": 2200,
+            "training_loss": 1.3365496397018433,
+            "seconds": 12.459,
+            "validation": {
+              "linear": {
+                "normalized_foa_mse": 1.79157292842865,
+                "foa_nrmse_db": -0.9114720821380615,
+                "all36_nrmse_db": -0.3015993535518646
+              },
+              "learned": {
+                "normalized_foa_mse": 1.8334472179412842,
+                "foa_nrmse_db": -0.8111326694488525,
+                "all36_nrmse_db": -0.2786073684692383
+              }
+            }
+          },
+          {
+            "step": 2400,
+            "training_loss": 1.3518604040145874,
+            "seconds": 13.887,
+            "validation": {
+              "linear": {
+                "normalized_foa_mse": 1.79157292842865,
+                "foa_nrmse_db": -0.9114720821380615,
+                "all36_nrmse_db": -0.3015993535518646
+              },
+              "learned": {
+                "normalized_foa_mse": 1.8354766368865967,
+                "foa_nrmse_db": -0.8063283562660217,
+                "all36_nrmse_db": -0.2764360010623932
+              }
+            }
+          }
+        ],
+        "training_scenes_sha256": "01f39235e6e2d61afc28eaa3cd65181d48bb79c9f7da8ce03079caea29c19145",
+        "validation_scenes_sha256": "c7e0016252dbd5c8fbcb8a6cac54ea1e4dea491362b729fe56af5b09c4d730d9"
+      },
+      "outcome": "Earlier held-out validation did not improve on the unchanged linear baseline; not used as evidence of improvement."
+    }
+  ],
+  "export_parity": {
+    "checked_bins": 257,
+    "max_abs_error": 1.430511474609375e-06,
+    "relative_l2_error": 4.3087993617518805e-07,
+    "rtol": 0.0003,
+    "atol": 3e-05,
+    "passed": true
+  },
+  "input_features": 465,
+  "inference_context": "Covariance, power and RMS are computed from all frames of the supplied window. Offline/noncausal; no clean target and no external state."
+}

@@ -1,0 +1,80 @@
+{
+  "version": "0.4.0",
+  "date": "2026-09-11",
+  "model_sha256": "4ce8deee16af297b3a3557b827438e469798c00e9c4aa936172cb8a7475b046c",
+  "tolerance": "1e-5 + 1e-4*abs(native)",
+  "numeric_fields": [
+    "output",
+    "quality"
+  ],
+  "excluded": [
+    "input_sha256 (platform numerical roundoff)",
+    "elapsed_seconds"
+  ],
+  "cases": [
+    {
+      "name": "synthetic",
+      "numeric_values_compared": 33290,
+      "maximum_absolute_difference": 5.970247681119645e-06,
+      "failures": 0,
+      "browser_seconds": 1.7414,
+      "native_seconds": 0.129096875
+    },
+    {
+      "name": "mono WAV through virtual array",
+      "numeric_values_compared": 105802,
+      "maximum_absolute_difference": 5.03532591622502e-06,
+      "failures": 0,
+      "browser_seconds": 5.8445,
+      "native_seconds": 0.161486708
+    }
+  ],
+  "ui_checks": [
+    "JP/EN navigation",
+    "Evidence third tab",
+    "OFF/ON same run: -4.63/-5.85 dB; no re-computation",
+    "Mono WAV file chooser and inference",
+    "Comparison ZIP downloaded by the actual UI",
+    "Bad audio outcomes visible in benchmark"
+  ],
+  "downloaded_audio": [
+    {
+      "name": "linear_FOA_ACN_N3D.wav",
+      "sample_rate_hz": 16000,
+      "samples": 6400,
+      "channels": 4
+    },
+    {
+      "name": "linear_FOA_ACN_SN3D.wav",
+      "sample_rate_hz": 16000,
+      "samples": 6400,
+      "channels": 4
+    },
+    {
+      "name": "enhanced_FOA_ACN_N3D.wav",
+      "sample_rate_hz": 16000,
+      "samples": 6400,
+      "channels": 4
+    },
+    {
+      "name": "enhanced_FOA_ACN_SN3D.wav",
+      "sample_rate_hz": 16000,
+      "samples": 6400,
+      "channels": 4
+    },
+    {
+      "name": "reference_FOA_ACN_N3D.wav",
+      "sample_rate_hz": 16000,
+      "samples": 6400,
+      "channels": 4
+    },
+    {
+      "name": "reference_FOA_ACN_SN3D.wav",
+      "sample_rate_hz": 16000,
+      "samples": 6400,
+      "channels": 4
+    }
+  ],
+  "real_audio_output_or_microphone_capture": false,
+  "paper_superiority_established": false
+}

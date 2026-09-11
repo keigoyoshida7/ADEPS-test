@@ -207,14 +207,14 @@ def load_bundle(bundle):
             'effective_order': None}
 
 
-def validate_data(data):
+def validate_data(data, max_bins=MAX_BINS):
     v, p, f, ref = (data[k] for k in ('V', 'p', 'frequencies', 'reference'))
     if v.ndim != 3 or p.ndim != 3 or v.shape[:2] != p.shape[:2] or v.shape[2] != CHANNELS:
         raise ValueError('Neural input: V=[F,Q,36], p=[F,Q,T]. A 4-coefficient V cannot be padded.')
     if not 4 <= v.shape[1] <= 64 or min(v.shape + p.shape) < 1:
         raise ValueError('FOA requires at least 4 microphones; maximum 64')
-    if v.shape[0] * p.shape[2] > MAX_BINS:
-        raise ValueError('Maximum 8192 frequency-time bins per run; use a shorter segment')
+    if v.shape[0] * p.shape[2] > max_bins:
+        raise ValueError(f'Maximum {max_bins} frequency-time bins per run; use a shorter segment')
     if v.size > 600_000 or f.ndim != 1 or len(f) != v.shape[0] or len(f) < 2:
         raise ValueError('Frequency grid or transfer matrix size is invalid')
     if not np.all(np.isfinite(f)) or np.any(f < 0) or np.any(np.diff(f) <= 0):

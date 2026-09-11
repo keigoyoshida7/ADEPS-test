@@ -34,7 +34,7 @@ def wav_bytes(rate, data):
     return out.getvalue()
 
 
-def prepare_zip(payload, config):
+def prepare_zip(payload, config, max_bins=MAX_BINS):
     """Import array.json + microphones.wav [+ reference.wav], without extracting paths."""
     with zipfile.ZipFile(io.BytesIO(payload)) as archive:
         files = archive.infolist()
@@ -76,8 +76,8 @@ def prepare_zip(payload, config):
             reference = resample_poly(reference, rate//divisor, original_rate//divisor, axis=0)
     if len(source) < fft:
         raise ValueError('The selected segment must be at least one FFT window long')
-    if (fft//2+1) * (int(np.ceil(len(source)/hop))+1) > MAX_BINS:
-        raise ValueError('Segment exceeds 8192 frequency-time bins; shorten duration (e.g. 0.4 s at 16 kHz)')
+    if (fft//2+1) * (int(np.ceil(len(source)/hop))+1) > max_bins:
+        raise ValueError(f'Segment exceeds {max_bins} frequency-time bins; shorten duration')
     def transform(audio):
         f, _, z = stft(audio.T, fs=rate, window='hann', nperseg=fft, noverlap=fft-hop,
                        nfft=fft, boundary='zeros', padded=True, scaling='spectrum')

@@ -61,11 +61,15 @@ class Handler(BaseHTTPRequestHandler):
             if not 0<size<=32_000_000:raise ValueError('アップロード上限は32 MBです。')
             raw=self.rfile.read(size);path=urlparse(self.path).path
             if path=='/api/ir':result=analyze_bundle(raw)
-            elif path=='/api/neural-audio':
-                from neural_audio import run_audio
+            elif path in ('/api/neural-audio', '/api/spatial-audio', '/api/spatial-source'):
                 config=json.loads(self.headers.get('X-ADEPS-Config','{}'))
                 if not isinstance(config,dict):raise ValueError('JSON object required')
-                result,archive=run_audio(raw,config)
+                if path=='/api/neural-audio':
+                    from neural_audio import run_audio
+                    result,archive=run_audio(raw,config)
+                else:
+                    from spatial import run_spatial_audio,run_spatial_source
+                    result,archive=(run_spatial_source if path=='/api/spatial-source' else run_spatial_audio)(raw,config)
                 result.update(zip_base64=base64.b64encode(archive).decode(),filename='ADEPS_test_FOA_comparison.zip')
             else:
                 cfg=json.loads(raw)
@@ -80,7 +84,10 @@ class Handler(BaseHTTPRequestHandler):
                 elif path=='/api/neural':
                     from neural import run_neural
                     result=run_neural(cfg)
-                elif path=='/api/neural-example':
+                elif path=='/api/spatial':
+                    from spatial import run_spatial
+                    result=run_spatial(cfg)
+                elif path in ('/api/neural-example','/api/spatial-example'):
                     from neural_audio import example_zip
                     result={'zip_base64':base64.b64encode(example_zip()).decode(),'filename':'ADEPS_test_array_audio_example.zip'}
                 elif path=='/api/max':result=bridge.command(cfg.get('command'),cfg.get('channel'))

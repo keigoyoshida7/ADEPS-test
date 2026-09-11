@@ -28,7 +28,7 @@ function request(
 ): Promise<Record<string, any>> {
   if (!worker) {
     worker = new Worker(
-      new URL(asset('/analysis-worker.mjs?v=0.3.0'), document.baseURI),
+      new URL(asset('/analysis-worker.mjs?v=0.4.0'), document.baseURI),
       { type: 'module' },
     );
     worker.onmessage = ({ data }) => {

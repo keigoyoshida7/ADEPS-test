@@ -1,0 +1,4 @@
+# Optional local-only SOFA audit tools; not needed by the web UI.
+-r requirements.txt
+h5py>=3.11,<4
+matplotlib>=3.8,<4

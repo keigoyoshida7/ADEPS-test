@@ -1,0 +1,900 @@
+{
+  "schema": "adeps-test-spatial-api-verification/1",
+  "created_utc": "2026-09-11T13:42:41.309239+00:00",
+  "scope": "Loopback HTTP smoke tests of backend/server.py Handler. Synthetic non-personal data only; no Max endpoint, OSC sender, audio device or playback invoked.",
+  "runtime": {
+    "python": "3.11.8",
+    "numpy": "2.1.3"
+  },
+  "checks": [
+    {
+      "name": "/api/spatial returns HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "Synthetic route model hash matches bundled checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Synthetic route input hash is SHA256",
+      "passed": true
+    },
+    {
+      "name": "Synthetic route frequencies finite and increasing",
+      "passed": true
+    },
+    {
+      "name": "Synthetic route linear finite aligned four-channel spectra",
+      "passed": true
+    },
+    {
+      "name": "Synthetic route enhanced finite aligned four-channel spectra",
+      "passed": true
+    },
+    {
+      "name": "/api/spatial-source returns HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz model hash matches bundled checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz input hash is SHA256",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz frequencies finite and increasing",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz linear finite aligned four-channel spectra",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz enhanced finite aligned four-channel spectra",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz ZIP passes CRC",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz ZIP includes both methods and manifest",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz linear_FOA_ACN_N3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz linear_FOA_ACN_N3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz linear_FOA_ACN_SN3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz linear_FOA_ACN_SN3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz enhanced_FOA_ACN_N3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz enhanced_FOA_ACN_N3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz enhanced_FOA_ACN_SN3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz enhanced_FOA_ACN_SN3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz reference_FOA_ACN_N3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz reference_FOA_ACN_N3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz reference_FOA_ACN_SN3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz reference_FOA_ACN_SN3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Source route at 16 kHz archive manifest agrees with API result",
+      "passed": true
+    },
+    {
+      "name": "Source route applies selection once",
+      "passed": true
+    },
+    {
+      "name": "/api/spatial-source returns HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz model hash matches bundled checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz input hash is SHA256",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz frequencies finite and increasing",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz linear finite aligned four-channel spectra",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz enhanced finite aligned four-channel spectra",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz ZIP passes CRC",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz ZIP includes both methods and manifest",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz linear_FOA_ACN_N3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz linear_FOA_ACN_N3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz linear_FOA_ACN_SN3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz linear_FOA_ACN_SN3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz enhanced_FOA_ACN_N3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz enhanced_FOA_ACN_N3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz enhanced_FOA_ACN_SN3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz enhanced_FOA_ACN_SN3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz reference_FOA_ACN_N3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz reference_FOA_ACN_N3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz reference_FOA_ACN_SN3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz reference_FOA_ACN_SN3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Source route at 48 kHz archive manifest agrees with API result",
+      "passed": true
+    },
+    {
+      "name": "48 kHz source export has 4800 samples",
+      "passed": true
+    },
+    {
+      "name": "/api/spatial-example returns HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "Example input ZIP passes CRC",
+      "passed": true
+    },
+    {
+      "name": "Example input ZIP contains array and observations",
+      "passed": true
+    },
+    {
+      "name": "Example microphone observations are finite six-channel",
+      "passed": true
+    },
+    {
+      "name": "/api/spatial-audio returns HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route model hash matches bundled checkpoint",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route input hash is SHA256",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route frequencies finite and increasing",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route linear finite aligned four-channel spectra",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route enhanced finite aligned four-channel spectra",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route ZIP passes CRC",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route ZIP includes both methods and manifest",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route linear_FOA_ACN_N3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route linear_FOA_ACN_N3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route linear_FOA_ACN_SN3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route linear_FOA_ACN_SN3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route enhanced_FOA_ACN_N3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route enhanced_FOA_ACN_N3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route enhanced_FOA_ACN_SN3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route enhanced_FOA_ACN_SN3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route reference_FOA_ACN_N3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route reference_FOA_ACN_N3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route reference_FOA_ACN_SN3D.wav finite four-channel WAV",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route reference_FOA_ACN_SN3D.wav sample rate and frame length",
+      "passed": true
+    },
+    {
+      "name": "Array ZIP route archive manifest agrees with API result",
+      "passed": true
+    },
+    {
+      "name": "Array route export has 6400 samples",
+      "passed": true
+    },
+    {
+      "name": "/api/spatial-source returns HTTP 400",
+      "passed": true
+    },
+    {
+      "name": "Source route rejects stereo input",
+      "passed": true
+    },
+    {
+      "name": "/api/spatial-source returns HTTP 400",
+      "passed": true
+    },
+    {
+      "name": "Source route enforces new 65536-bin limit",
+      "passed": true
+    }
+  ],
+  "requests": [
+    {
+      "path": "/api/spatial",
+      "status": 200,
+      "seconds": 0.6693,
+      "request_bytes": 163,
+      "request_sha256": "473feabaf4e92196e7dbd39912bc52db35b6a90e5c09418ef68f2eee22f5da75",
+      "response_bytes": 760353,
+      "content_type": "application/json; charset=utf-8",
+      "result_schema": "adeps-test-spatial-run/1",
+      "model_sha256": "4ce8deee16af297b3a3557b827438e469798c00e9c4aa936172cb8a7475b046c",
+      "input_sha256": "5da794ad04cfc472be7fb50434e913872367c2c941ddd9bdfc49bea011c1c616",
+      "configuration": {
+        "microphones": 6,
+        "radius_m": 0.06,
+        "snr_db": 30,
+        "data_seed": 1100101,
+        "scene": "speech_like",
+        "regularization": 0.001,
+        "enabled": true,
+        "include_legacy": false
+      },
+      "tuning": {
+        "blend": 1.0,
+        "consistency": 0.0,
+        "selected_linear_regularization": 0.01
+      },
+      "microphones": 6,
+      "frequencies": 128,
+      "frequency_range_hz": [
+        1.0,
+        20000.0
+      ],
+      "frames": 16,
+      "quality": {
+        "linear": {
+          "nrmse_db": -4.092863993513411,
+          "coherence": 0.6060970465918718,
+          "log_spectral_mae_db": 7.6125981261383,
+          "si_sdr": null
+        },
+        "enhanced": {
+          "nrmse_db": -5.018697132751786,
+          "coherence": 0.7146753046565206,
+          "log_spectral_mae_db": 6.064132329238128,
+          "si_sdr": null
+        }
+      }
+    },
+    {
+      "path": "/api/spatial-source",
+      "status": 200,
+      "seconds": 0.473,
+      "request_bytes": 124858,
+      "request_sha256": "a4dc01d69ed0534e3feb2d3e1a9fa781f3882f31e28b62b6f65c936128632d41",
+      "response_bytes": 4789421,
+      "content_type": "application/json; charset=utf-8",
+      "result_schema": "adeps-test-spatial-run/1",
+      "model_sha256": "4ce8deee16af297b3a3557b827438e469798c00e9c4aa936172cb8a7475b046c",
+      "input_sha256": "7cc07e150528e64c0116fa712c7ac9a6ceb9ea6f9fbfb946b0c87910e3bae648",
+      "configuration": {
+        "microphones": 6,
+        "radius_m": 0.06,
+        "snr_db": 30,
+        "data_seed": 1100101,
+        "scene": "speech_like",
+        "regularization": 0.001,
+        "enabled": true,
+        "include_legacy": false,
+        "start_seconds": 0.1,
+        "duration_seconds": 0.4,
+        "analysis_sample_rate_hz": 16000
+      },
+      "tuning": {
+        "blend": 1.0,
+        "consistency": 0.0,
+        "selected_linear_regularization": 0.01
+      },
+      "microphones": 6,
+      "frequencies": 129,
+      "frequency_range_hz": [
+        0.0,
+        8000.0
+      ],
+      "frames": 51,
+      "quality": {
+        "linear": {
+          "nrmse_db": -19.42155115706932,
+          "coherence": 0.17083908732971595,
+          "log_spectral_mae_db": 50.32083909325689,
+          "si_sdr": {
+            "by_channel_db": [
+              33.508442666834476,
+              19.086862085850058,
+              16.65197504569357,
+              23.99145624238768
+            ],
+            "mean_valid_channels_db": 23.309684010191447,
+            "valid_channels": 4,
+            "definition": "zero-mean per-channel projection; arithmetic mean across valid FOA channels"
+          }
+        },
+        "enhanced": {
+          "nrmse_db": -16.683432162602184,
+          "coherence": 0.17693470126055263,
+          "log_spectral_mae_db": 49.61988782823632,
+          "si_sdr": {
+            "by_channel_db": [
+              27.016922228330674,
+              18.41317133815876,
+              15.395344114097899,
+              18.469343367910426
+            ],
+            "mean_valid_channels_db": 19.82369526212444,
+            "valid_channels": 4,
+            "definition": "zero-mean per-channel projection; arithmetic mean across valid FOA channels"
+          }
+        }
+      },
+      "zip_sha256": "987fc3dc87dad6cec0fc6285e8467e7b650f8ad2624de9942680c6c9a91d1183",
+      "zip_bytes": 1678823,
+      "export_files": [
+        {
+          "name": "linear_FOA_ACN_N3D.wav",
+          "bytes": 102458,
+          "sha256": "dfbbf0dc07fab2067f9152e343946ffd7c6512971eb34b7d294146a2c915b866",
+          "sample_rate_hz": 16000,
+          "samples": 6400,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.1350371390581131
+        },
+        {
+          "name": "linear_FOA_ACN_SN3D.wav",
+          "bytes": 102458,
+          "sha256": "f09ffae35d5928c2c64ed14c65ba902de86939e8183333c499d1b9655b70df3a",
+          "sample_rate_hz": 16000,
+          "samples": 6400,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.11338607221841812
+        },
+        {
+          "name": "enhanced_FOA_ACN_N3D.wav",
+          "bytes": 102458,
+          "sha256": "f8c1bd24c04edf472fc3ad1ed563163a44621c8afbf17a9792fe9f4b328f47fe",
+          "sample_rate_hz": 16000,
+          "samples": 6400,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.14538700878620148
+        },
+        {
+          "name": "enhanced_FOA_ACN_SN3D.wav",
+          "bytes": 102458,
+          "sha256": "63d4fa11507466d73363cdb301105845c889243174f136f9c10ef041e49c0ec4",
+          "sample_rate_hz": 16000,
+          "samples": 6400,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.11412748694419861
+        },
+        {
+          "name": "reference_FOA_ACN_N3D.wav",
+          "bytes": 102458,
+          "sha256": "8290cbdd9d14eb8c30f8a5c4d64d7557511e9c0756165ac1455f2d3742fad350",
+          "sample_rate_hz": 16000,
+          "samples": 6400,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.1355857402086258
+        },
+        {
+          "name": "reference_FOA_ACN_SN3D.wav",
+          "bytes": 102458,
+          "sha256": "e5cd23bc59c670c24a8c0c228371e4c24934e888b4dbe571e257f9e0a49dbe6f",
+          "sample_rate_hz": 16000,
+          "samples": 6400,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.11311911046504974
+        },
+        {
+          "name": "result.json",
+          "bytes": 3671628,
+          "sha256": "03add220df8ca4733a9bd127193141fd49a84cc899caf142a0787626622cbd37"
+        },
+        {
+          "name": "READ-ME.txt",
+          "bytes": 286,
+          "sha256": "10493bf71bc6eb168988f95b04e8ff5c167b00cd764b3ac096ab048bc4e2da8e"
+        }
+      ],
+      "audio": {
+        "sample_rate_hz": 16000,
+        "samples": 6400,
+        "duration_seconds": 0.4,
+        "shared_export_gain": 1.0,
+        "source_sample_rate_hz": 48000,
+        "source_start_seconds": 0.1,
+        "source_duration_seconds": 0.4
+      }
+    },
+    {
+      "path": "/api/spatial-source",
+      "status": 200,
+      "seconds": 0.4746,
+      "request_bytes": 124858,
+      "request_sha256": "a4dc01d69ed0534e3feb2d3e1a9fa781f3882f31e28b62b6f65c936128632d41",
+      "response_bytes": 3681017,
+      "content_type": "application/json; charset=utf-8",
+      "result_schema": "adeps-test-spatial-run/1",
+      "model_sha256": "4ce8deee16af297b3a3557b827438e469798c00e9c4aa936172cb8a7475b046c",
+      "input_sha256": "cadacf39382d470881271cd5e0aedb5f3455cbc50436550622a32d6aeae89fb3",
+      "configuration": {
+        "microphones": 6,
+        "radius_m": 0.06,
+        "snr_db": 30,
+        "data_seed": 1100101,
+        "scene": "speech_like",
+        "regularization": 0.001,
+        "enabled": true,
+        "include_legacy": false,
+        "start_seconds": 0.1,
+        "duration_seconds": 0.1,
+        "analysis_sample_rate_hz": 48000
+      },
+      "tuning": {
+        "blend": 1.0,
+        "consistency": 0.0,
+        "selected_linear_regularization": 0.01
+      },
+      "microphones": 6,
+      "frequencies": 129,
+      "frequency_range_hz": [
+        0.0,
+        24000.0
+      ],
+      "frames": 39,
+      "quality": {
+        "linear": {
+          "nrmse_db": -9.334615626945315,
+          "coherence": 0.3493884584986777,
+          "log_spectral_mae_db": 56.729181575176256,
+          "si_sdr": {
+            "by_channel_db": [
+              24.05800159248129,
+              16.977349927499304,
+              13.70433547864496,
+              17.164704445285007
+            ],
+            "mean_valid_channels_db": 17.976097860977642,
+            "valid_channels": 4,
+            "definition": "zero-mean per-channel projection; arithmetic mean across valid FOA channels"
+          }
+        },
+        "enhanced": {
+          "nrmse_db": -10.25472546386599,
+          "coherence": 0.3492705738892423,
+          "log_spectral_mae_db": 55.66031209764937,
+          "si_sdr": {
+            "by_channel_db": [
+              21.95122958507077,
+              19.092454824450368,
+              11.899568399030404,
+              17.894444139288186
+            ],
+            "mean_valid_channels_db": 17.70942423695993,
+            "valid_channels": 4,
+            "definition": "zero-mean per-channel projection; arithmetic mean across valid FOA channels"
+          }
+        }
+      },
+      "zip_sha256": "f21c0232e49adabc467089d3062bc866960f61f75403d8543a096d34f2610323",
+      "zip_bytes": 1287023,
+      "export_files": [
+        {
+          "name": "linear_FOA_ACN_N3D.wav",
+          "bytes": 76858,
+          "sha256": "a7a92ce27e8b3f3db62746bfc67afa05f76715d755e7a66fbf514c50ded3718f",
+          "sample_rate_hz": 48000,
+          "samples": 4800,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.12056197226047516
+        },
+        {
+          "name": "linear_FOA_ACN_SN3D.wav",
+          "bytes": 76858,
+          "sha256": "f889f01c873bc73effb97fef1acad374107819326bf5a9472be936e891ae7285",
+          "sample_rate_hz": 48000,
+          "samples": 4800,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.12056197226047516
+        },
+        {
+          "name": "enhanced_FOA_ACN_N3D.wav",
+          "bytes": 76858,
+          "sha256": "da1af4110fa186eec278f12f7388a85b626afbe5d068cc9b80f25c22489d5197",
+          "sample_rate_hz": 48000,
+          "samples": 4800,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.10864464193582535
+        },
+        {
+          "name": "enhanced_FOA_ACN_SN3D.wav",
+          "bytes": 76858,
+          "sha256": "cc0dc092f1ffc484dcc9ccd9780b9d685526e9831552dd43ae9a68b3ac76e249",
+          "sample_rate_hz": 48000,
+          "samples": 4800,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.10864464193582535
+        },
+        {
+          "name": "reference_FOA_ACN_N3D.wav",
+          "bytes": 76858,
+          "sha256": "a1746ec21ce769630e2a00b4be9c6d444c4387eaeb4c8e95dc66bbe94160e242",
+          "sample_rate_hz": 48000,
+          "samples": 4800,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.07964595407247543
+        },
+        {
+          "name": "reference_FOA_ACN_SN3D.wav",
+          "bytes": 76858,
+          "sha256": "67adaecf09a38891e3815f2d030552e0d9f68a559b2259e57fe431c4067acf44",
+          "sample_rate_hz": 48000,
+          "samples": 4800,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.07016493380069733
+        },
+        {
+          "name": "result.json",
+          "bytes": 2837944,
+          "sha256": "8f3d6db02c3108c819235d6c81c8fc2cd1978dd882cde33ad248236d9473e9c5"
+        },
+        {
+          "name": "READ-ME.txt",
+          "bytes": 286,
+          "sha256": "10493bf71bc6eb168988f95b04e8ff5c167b00cd764b3ac096ab048bc4e2da8e"
+        }
+      ],
+      "audio": {
+        "sample_rate_hz": 48000,
+        "samples": 4800,
+        "duration_seconds": 0.1,
+        "shared_export_gain": 1.0,
+        "source_sample_rate_hz": 48000,
+        "source_start_seconds": 0.1,
+        "source_duration_seconds": 0.1
+      }
+    },
+    {
+      "path": "/api/spatial-example",
+      "status": 200,
+      "seconds": 0.0253,
+      "request_bytes": 2,
+      "request_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "response_bytes": 635352,
+      "content_type": "application/json; charset=utf-8",
+      "result_schema": null,
+      "zip_sha256": "405f347ecc0fc2951fd447af09fa39aee2189e49a94982c11f699fc1af174550",
+      "zip_bytes": 476462,
+      "files": [
+        "array.json",
+        "microphones.wav",
+        "reference.wav"
+      ],
+      "sample_rate_hz": 16000,
+      "samples": 12800,
+      "microphones": 6
+    },
+    {
+      "path": "/api/spatial-audio",
+      "status": 200,
+      "seconds": 0.534,
+      "request_bytes": 476462,
+      "request_sha256": "405f347ecc0fc2951fd447af09fa39aee2189e49a94982c11f699fc1af174550",
+      "response_bytes": 4754445,
+      "content_type": "application/json; charset=utf-8",
+      "result_schema": "adeps-test-spatial-run/1",
+      "model_sha256": "4ce8deee16af297b3a3557b827438e469798c00e9c4aa936172cb8a7475b046c",
+      "input_sha256": "a9ad3fe9b60e8c6afbe0526ad843c68e7dbff3877be9948f2fb8ea2a000591c6",
+      "configuration": {
+        "microphones": 6,
+        "radius_m": 0.06,
+        "snr_db": 30,
+        "data_seed": 1100101,
+        "scene": "speech_like",
+        "regularization": 0.001,
+        "enabled": true,
+        "include_legacy": false,
+        "start_seconds": 0.1,
+        "duration_seconds": 0.4
+      },
+      "tuning": {
+        "blend": 1.0,
+        "consistency": 0.0,
+        "selected_linear_regularization": 0.01
+      },
+      "microphones": 6,
+      "frequencies": 129,
+      "frequency_range_hz": [
+        0.0,
+        8000.0
+      ],
+      "frames": 51,
+      "quality": {
+        "linear": {
+          "nrmse_db": -19.129825241045594,
+          "coherence": 0.7295546354941608,
+          "log_spectral_mae_db": 6.604747345158307,
+          "si_sdr": {
+            "by_channel_db": [
+              46.17010894456014,
+              19.5945418200416,
+              13.28200136301924,
+              23.85702033830919
+            ],
+            "mean_valid_channels_db": 25.72591811648254,
+            "valid_channels": 4,
+            "definition": "zero-mean per-channel projection; arithmetic mean across valid FOA channels"
+          }
+        },
+        "enhanced": {
+          "nrmse_db": -17.429111249307397,
+          "coherence": 0.6335399579862646,
+          "log_spectral_mae_db": 23.744366270632103,
+          "si_sdr": {
+            "by_channel_db": [
+              24.323577331116965,
+              19.29861539157119,
+              14.683145715597103,
+              25.280378892020497
+            ],
+            "mean_valid_channels_db": 20.89642933257644,
+            "valid_channels": 4,
+            "definition": "zero-mean per-channel projection; arithmetic mean across valid FOA channels"
+          }
+        }
+      },
+      "zip_sha256": "69c69c31c8c2cbf225ae1fd39d5cac52adf02f2c059e2f51de524e9f86a8ac23",
+      "zip_bytes": 1656982,
+      "export_files": [
+        {
+          "name": "linear_FOA_ACN_N3D.wav",
+          "bytes": 102458,
+          "sha256": "d83bc0ceea672ae253a5dcc67d60e4c574a26bb64e314659d4705365e7698cac",
+          "sample_rate_hz": 16000,
+          "samples": 6400,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.3597866892814636
+        },
+        {
+          "name": "linear_FOA_ACN_SN3D.wav",
+          "bytes": 102458,
+          "sha256": "585a66cc8ebf39cbff144e1f15dcc67c3a53ba6883c18290daecc9016a974cf4",
+          "sample_rate_hz": 16000,
+          "samples": 6400,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.2989177107810974
+        },
+        {
+          "name": "enhanced_FOA_ACN_N3D.wav",
+          "bytes": 102458,
+          "sha256": "2ab8a009f28c7193c3371239a48317b581a26c5070d4b0b79a05fc9f98b50a08",
+          "sample_rate_hz": 16000,
+          "samples": 6400,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.37329748272895813
+        },
+        {
+          "name": "enhanced_FOA_ACN_SN3D.wav",
+          "bytes": 102458,
+          "sha256": "7a8163b48cba21455c0308e62257066931d3234c7786d430fe861e0714683486",
+          "sample_rate_hz": 16000,
+          "samples": 6400,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.3041748106479645
+        },
+        {
+          "name": "reference_FOA_ACN_N3D.wav",
+          "bytes": 102458,
+          "sha256": "c3801447f4ed25c03ecdf316cc734550c9fa0723aaa0b90ed6767d8f8c582105",
+          "sample_rate_hz": 16000,
+          "samples": 6400,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.356913685798645
+        },
+        {
+          "name": "reference_FOA_ACN_SN3D.wav",
+          "bytes": 102458,
+          "sha256": "a84056bbb32cd88977fa69a474a2355a19a9143997d8bb57964f94bf3a55aaed",
+          "sample_rate_hz": 16000,
+          "samples": 6400,
+          "channels": 4,
+          "finite": true,
+          "peak": 0.29909130930900574
+        },
+        {
+          "name": "result.json",
+          "bytes": 3665740,
+          "sha256": "5bd6c43c1b4efa019b9e36b2b2e1ebe3cc3f0db8b4d2f76c486537a4aab9bad7"
+        },
+        {
+          "name": "READ-ME.txt",
+          "bytes": 286,
+          "sha256": "10493bf71bc6eb168988f95b04e8ff5c167b00cd764b3ac096ab048bc4e2da8e"
+        }
+      ],
+      "audio": {
+        "sample_rate_hz": 16000,
+        "samples": 6400,
+        "duration_seconds": 0.4,
+        "shared_export_gain": 1.0,
+        "source_sample_rate_hz": null,
+        "source_start_seconds": null,
+        "source_duration_seconds": null
+      }
+    },
+    {
+      "path": "/api/spatial-source",
+      "status": 400,
+      "seconds": 0.0049,
+      "request_bytes": 249658,
+      "request_sha256": "1ee8de3ac36014a250b7a64b4f89ab18d2ac82bebb224b756f4da51956ba8662",
+      "response_bytes": 74,
+      "content_type": "application/json; charset=utf-8",
+      "result_schema": null,
+      "expected_error": "Choose a mono source WAV (8–96 kHz), not an array recording"
+    },
+    {
+      "path": "/api/spatial-source",
+      "status": 400,
+      "seconds": 0.2652,
+      "request_bytes": 384058,
+      "request_sha256": "364f21d420a626f045a8ffd94378622f498037e7de0ce4c7584a05dbf7aaead8",
+      "response_bytes": 72,
+      "content_type": "application/json; charset=utf-8",
+      "result_schema": null,
+      "expected_error": "Segment exceeds 65536 frequency-time bins; shorten duration"
+    }
+  ],
+  "expected_model_sha256": "4ce8deee16af297b3a3557b827438e469798c00e9c4aa936172cb8a7475b046c",
+  "generated_source": {
+    "kind": "Newly generated non-personal chirped harmonic WAV; never played",
+    "sample_rate_hz": 48000,
+    "samples": 31200,
+    "channels": 1,
+    "sha256": "a4dc01d69ed0534e3feb2d3e1a9fa781f3882f31e28b62b6f65c936128632d41"
+  },
+  "passed": true,
+  "cleanup": {
+    "http_server_stopped": true,
+    "max_bridge_constructed": false,
+    "max_endpoint_called": false,
+    "audio_playback_invoked": false
+  },
+  "finished_utc": "2026-09-11T13:42:44.358643+00:00"
+}

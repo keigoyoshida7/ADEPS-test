@@ -1,0 +1,101 @@
+{
+  "schema": "adeps-test-spatial-tuning/1",
+  "status": "frozen-validation-only",
+  "model_sha256": "4ce8deee16af297b3a3557b827438e469798c00e9c4aa936172cb8a7475b046c",
+  "blend": 1.0,
+  "consistency": 0.0,
+  "selected_linear_regularization": 0.01,
+  "seed_range": [
+    25000,
+    25035
+  ],
+  "objective": "Mean paired-scene FOA complex NRMSE dB; references used only for offline validation selection.",
+  "validation_baseline_db": -1.0319519616900321,
+  "validation_selected_db": -3.424664448839901,
+  "candidates": [
+    {
+      "blend": 0.25,
+      "consistency": 0.0,
+      "mean_nrmse_db": -1.8763016445175527
+    },
+    {
+      "blend": 0.25,
+      "consistency": 0.15,
+      "mean_nrmse_db": -1.628159549474154
+    },
+    {
+      "blend": 0.25,
+      "consistency": 0.5,
+      "mean_nrmse_db": -1.0592189315014326
+    },
+    {
+      "blend": 0.5,
+      "consistency": 0.0,
+      "mean_nrmse_db": -2.670689819213829
+    },
+    {
+      "blend": 0.5,
+      "consistency": 0.15,
+      "mean_nrmse_db": -2.380005843748609
+    },
+    {
+      "blend": 0.5,
+      "consistency": 0.5,
+      "mean_nrmse_db": -1.6743576209727669
+    },
+    {
+      "blend": 0.75,
+      "consistency": 0.0,
+      "mean_nrmse_db": -3.26789186566053
+    },
+    {
+      "blend": 0.75,
+      "consistency": 0.15,
+      "mean_nrmse_db": -3.020289893133609
+    },
+    {
+      "blend": 0.75,
+      "consistency": 0.5,
+      "mean_nrmse_db": -2.247851711128363
+    },
+    {
+      "blend": 1.0,
+      "consistency": 0.0,
+      "mean_nrmse_db": -3.424664448839901
+    },
+    {
+      "blend": 1.0,
+      "consistency": 0.15,
+      "mean_nrmse_db": -3.3885542582331643
+    },
+    {
+      "blend": 1.0,
+      "consistency": 0.5,
+      "mean_nrmse_db": -2.7401773702533094
+    }
+  ],
+  "linear_candidates": [
+    {
+      "regularization": 1e-05,
+      "mean_nrmse_db": 8.692525158639878
+    },
+    {
+      "regularization": 0.0001,
+      "mean_nrmse_db": 2.7377243263304876
+    },
+    {
+      "regularization": 0.001,
+      "mean_nrmse_db": -1.0319519616900321
+    },
+    {
+      "regularization": 0.01,
+      "mean_nrmse_db": -2.5885253528076357
+    },
+    {
+      "regularization": 0.1,
+      "mean_nrmse_db": -2.5508129728480715
+    }
+  ],
+  "configuration_sha256": "1dbf2d9efeb347525c251d675474b21325b01bbd02899c6ee619c1b0c7c6851d",
+  "test_data_used": false
+}

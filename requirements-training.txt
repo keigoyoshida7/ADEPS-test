@@ -1,0 +1,5 @@
+# Optional local training only. Browser inference uses the exported NumPy weights.
+# The recorded training environment and exact versions are in the model card.
+numpy>=2.1,<3
+scipy>=1.15,<2
+torch>=2.9,<3

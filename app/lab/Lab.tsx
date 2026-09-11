@@ -25,6 +25,7 @@ import LayoutReference, { type LayoutId } from './LayoutReference';
 import { asset } from './assets';
 import MaxReference from './MaxReference';
 import NeuralInference from './NeuralInference';
+import ModelLab from './ModelLab';
 import { analysisApi as api, isLocalEngine } from './scientificClient';
 import { Plot, Heatmap, fmt } from './Plots';
 
@@ -54,7 +55,8 @@ const pages = [
   },
   { id: 'playback', name: '再生系の実験', en: 'PLAYBACK', icon: Box },
   { id: 'paper', name: '論文と実装の範囲', en: 'EVIDENCE', icon: CircleHelp },
-  { id: 'neural', name: 'ニューラル推論', en: 'DIFFUSION EXPERIMENT', icon: FlaskConical },
+  { id: 'model', name: '学習モデル比較', en: 'LEARNED MODEL A/B', icon: FlaskConical },
+  { id: 'neural', name: '旧小型モデルの拡散推論', en: 'LEGACY DIFFUSION', icon: FlaskConical },
   {
     id: 'capture',
     name: 'マイク → Ambisonics',
@@ -343,7 +345,7 @@ function LabContent() {
         {
           export_schema: 'adeps-test-lab-run/1',
           exported_at: new Date().toISOString(),
-          app_version: '0.3.1',
+          app_version: '0.4.0',
           result,
         },
       );
@@ -412,9 +414,9 @@ function LabContent() {
             Max {status?.max_reply ? t('応答あり') : t('応答なし')}
           </div>
           <p>
-            RESEARCH PROTOTYPE · 0.3
+            RESEARCH PROTOTYPE · 0.4
             <br />
-            2026.09.10 / RESEARCH USE
+            2026.09.11 / RESEARCH USE
           </p>
           <span className="silent">
             <VolumeX size={14} />
@@ -430,7 +432,7 @@ function LabContent() {
           </div>
           <div className="top-actions">
             <LanguageToggle />
-            <span className="badge">{t('独自の小型モデル · 実験用')}</span>
+            <span className="badge">{t('独自学習モデル · 実験用')}</span>
             {result && (
               <button onClick={exportResult}>
                 <Download size={16} />
@@ -453,6 +455,7 @@ function LabContent() {
           </Note>
         )}
         <div hidden={tab !== 'neural'}><NeuralInference /></div>
+        <div hidden={tab !== 'model'}><ModelLab /></div>
         {tab === 'layout' && (
           <LayoutReference
             onExperiment={(id: LayoutId) => {

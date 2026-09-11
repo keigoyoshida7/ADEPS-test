@@ -1,6 +1,6 @@
 {
   "name": "adeps-test",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -12,7 +12,7 @@
     "lint": "oxlint",
     "format": "oxfmt",
     "test:numerics": "PYTHONPATH=backend python3 -m unittest discover -s tests -v",
-    "test:max": "node --test max/bridge.test.js",
+    "test:max": "node --test max/*.test.js",
     "dev:local": "VITE_ANALYSIS_MODE=local npm run dev",
     "typecheck": "tsc --noEmit"
   },

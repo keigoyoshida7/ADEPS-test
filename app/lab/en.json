@@ -668,5 +668,8 @@
   "グラフ上で各点の値を確認できます。横軸：": "Inspect values at each point on the graph. Horizontal axis: ",
   "表示：1 Hz〜20 kHz（対数）": "Display: 1 Hz–20 kHz (logarithmic)",
   "表示帯域内のデータ：": "Data within the display range: ",
-  "データのない帯域には曲線を描きません。": "No curve is drawn where data are unavailable."
+  "データのない帯域には曲線を描きません。": "No curve is drawn where data are unavailable.",
+  "学習モデル比較": "Learned model comparison",
+  "旧小型モデルの拡散推論": "Legacy small-model diffusion",
+  "独自学習モデル · 実験用": "Independent learned models · Experimental"
 }

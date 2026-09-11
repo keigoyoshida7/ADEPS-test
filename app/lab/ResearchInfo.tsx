@@ -1,5 +1,5 @@
 'use client';
-import { useT } from './i18n';
+import { useLanguage, useT } from './i18n';
 import { asset } from './assets';
 import { useState, type ReactNode } from 'react';
 import { ArrowRight, Copy, Download, ExternalLink } from 'lucide-react';
@@ -8,8 +8,6 @@ const REPO =
   'https://github.com/Amitmils/ADEUPS/tree/5076f163a1f939c297b55a39b2d9d33e2b224a5f';
 const citation =
   'Amit Milstein, Nir Shlezinger, and Boaz Rafaely. “Array-Agnostic Ambisonics Encoding via Diffusion Posterior Sampling.” arXiv:2608.24558v2, 27 August 2026. https://doi.org/10.48550/arXiv.2608.24558';
-const application =
-  '本デモはMilstein, Shlezinger, and Rafaely（2026, arXiv:2608.24558v2）が示す、信号表現と物理取得モデルを分ける考え方を参照した。マイクからFOAへの経路には同論文の式(5)に示される線形符号化を独自実装し、チャンネル規約と正則化の設定を明示した。スピーカー再生側には別途、正則化した線形音圧マッチングによる合成実験を実装した。さらに式(10)・式(11)・Algorithm 1に基づく拡散推論を独自実装し、合成空間係数で学習した小型MLPを接続した。著者のネットワーク・学習データ・重み、および論文の公表性能や実際の音響システムでの性能は再現・検証していない。';
 function Cite({ at, children }: { at: string; children: ReactNode }) {
   return (
     <a
@@ -49,6 +47,12 @@ export default function ResearchInfo({
   onNavigate: (page: string) => void;
 }) {
   const t = useT();
+  const language = useLanguage();
+  const l = (jp: string, en: string) => language === 'jp' ? jp : en;
+  const application = l(
+    '本デモはMilstein, Shlezinger, and Rafaely（2026, arXiv:2608.24558v2）が示す、信号表現と物理取得モデルを分ける考え方を参照した。マイクからFOAへの経路には式(5)と同じ形式の線形符号化を独自実装した。旧実験では式(10)・式(11)・Algorithm 1に基づく拡散推論と小型MLPを接続した。追加した学習モデル比較では、線形推定・物理解像行列・時間共分散・チャンネルのパワーを入力する教師あり残差ネットワークを独自学習した。追加の観測整合は検証で係数0が選ばれ、同梱設定では適用していない。この新手法はADEPSの拡散モデルではない。学習・調整・最終評価を分け、同じ入力による線形法との比較を行う。著者のネットワーク・学習データ・重み、論文の公表性能、実際の音響システムでの性能は再現・検証していない。',
+    'This demo draws on the separation of signal representation and physical acquisition model in Milstein, Shlezinger, and Rafaely (2026, arXiv:2608.24558v2). Its microphone-to-FOA path independently implements the linear encoding form in Eq. (5). The legacy experiment combines a small MLP with diffusion inference based on Eqs. (10)–(11) and Algorithm 1. The added learned-model comparison uses an independently trained supervised residual network conditioned on the linear estimate, physical resolution matrix, temporal covariance and channel powers. Validation selected zero additional observation consistency, so the bundled configuration does not apply that post-processing step. This new method is not the ADEPS diffusion model. Training, tuning and final evaluation are separated; linear and learned methods are compared using identical inputs. The authors’ network, training data, weights, published performance and real-system performance have not been reproduced or verified.',
+  );
 
   const [message, setMessage] = useState('');
   async function copy(text: string) {
@@ -81,6 +85,8 @@ export default function ResearchInfo({
             '圧縮・観測整合性・denoiserを通る勾配・反復更新を独自実装しました。著者のNCSN++Mと学習済み重みは未公開で、論文の性能を再現したとは扱いません。',
           )}
         </p>
+        <p>{l('新しい「学習モデル比較」では、物理モデルで条件付けした教師あり残差ネットワークを独自学習しました。旧小型モデルと区別し、同一入力のON / OFF、未使用条件での評価、Maxの音源ファイルを使う検証を追加しています。',
+          'The new “Learned model comparison” independently trains a physics-conditioned supervised residual network. It is separate from the legacy small model and adds paired ON / OFF comparison, held-out evaluation and tests using source files from Max.')}</p>
       </div>
       <div className="info-status-grid">
         <div>
@@ -110,15 +116,14 @@ export default function ResearchInfo({
           </button>
         </div>
         <div>
-          <span>{t('03 / 独自モデルで実行')}</span>
-          <h3>{t('ADEPSの拡散推論')}</h3>
+          <span>{l('03 / 独自学習モデル', '03 / Independently trained model')}</span>
+          <h3>{l('同じ入力でON / OFFを比較', 'Compare ON / OFF on the same input')}</h3>
           <p>
-            {t(
-              '合成空間係数で学習した小型MLPと拡散推論式を接続。線形との比較、反復履歴、FOA WAVを書き出します。',
-            )}
+            {l('物理解像行列で条件付けした学習モデルと線形処理を比較。誤差・coherence・未使用条件の評価・FOA WAVを確認します。',
+              'Compare a learned model conditioned on the physical resolution matrix with linear encoding. Inspect error, coherence, held-out evaluation and FOA WAV exports.')}
           </p>
-          <button onClick={() => onNavigate('neural')}>
-            {t('ニューラル推論へ')}
+          <button onClick={() => onNavigate('model')}>
+            {l('学習モデル比較へ', 'Open learned model comparison')}
             <ArrowRight size={14} />
           </button>
         </div>
@@ -132,6 +137,7 @@ export default function ResearchInfo({
           ['evaluation', t('結果の読み方')],
           ['geometry', t('配置・測定・外部制御')],
           ['status', t('未実装と次の段階')],
+          ['learned', l('独自学習モデルと比較', 'Independent learned model')],
           ['references', t('参考文献')],
         ].map(([id, label], i) => (
           <a key={id} href={`#info-${id}`}>
@@ -200,8 +206,8 @@ export default function ResearchInfo({
         </div>
         <div className="info-copy">
           <h3>{t('この試作の応用範囲を説明する文章')}</h3>
-          <p>{t(application)}</p>
-          <button onClick={() => copy(t(application))}>
+          <p>{application}</p>
+          <button onClick={() => copy(application)}>
             <Copy size={14} />
             {t('説明文をコピー')}
           </button>
@@ -275,6 +281,13 @@ export default function ResearchInfo({
                   <br />
                   {t('独自学習MLP・150回のEuler更新')}
                 </td>
+              </tr>
+              <tr>
+                <td><Cite at="S2.E2">{t('§2.1・式(2)')}</Cite><br/><Cite at="S2.E5">{t('§2.3・式(5)')}</Cite></td>
+                <td><b>{l('物理モデルを条件に使う独自の学習手法。', 'An independent learned method conditioned on the physical model.')}</b>
+                  {l('E pとE V、時間共分散・パワーを残差ネットワークへ入力します。追加の観測整合は検証で係数0を選び、同梱設定では省略。論文の拡散推論とは異なる教師あり手法です。',
+                    'A residual network receives E p, E V, temporal covariance and power. Validation selected zero additional observation consistency, so the bundled configuration omits that update. This is a supervised method distinct from the paper’s diffusion inference.')}</td>
+                <td>{l('「学習モデル比較」 / ON・OFF・未使用条件の評価', '“Learned model comparison” / ON, OFF and held-out evaluation')}</td>
               </tr>
               <tr>
                 <td>
@@ -648,9 +661,8 @@ export default function ResearchInfo({
               <tr>
                 <td>SI-SDR / ILD / IC</td>
                 <td>
-                  {t(
-                    '現在は未算出。整合する時間信号、両耳レンダラー、HRTF等を準備して別途実装する必要がある。',
-                  )}
+                  {l('SI-SDRは、対応する時間領域の参照FOAがある音声入力で算出。複素スペクトルのみの合成入力では未算出。ILD / ICには両耳レンダラーとHRTF等が必要で、現在は未実装。',
+                    'SI-SDR is computed for audio input with matching time-domain reference FOA, but not for synthetic complex spectra alone. ILD / IC require a binaural renderer and HRTF; they remain unimplemented.')}
                 </td>
               </tr>
             </tbody>
@@ -907,7 +919,43 @@ export default function ResearchInfo({
           {t('アダプター接続条件 JSON')}
         </a>
       </Section>
-      <Section id="info-references" n="08" title={t('参考文献・参照資料')}>
+      <Section id="info-learned" n="08" title={l('独自学習モデル：何を変え、どう比較するか', 'Independent learned model: changes and evaluation')}>
+        <p>{l('新しいモデルは、論文と同じ課題である「マイク観測と既知の応答VからFOAを推定する」ための独自手法です。拡散の反復を増やす代わりに、教師あり残差ネットワークによる一度の予測を使います。論文を上回る性能は目標であり、現在の結果から達成したとは主張しません。',
+          'The new model addresses the same task—estimating FOA from microphone observations and a known response V—using an independent method. It uses a single supervised residual-network prediction instead of repeated diffusion updates. Exceeding the paper’s performance is an objective, not an established result.')}
+          <Cite at="S2.E2">{l('観測モデル', 'Observation model')}</Cite></p>
+        <p className="muted">{l('この追加章はv3も参照しています。既存の式・表との対応は、初期に照合したv2への固定リンクを保持しています。',
+          'This added section also references v3. Existing equation and table mappings retain links to v2, the version initially reviewed.')} <a href="https://arxiv.org/html/2608.24558v3" target="_blank" rel="noreferrer">arXiv:2608.24558v3</a></p>
+        <h3>{l('学習した部分と物理モデルの役割', 'Learned and physical components')}</h3>
+        <p>{l('線形推定 âₗᵢₙ = E p と解像行列 R = E V を作り、時間共分散・36チャンネルのパワーとともに残差ネットワークへ入力します。465個の特徴量から、5次・36成分の複素空間係数を予測します。追加の観測整合としてE(p − Vâ)に比例する更新も実装していますが、別の検証セットで予測の混合率1・追加整合の係数0が選ばれたため、今回同梱の設定では追加更新を行いません。これらの設定は最終テストの前に固定しています。',
+          'The network receives the linear estimate âₗᵢₙ = E p, resolution matrix R = E V, temporal covariance and powers of the 36 channels. It predicts 36 complex fifth-order spatial coefficients from 465 features. An optional update proportional to E(p − Vâ) is implemented, but separate tuning validation selected a prediction blend of 1 and an additional consistency coefficient of 0. The bundled configuration therefore omits that update. These settings were frozen before final testing.')}</p>
+        <p>{l('学習の損失では、評価対象となる一次・4成分のFOAを重視します。参照FOAは学習と評価のために使い、推定器の入力には渡しません。マイクの位置だけから実機の応答Vを推測できるという前提も置きません。',
+          'The training loss emphasizes the four first-order FOA components used for evaluation. Reference FOA is used for training and scoring, never as estimator input. Microphone coordinates alone are not assumed to determine a real device’s response V.')}</p>
+        <p>{l('今回の同梱モデルは隠れ層4層・幅512・1,063,496パラメータです。時間共分散やパワーは入力した区間の全フレームから計算するため、未来のフレームも利用するオフライン処理です。リアルタイムの因果モデルではありません。',
+          'The bundled model has four hidden layers of width 512 and 1,063,496 parameters. Temporal covariance and power use every frame of the supplied window, including future frames. This is offline, noncausal processing rather than a real-time causal model.')}</p>
+        <div className="table-scroll"><table><thead><tr><th>{l('比較するもの', 'Comparison')}</th><th>{l('今回の扱い', 'Current treatment')}</th></tr></thead><tbody>
+          <tr><td>{l('OFF：線形推定', 'OFF: linear encoding')}</td><td>{l('同じ観測p・応答V・正則化で計算した線形出力。ON / OFFを押すたびに入力を生成し直しません。', 'Linear output from the same p, V and regularization. Toggling ON / OFF never regenerates the input.')}</td></tr>
+          <tr><td>{l('調整済みの線形法', 'Tuned linear encoding')}</td><td>{l('ベンチマークでは、別の検証セットで線形法の正則化を選んだ比較対象も追加。既定値の線形法に対する改善だけで判断しません。', 'The benchmark also includes a stronger linear baseline whose regularization was selected on separate validation data. Improvement over the default baseline alone is not the sole criterion.')}</td></tr>
+          <tr><td>{l('ON：独自モデル', 'ON: independent model')}</td><td>{l('物理解像行列・時間特徴で条件付けした残差ネットワーク。今回の追加観測整合はOFF。重みのハッシュ、適用設定、計算時間を結果に保存。', 'A residual network conditioned on the physical resolution matrix and temporal features. Additional observation consistency is OFF in this configuration. Results record the weights hash, applied settings and computation time.')}</td></tr>
+          <tr><td>{l('旧小型MLP', 'Legacy small MLP')}</td><td>{l('別のタブに拡散推論の実験を保存。新しい比較画面でも任意で同じ入力に実行できます。これも公式ADEPSではありません。', 'Its diffusion experiment remains in a separate tab and can optionally run on the same input in the new comparison. It is not official ADEPS either.')}</td></tr>
+          <tr><td>{l('論文のADEPS', 'ADEPS from the paper')}</td><td>{l('課題・観測モデル・線形ベースライン・評価の目的を参照。学習データ・ネットワーク・公式重みが一致していないため、公表スコアと本試作の数値を直接競わせません。', 'Referenced for the task, observation model, linear baseline and evaluation goals. Because the training data, network and official weights differ, published scores are not directly ranked against this prototype.')}</td></tr>
+        </tbody></table></div>
+        <h3>{l('学習・調整・最終評価を分ける', 'Separate training, tuning and final evaluation')}</h3>
+        <p>{l('学習データは、方向を持つ音場と位相遅延を含む合成データです。実際の音声コーパスや部屋の測定値ではありません。学習用、モデル選択用の検証、混合率などの調整用、最終テストで生成seedを分けます。使用した条件とseedは「学習モデル比較」の評価記録に保存します。最終結果を見てモデルを選び直す場合、そのテストは調整用となり、新しい最終テストが必要です。',
+          'Training uses synthetic directional fields with phase delays, not recorded speech corpora or measured rooms. Separate generator seeds are used for training, model-validation, inference tuning and final tests. Conditions and seeds are saved in the comparison’s evaluation record. If test results inform another model selection, that test becomes tuning data and a new final test is needed.')}</p>
+        <p>{l('今回の学習は3,072シーン（seed 10000〜13071）、モデル検証は64シーン（20000〜20063）。12,000ステップ学習し、モデル検証で選んだ10,400ステップ時点の重みを採用しました。別の36シーン（25000〜25035）で推論条件と線形比較対象を調整し、最終テストは90000以降、WAVテストは91000以降の別seedを使います。',
+          'This run trains on 3,072 scenes (seeds 10000–13071) and validates the model on 64 scenes (20000–20063). Training runs for 12,000 steps; model validation selected the checkpoint at step 10,400. A separate 36 scenes (25000–25035) tune inference settings and the linear baseline. Final tests use seeds starting at 90000 and WAV tests starting at 91000.')}</p>
+        <p>{l('改善した割合に加えて、悪化した条件、平均・中央値、信頼区間を確認します。NRMSEが改善してもcoherenceや聴感が悪化する場合があります。参照のない実録音では復元品質の数値を空欄にし、観測残差だけで成功とは判定しません。',
+          'Inspect regressions, mean and median changes, confidence intervals and the fraction improved. Better NRMSE may coexist with poorer coherence or listening quality. For real recordings without a reference, reconstruction-quality fields remain unavailable; observation residual alone is not treated as success.')}</p>
+        <h3>{l('Maxと実録音を使う検証', 'Testing with Max and recordings')}</h3>
+        <p>{l('現在のWebとMaxの連携は制御メッセージです。新しい実験パッチでは発話・音楽・ノイズ・過渡音をモノラルWAVに保存し、その音源をWeb上の仮想アレイに入力できます。これは合成の収音テストです。実際の空間を評価するときは、スピーカーから再生し、マイクアレイで収録した音と対応する応答Vを入力します。どちらもファイルによるオフライン検証であり、会場の音をリアルタイムに補正する機能ではありません。',
+          'The existing Web–Max link carries control messages. The new experiment patch saves speech, music, noise or transient sources as mono WAV files for a virtual array in the browser. That is a simulated capture test. For a real space, play through speakers and import the array recording with its matching response V. Both are offline file-based experiments, not live venue correction.')}</p>
+        <div className="source-links"><button onClick={() => onNavigate('model')}>{l('学習モデル比較へ', 'Open learned model comparison')}<ArrowRight size={14}/></button>
+          <button onClick={() => onNavigate('neural')}>{l('旧小型モデルの拡散推論へ', 'Open legacy small-model diffusion')}<ArrowRight size={14}/></button>
+          <a href={asset('/models/spatial-benchmark.json')} download>{l('評価条件・記録 JSON', 'Evaluation conditions and record JSON')}</a>
+          <a href={asset('/info/SPATIAL_MODEL.md')} target="_blank" rel="noreferrer">{l('手法・学習・失敗例の詳細', 'Method, training and failure analysis')}</a>
+          <a href={asset('/examples/ADEPS_Max_Experiment.zip')} download>{l('Max実験パッチ', 'Max experiment patch')}</a></div>
+      </Section>
+      <Section id="info-references" n="09" title={t('参考文献・参照資料')}>
         <ol className="bibliography">
           <li id="ref-1">
             <b>{t('Milstein, Shlezinger & Rafaely（2026）')}</b>
