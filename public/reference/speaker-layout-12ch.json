@@ -1,0 +1,50 @@
+{
+  "schema": "adeps-test-speaker-layout/1",
+  "title": "Saved project · 12 speakers",
+  "units": "metres",
+  "speakers": [
+    { "id": 1, "label": "Front C", "position_m": [0, 3.75, 2.2] },
+    { "id": 2, "label": "Front R", "position_m": [2.85, 3.75, 2.2] },
+    { "id": 3, "label": "R1", "position_m": [2.85, 1.25, 2.2] },
+    { "id": 4, "label": "R2", "position_m": [2.85, -1.25, 2.2] },
+    { "id": 5, "label": "Rear R", "position_m": [2.85, -3.75, 2.2] },
+    { "id": 6, "label": "Rear C", "position_m": [0, -3.75, 2.2] },
+    { "id": 7, "label": "Rear L", "position_m": [-2.85, -3.75, 2.2] },
+    { "id": 8, "label": "L2", "position_m": [-2.85, -1.25, 2.2] },
+    { "id": 9, "label": "L1", "position_m": [-2.85, 1.25, 2.2] },
+    { "id": 10, "label": "Front L", "position_m": [-2.85, 3.75, 2.2] },
+    { "id": 11, "label": "Ceiling1", "position_m": [0, 1.25, 2.4] },
+    { "id": 12, "label": "Ceiling2", "position_m": [0, -1.25, 2.4] }
+  ],
+  "coordinate_system": {
+    "axes": { "x": "right", "y": "front", "z": "up" },
+    "axis_evidence": "The saved labels place Right at positive X and Front at positive Y. Z is the configured height. Physical compass heading and measurement origin are unverified.",
+    "original_origin_m": [0, 0, 0],
+    "physical_origin_verified": false,
+    "source_conversion": "Original signed centimetres divided by 100; the stored positions above have no origin shift, rotation, mirroring, or rescaling.",
+    "foa_axes": { "x": "front", "y": "left", "z": "up" },
+    "foa_from_raw_matrix": [[0, 1, 0], [-1, 0, 0], [0, 0, 1]],
+    "conversion": "Subtract the chosen listener position in raw metres, rotate the resulting column vector by foa_from_raw_matrix, then normalize to a direction. Thus [x_foa,y_foa,z_foa]=[delta_Y,-delta_X,delta_Z]. The listener position is an independently declared assumption, not a surveyed value from this file."
+  },
+  "source": {
+    "kind": "User-provided saved Yamaha project; current backup member",
+    "sha256": "59afef22fc0877c82b95b639a958b3e4ee392d6be7e7af96a4a3fab94015c686"
+  },
+  "verification": {
+    "saved_file_values": true,
+    "as_built": false,
+    "physical_output_routes": false,
+    "room_dimensions": false
+  },
+  "room_dimensions_m": null,
+  "channel_order_note": {
+    "jp": "保存プロジェクトのスピーカーID順です。以前の画面記録とは11/12が逆のため、実機出力前に照合してください。IDはDanteやアンプへの接続順を証明するものではありません。",
+    "en": "Saved project speaker-ID order. IDs 11/12 are reversed in an earlier screen record; verify before hardware output. These IDs do not establish Dante or amplifier channel routing."
+  },
+  "historical_difference": {
+    "date": "2026-09-08",
+    "offline": true,
+    "channels": [11, 12],
+    "description": "The earlier offline screen record placed Ceiling1 at Y=-1.25 m and Ceiling2 at Y=+1.25 m. This asset preserves the independently verified saved-file values: Ceiling1 at Y=+1.25 m and Ceiling2 at Y=-1.25 m."
+  }
+}

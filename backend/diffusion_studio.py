@@ -1,8 +1,8 @@
 """Offline, synthetic diffusion trajectory viewer with genuine sampler snapshots.
 
-Uses the existing independently trained TinyDenoiser, not the ADEPS authors'
-model and not the separate deterministic spatial residual model. No devices,
-network, uploads, or training are involved.
+The legacy default uses TinyDenoiser. Native full-size speech-prior calls inject
+their checkpoint, observation and sampler explicitly; neither path is the
+ADEPS authors' official model. No devices, uploads or training are involved.
 """
 import base64
 import hashlib
@@ -33,6 +33,7 @@ FREQUENCY_METRIC_DEFINITIONS = {
     'magnitude_squared_coherence': 'Gen-A Eq.6: per coefficient, abs(sum_time(conj(reference)*estimate))^2 / (sum_time(abs(reference)^2)*sum_time(abs(estimate)^2)); then average over the shared reference-active coefficient set. Time and coefficients are not flattened together. Higher is better.',
     'coherence_zero_policy': 'The common coefficient mask is reference nonzero at any frame. Reference-inactive coefficients are excluded for every method. If any reference-active coefficient has an entirely zero estimate, or no reference coefficient is active, that frequency is null rather than averaging a method-dependent subset. Finite results are clipped to [0,1] only for rounding. These zero policies are additional conventions.',
     'coherence_limit': 'Coherence can equal one despite a constant gain or phase error, and with one nonzero frame it is trivial. It does not by itself establish correct direction or spatial reconstruction.',
+    'scalar_coherence': 'Arithmetic mean of the frequency-wise MSC values, with equal weight for each frequency having any nonzero reference coefficient. DC and Nyquist are included when reference-active; entirely reference-silent frequencies are excluded. If any reference-active frequency has an undefined MSC because a required estimate coefficient is zero, the whole scalar is null. This additional aggregation convention is not the paper test-set average.',
     'scope': 'One synthetic matched-order run, effective_order=prior_order=5, evaluated on FOA first four coefficients. Not the paper test-set average, order-15 mismatch experiment, or Parametric baseline.',
     'sources': ['https://arxiv.org/html/2608.24558v3#S4',
                 'https://arxiv.org/html/2501.08047v1#S3.SS4'],
@@ -224,6 +225,35 @@ def frequency_metrics(estimate, reference, frequencies):
             'channels': 4, 'frames': int(target.shape[2])}
 
 
+def coherence_summary(spectral):
+    """Aggregate the same reference-common MSC used by the plotted curves.
+
+    A missing prediction must not improve the scalar by removing a difficult
+    channel/frequency. Reference-silent frequencies remain genuinely undefined.
+    """
+    active = spectral['reference_active_channels']
+    valid_channels = spectral['coherence_valid_channels']
+    curve = spectral['magnitude_squared_coherence']
+    active_frequencies = [value for value, count in zip(curve, active) if count > 0]
+    valid_frequencies = [value for value in active_frequencies if value is not None]
+    missing = len(active_frequencies) - len(valid_frequencies)
+    value = float(np.mean(valid_frequencies)) if active_frequencies and not missing else None
+    return {
+        'coherence': value,
+        'coherence_by_frequency': list(curve),
+        'coherence_definition': FREQUENCY_METRIC_DEFINITIONS['scalar_coherence'],
+        'coherence_status': ('undefined_no_reference' if not active_frequencies else
+                             'undefined_missing_estimate' if missing else 'defined'),
+        'coherence_valid_frequency_bins': len(valid_frequencies),
+        'coherence_reference_active_frequency_bins': len(active_frequencies),
+        'coherence_missing_estimate_frequency_bins': missing,
+        'coherence_excluded_reference_silent_frequency_bins': len(curve) - len(active_frequencies),
+        'coherence_valid_bins': int(sum(valid_channels)),
+        'coherence_total_bins': len(curve) * spectral['channels'],
+        'coherence_pair_count_definition': 'valid_bins counts coefficient-frequency pairs with both nonzero reference and estimate; total_bins is frequencies times four coefficients. These pair counts do not permit excluding an undefined reference-active frequency from the scalar.',
+    }
+
+
 def _preview_pcm16(rate, audio):
     stereo = audio @ PREVIEW_MATRIX.T
     data = np.rint(np.clip(stereo, -1., 1.)*32767).astype(np.int16)
@@ -232,9 +262,9 @@ def _preview_pcm16(rate, audio):
     return target.getvalue()
 
 
-def run_studio(config, progress=None):
+def run_studio(config, progress=None, *, model=None, observation=None, sampler=None):
     """Return JSON-safe trajectory metadata plus a ZIP of actual 4-channel WAVs."""
-    data = make_observation(config)
+    data = make_observation(config) if observation is None else observation
     cfg = data['configuration']
     v, p, reference = data['V'], data['p'], data['reference']
     if progress:
@@ -245,7 +275,7 @@ def run_studio(config, progress=None):
         raise ValueError('Encoded observation is too small for the diffusion prior')
     y = compress(linear/scale)
     ev = encoder @ v
-    denoiser = TinyDenoiser()
+    denoiser = TinyDenoiser() if model is None else model
     wanted = set(np.rint(np.linspace(0, cfg['steps']-2, 6)).astype(int).tolist())
     snapshots = []
 
@@ -253,7 +283,7 @@ def run_studio(config, progress=None):
         if meta['stage'] == 'final_sample' or meta['step'] in wanted:
             snapshots.append((dict(meta), coefficients*scale))
 
-    final, trace = sample(y, ev, denoiser, steps=cfg['steps'], eta_prime=cfg['eta_prime'],
+    final, trace = (sample if sampler is None else sampler)(y, ev, denoiser, steps=cfg['steps'], eta_prime=cfg['eta_prime'],
                           seed=cfg['seed'], progress=progress, snapshot=snapshot)
     final *= scale
     if not np.array_equal(snapshots[-1][1], final):
@@ -289,13 +319,15 @@ def run_studio(config, progress=None):
                           for name, (lo, hi) in BANDS.items()}}
     items = []
     for (meta, full), foa, signal in zip(raw, foas, signals):
+        spectral = frequency_metrics(foa, foas[0], data['frequencies'])
         metric = quality(foa, foas[0])
+        metric.update(coherence_summary(spectral))
         metric['encoded_residual'] = float(np.linalg.norm(compress(ev@(full/scale))-y)/np.linalg.norm(y))
         metric['encoded_residual_definition'] = 'Relative compressed E V residual of all 36 unprojected sampler coefficients against the encoded observation; not a FOA accuracy metric.'
         metric['si_sdr'] = si_sdr(signal, signals[0])
         item = {**meta, 'covariance': covariance(foa*gain, data['frequencies']),
                 'preview_wav_base64': base64.b64encode(_preview_pcm16(audio['sample_rate_hz'], signal*gain)).decode('ascii'),
-                'metrics': metric, 'frequency_metrics': frequency_metrics(foa, foas[0], data['frequencies']),
+                'metrics': metric, 'frequency_metrics': spectral,
                 'wav_filename': f"{meta['id']}_FOA_ACN_N3D.wav"}
         items.append(item)
     singular = np.linalg.svd(v[:, :, :4], compute_uv=False)
@@ -332,6 +364,27 @@ def run_studio(config, progress=None):
                   'Covariances use STFT-bin means, not calibrated SPL or a spatial pressure field. Intermediate clean estimates may worsen and are not noisy latent states.',
                   'PCM16 stereo previews use a fixed cardioid pair; 4ch WAVs must be Ambisonics-decoded before speaker playback.'
               ]}
+    if observation is not None:
+        # Native full-size speech examples supply their own truthful provenance.
+        # The default browser path above remains byte-for-byte numerically identical.
+        result['model'] = denoiser.card.get('model', denoiser.card)
+        result['implementation'] = data['implementation']
+        result['notes'] = data['notes']
+        result['frequency_metric_definitions'] = {**FREQUENCY_METRIC_DEFINITIONS,
+                                                'scope': data['metric_scope']}
+        result['configuration']['compressed_std'] = denoiser.std
+        reference_rms = float(np.sqrt(np.mean(np.abs(reference)**2)))
+        result['scaling_diagnostic'] = {
+            'reference_hoa_rms': reference_rms,
+            'linear_hoa_rms': scale,
+            'linear_to_reference_rms_ratio': scale/reference_rms if reference_rms > 0 else None,
+            'used_for_inference': False,
+            'description': 'Reference RMS is diagnostic only; inference uses Linear RMS, training uses clean RMS. Both RMS values span all 36 complex N5 coefficients, frequency bins, and time frames, before compression, FOA projection, or shared export gain.',
+        }
+        if 'attribution' in data:
+            result['audio']['attribution'] = data['attribution']
+        result['configuration']['input_kind'] = 'full-size-speech-scene'
+        result['example_provenance'] = data['example_provenance']
     result = to_jsonable(result)
     metadata = {**result, 'reference': {k: value for k, value in result['reference'].items() if k != 'preview_wav_base64'},
                 'linear': {k: value for k, value in result['linear'].items() if k != 'preview_wav_base64'},
@@ -342,7 +395,7 @@ def run_studio(config, progress=None):
             archive.writestr(item['wav_filename'], wav_bytes(audio['sample_rate_hz'], signal*gain))
         archive.writestr('metadata.json', json.dumps(metadata, ensure_ascii=False, allow_nan=False, indent=2))
         archive.writestr('READ-ME.txt',
-                          'Diffusion studio: independent tiny procedural EDM model, not official ADEPS.\n'
+                          (data['implementation'] + '\n' if observation is not None else 'Diffusion studio: independent tiny procedural EDM model, not official ADEPS.\n') +
                           'WAVs: 4ch float32, ACN/N3D W,Y,Z,X; same segment and shared gain.\n'
                           'Within this ZIP, use the same Ambisonics decoder and playback level for every file.\n'
                           'Across runs, account for each metadata.audio.shared_gain before comparing levels.\n'

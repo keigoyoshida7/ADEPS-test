@@ -38,6 +38,7 @@ next-env.d.ts
 /work/
 
 .venv/
+.venv-paper/
 __pycache__/
 *.pyc
 

@@ -88,6 +88,10 @@ class Handler(BaseHTTPRequestHandler):
                     from diffusion_studio import run_studio
                     result,archive=run_studio(cfg)
                     result.update(zip_base64=base64.b64encode(archive).decode(),filename='ADEPS_test_diffusion_studio.zip')
+                elif path=='/api/paper-studio':
+                    from paper_studio import run_paper_studio
+                    result,archive=run_paper_studio(cfg)
+                    result.update(zip_base64=base64.b64encode(archive).decode(),filename='ADEPS_test_full_prior_studio.zip')
                 elif path=='/api/spatial':
                     from spatial import run_spatial
                     result=run_spatial(cfg)

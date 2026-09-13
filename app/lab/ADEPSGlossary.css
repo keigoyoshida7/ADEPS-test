@@ -1,0 +1,28 @@
+.adeps-glossary { display:grid; gap:26px; padding-bottom:18px; }
+.ag-intro h2 { font-size:clamp(28px,3.3vw,42px); line-height:1.5; font-weight:400; letter-spacing:.025em; margin:17px 0; }
+.ag-intro p { color:#aaa; line-height:1.9; font-size:14px; }
+.ag-controls { border-top:1px solid #333; border-bottom:1px solid #333; padding:25px 0 12px; }
+.ag-search { display:flex; align-items:center; gap:12px; border:1px solid #686868; max-width:700px; padding:0 14px; }
+.ag-search > svg { flex-shrink:0; color:#bbb; }
+.ag-search input { width:100%; min-width:0; padding:15px 0; border:0; background:transparent; font:inherit; font-size:14px; }
+.ag-search input:focus { outline:0; }
+.ag-search input::-webkit-search-cancel-button { -webkit-appearance:none; appearance:none; }
+.ag-search:focus-within { outline:1px solid #eee; outline-offset:3px; }
+.ag-search button { padding:6px; border:0; background:none; }
+.ag-categories { display:flex; flex-wrap:wrap; gap:8px; margin-top:19px; }
+.ag-categories button { padding:9px 13px; font-size:12px; font-weight:400; }
+.ag-categories button[aria-pressed='true'] { background:#eee; color:#080808; border-color:#eee; }
+.ag-count { display:block; color:#999; font-size:11px; margin:15px 0 0; }
+.ag-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:15px; align-items:stretch; }
+.ag-card { border:1px solid #383838; padding:23px; display:flex; flex-direction:column; min-width:0; }
+.ag-category { color:#939393; font-size:10px; letter-spacing:.055em; }
+.ag-card h3 { font-size:21px; font-weight:400; margin:15px 0 11px; line-height:1.4; overflow-wrap:anywhere; }
+.ag-card h4 { font-size:13px; font-weight:400; color:#d2d2d2; margin:0 0 13px; line-height:1.65; }
+.ag-card p { font-size:12px; line-height:1.95; color:#aaa; margin:0 0 16px; }
+.ag-card a { display:flex; align-items:center; gap:6px; font-size:10px; color:#999; margin-top:auto; width:fit-content; }
+.ag-card a:hover { color:#fff; }
+.ag-empty { padding:32px 0; font-size:14px; color:#aaa; }
+.ag-footnote { color:#888; font-size:11px; line-height:1.9; margin:0; max-width:900px; }
+.ag-sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+@media (max-width:1100px) { .ag-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:600px) { .ag-grid { grid-template-columns:1fr; gap:12px; } .ag-card { padding:21px; } .ag-categories { gap:6px; } .ag-categories button { padding:8px 10px; font-size:11px; } }

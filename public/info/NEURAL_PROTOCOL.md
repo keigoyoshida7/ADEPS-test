@@ -1,5 +1,7 @@
 # Neural experiment — implementation and field-test protocol
 
+> **過去の実装記録 / Historical implementation.** このページはv0.5.4以前の経路を記録しています。v0.6.0の公開UIは30.78Mの音声priorへ移行し、旧小型モデルの操作画面を取り除きました。現在のモデル・データ・評価・実行方法は[音声priorの実装と評価](PAPER_PRIOR.md)を参照してください。This page records an earlier implementation; see the linked current record for v0.6.0.
+
 Version 0.3.2, 10 September 2026. This is an **independent equation test with a small trained prior**, not the authors' implementation or a reproduction of their reported results.
 
 ## 日本語：最初の使い方
