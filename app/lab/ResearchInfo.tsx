@@ -46,6 +46,14 @@ export default function ResearchInfo({ onNavigate }: { onNavigate: (page: string
       <div><span>{l('学習の実績', 'ACTUAL TRAINING')}</span><h3>{l('保存記録で確認', 'Read the record')}</h3><p>{l('更新回数、実際に使ったシーン数、評価、重みSHAを記録。「ADEPSの流れ」の②で表示します。', 'Optimizer updates, scenes actually seen, evaluation and checkpoint SHA are recorded. View them in workflow stage 2.')}</p><button type="button" onClick={() => onNavigate('workflow')}>{l('手順と学習記録へ', 'Workflow & training record')}<ArrowRight size={14}/></button></div>
       <div><span>{l('復元結果', 'RECONSTRUCTION')}</span><h3>{l('同じ入力で比較', 'Compare the same input')}</h3><p>{l('Webは計算済み例の表示、再計算はローカルTorchです。結果のモデルIDと重みSHAで出所を確かめます。', 'The web displays computed examples; local Torch performs recomputation. Model ID and checkpoint SHA identify each result.')}</p><button type="button" onClick={() => onNavigate('diffusion')}>{l('復元・比較へ', 'Reconstruct & compare')}<ArrowRight size={14}/></button></div>
     </div>
+    <section className="panel info-section">
+      <div className="info-section-title"><span>+ α</span><h2>{l('関連研究から加えた復元処理', 'Reconstruction additions informed by related research')}</h2></div>
+      <p>{l('別タブでは、同じ学習済みモデルに方向共分散・波形としてのSTFT整合・観測補正を組み合わせた独自方式を比較します。学習済み補正をOFFにした比較も掲載し、何が改善に寄与したかを分けて確認します。重みの再学習や、原著ADEPSを上回ったという主張は含みません。', 'The separate tab compares an independent combination of the same trained model, directional covariance, STFT waveform consistency and observation correction. A learned-refinement OFF control separates the contribution of each part. This does not retrain the checkpoint or establish superiority over the original ADEPS paper.')}</p>
+      <button type="button" onClick={() => onNavigate('plus')}>{l('ADEPS + αの比較へ', 'Open ADEPS + α comparison')}<ArrowRight size={14}/></button>
+      <Source href={asset('info/PLUS_METHODS.md')}>{l('実装方法と引用元', 'Methods and citations')}</Source>
+      <Source href={asset('info/PLUS_PROTOCOL.md')}>{l('評価条件と判定方法', 'Evaluation protocol')}</Source>
+      <Source href={asset('info/PLUS_USAGE.md')}>{l('自分の入力で再計算', 'Recompute with your input')}</Source>
+    </section>
     <nav className="info-toc" aria-label={l('このページの項目', 'On this page')}>
       {[['paper-source', l('原著と引用', 'Paper & citation')], ['paper-equations', l('数式との対応', 'Equation mapping')], ['paper-training', l('データと学習', 'Data & training')], ['paper-limits', l('評価と残る違い', 'Evaluation & differences')]].map(([id, label], i) => <a key={id} href={`#${id}`}><span>0{i + 1}</span>{label}</a>)}
     </nav>

@@ -1,6 +1,6 @@
 {
   "name": "adeps-test",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -16,7 +16,8 @@
     "dev:local": "VITE_ANALYSIS_MODE=local npm run dev",
     "typecheck": "tsc --noEmit",
     "test:studio": "node --experimental-strip-types --test tests/diffusion_math.test.mjs tests/noise_schedule.test.mjs tests/process_audition.test.mjs tests/decoding_math.test.mjs",
-    "test:training": "python3 -m unittest discover -s training_tests -v"
+    "test:training": "python3 -m unittest discover -s training_tests -v",
+    "test:plus": "python3 -m unittest discover -s scripts -p 'test_*plus*.py' -v"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

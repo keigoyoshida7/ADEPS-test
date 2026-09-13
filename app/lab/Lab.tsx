@@ -1,16 +1,18 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-import { AudioLines, BookOpen, CircleHelp, Route, Speaker, VolumeX } from 'lucide-react';
+import { AudioLines, BookOpen, CircleHelp, FlaskConical, Route, Speaker, VolumeX } from 'lucide-react';
 import { useLanguage, LocaleProvider, LanguageToggle } from './i18n';
 import ADEPSWorkflow from './ADEPSWorkflow';
 import ADEPSGlossary from './ADEPSGlossary';
 import DiffusionStudio from './DiffusionStudio';
 import ResearchInfo from './ResearchInfo';
 import SpeakerDecoding from './SpeakerDecoding';
+import ADEPSPlus from './ADEPSPlus';
 
 const pages = [
   { id: 'workflow', jp: 'ADEPSの流れ', en: 'ADEPS workflow', icon: Route },
   { id: 'diffusion', jp: '復元・比較', en: 'Reconstruct & compare', icon: AudioLines },
+  { id: 'plus', jp: 'ADEPS + α', en: 'ADEPS + α', icon: FlaskConical },
   { id: 'decoding', jp: 'スピーカーで再生', en: 'Speaker playback', icon: Speaker },
   { id: 'paper', jp: '論文と実装の範囲', en: 'Paper & implementation', icon: CircleHelp },
   { id: 'glossary', jp: '用語の解説', en: 'Glossary', icon: BookOpen },
@@ -69,6 +71,7 @@ function LabContent() {
       </header>
       <div hidden={tab !== 'workflow'}><ADEPSWorkflow language={language} active={tab === 'workflow'} onNavigate={navigate}/></div>
       <div hidden={tab !== 'diffusion'}><DiffusionStudio active={tab === 'diffusion'}/></div>
+      <div hidden={tab !== 'plus'}><ADEPSPlus language={language} active={tab === 'plus'} onNavigate={navigate}/></div>
       <div hidden={tab !== 'decoding'}><SpeakerDecoding language={language} active={tab === 'decoding'} onNavigate={navigate}/></div>
       <div hidden={tab !== 'glossary'}><ADEPSGlossary language={language}/></div>
       {tab === 'paper' && <ResearchInfo onNavigate={navigate}/>}

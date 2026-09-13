@@ -1,0 +1,11 @@
+{
+  "schema": "adeps-plus-progress/1",
+  "phase": "complete",
+  "completed": 288,
+  "total": 288,
+  "updated_at": "2026-09-13T12:35:39.329303+00:00",
+  "label_jp": "評価と表示の確認を完了",
+  "label_en": "Evaluation and display verification complete",
+  "detail_jp": "全32場面・9方式の記録を表示しています。",
+  "detail_en": "Showing all 32 scenes and nine methods."
+}

@@ -1,0 +1,38 @@
+{
+  "schema": "adeps-plus-selection/1",
+  "configuration": {
+    "steps": 8,
+    "sigma_start": 0.3,
+    "relaxation": 0.25,
+    "use_stft_consistency": true,
+    "stft_iterations": 0,
+    "ridge_relative": 1e-07
+  },
+  "post_iterations": 50,
+  "post_ridge_relative": 0.001,
+  "model_weights_sha256": "0e88c717770453520331d797392794934c6eb167716007b44bb58633e811d7b2",
+  "selection_split": "validation",
+  "selection_scenes": 16,
+  "selection_metric": "Mean full-band complex FOA NRMSE dB; best of the predeclared candidates with learned refinement enabled.",
+  "no_denoiser_control_is_reported_even_if_better": true,
+  "independent_algorithm_not_official_ADEPS": true,
+  "provenance": {
+    "source_sha256": {
+      "backend/plus_system.py": "f81d60c7492248875a0e0c2d45473731371127a8c84c9213f3b28c597995ff4a",
+      "backend/plus_hybrid.py": "5d36f01141ed774e6d05e8acd17a004d410c7a40bc0fafba5280c49b5bf42042",
+      "backend/plus_spatial.py": "ae1ec6c503964ba500209b4a88d39726185821123572eeafc74ffd0ea017d335",
+      "backend/plus_diffusion.py": "209b35ef8b7ca3f3effe5a8e274b6189f55495bd3b7618c9ba07ef751c471408",
+      "backend/plus_consistency.py": "0d6d1897a3f37fcb563404049825029261699debdce89f4fab442b29ba1561fe",
+      "backend/plus_reconstruction.py": "49c26afc8507f9b14aa3a2d37dde332e91a51d13d9e15002c2091d0d70e9b8e1",
+      "backend/plus_metrics.py": "d4c63da7733ef497a9fc361c507352395746c08e7e552c5d44b253947963d0a2",
+      "backend/plus_covariance.py": "647e9502235e55c2e0916d3d148345d9632c26016e8b238a95d50aab5e3ecf7d",
+      "backend/paper_inference.py": "a27907bf89d6fc6c3e6d0bdb0c12df54495e9c52ba5789f716d00efd663cbd1f",
+      "backend/paper_prior.py": "37f35608804daed556c33ee8c4859424d37f6d01b9bd68db04d8413c4d33af2b",
+      "backend/capture.py": "a6ceee0694a31d4dd608fa047d4c4aaa63ffd72cc2362a8e0f482c40234c3a23",
+      "backend/neural.py": "37276054c0c48c5bef31e357a666a4c0dde73473553aa9fff34d04eab19b11f8",
+      "backend/diffusion_studio.py": "d3cf4ad1178cb9ae9d66e35eff43beade1bdc6273148df262eec67070a9b785b",
+      "backend/neural_audio.py": "d7cc60252a2375c00e73c86b4d37cccd1a09370184d7fd9840c785103ad4b607",
+      "backend/numerics.py": "ee137463feb665e3c9bbfb28ae0f1dc41581a16aad4863324d662784f8b529d3"
+    }
+  }
+}
