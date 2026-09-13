@@ -32,9 +32,10 @@ function status(value: unknown): value is Status {
     && typeof s.input_sha256 === 'string' && (!s.input_sha256 || hash(s.input_sha256));
 }
 
-export default function MaxComparison({ language, selectedMethod, onSelect, active }: {
-  language: 'jp' | 'en'; selectedMethod: string; onSelect: (id: string) => void; active: boolean;
+export default function MaxComparison({ language, active }: {
+  language: 'jp' | 'en'; active: boolean;
 }) {
+  const [selectedMethod, setSelectedMethod] = useState('linear_tuned');
   const jp = language === 'jp', l = (ja: string, en: string) => jp ? ja : en;
   const id = useId(), mounted = useRef(true);
   const requestSerial = useRef(0), busyRef = useRef(false);
@@ -101,8 +102,9 @@ export default function MaxComparison({ language, selectedMethod, onSelect, acti
     finally { busyRef.current = false; if (mounted.current) setBusy(false); }
   }
   return <section className="max-comparison" id="max-comparison" aria-label={l('Maxで方式を聴き比べる', 'Compare methods in Max')}>
-    <header><span className="pla-eyebrow">MAX / SAME INPUT</span><h4>{l('Maxで方式を聴き比べる', 'Compare methods in Max')}</h4>
-      <p>{l('計算済みの同じ音を、再生位置を保って切り替えます。方式ごとの音量補正はせず、共通ゲインと共通の12chデコーダを使います。', 'Switch computed versions of the same audio while keeping the playback position. All methods use one shared gain and one 12-channel decoder; there is no per-method normalization.')}</p></header>
+    <header><span className="max-eyebrow">MAX / SAME INPUT</span><h3>{l('Maxで方式を聴き比べる', 'Compare methods in Max')}</h3>
+      <p>{l('計算済みの同じ音を、再生位置を保って切り替えます。方式ごとの音量補正はせず、共通ゲインと共通の12chデコーダを使います。', 'Switch computed versions of the same audio while keeping the playback position. All methods use one shared gain and one 12-channel decoder; there is no per-method normalization.')}</p>
+      <p className="max-note">{l('配布音声は保存済み12ch配置の初期デコーダを使います。下の配置・正則化の操作は計算例で、Maxの配り方には自動反映されません。', 'The audio bank uses the default decoder for the saved 12-speaker layout. Layout and regularization controls below are an illustration; they do not automatically change the Max feeds.')}</p></header>
     <div className="max-flow" aria-label={l('音声の経路', 'Audio path')}>
       {[l('同じ入力', 'Same input'), l('方式を選択', 'Select method'), 'FOA · N3D', l('共通デコーダ', 'Shared decoder'), 'S1–S12'].map((text, i) => <span key={i}>{i > 0 && <b aria-hidden="true">→</b>}{text}</span>)}
     </div>
@@ -110,10 +112,10 @@ export default function MaxComparison({ language, selectedMethod, onSelect, acti
       {failed && <button type="button" onClick={() => setRetry(v => v + 1)}><RefreshCw size={13}/>{l('再読込', 'Retry')}</button>}</output> : <>
       <div className="max-options"><label htmlFor={`${id}-bank`}>{l('比較する音声', 'Audio bank')}<select id={`${id}-bank`} disabled={busy} value={bank?.id} onChange={e => { setBankId(e.target.value); setMessage(''); }}>
         {data.banks.map(b => <option key={b.id} value={b.id}>{jp ? b.title_jp : b.title_en}</option>)}</select></label>
-        <label htmlFor={`${id}-method`}>{l('Maxで聴く方式', 'Method to hear in Max')}<select id={`${id}-method`} disabled={busy} value={selected?.id ?? ''} onChange={e => { onSelect(e.target.value); setMessage(''); }}>
+        <label htmlFor={`${id}-method`}>{l('Maxで聴く方式', 'Method to hear in Max')}<select id={`${id}-method`} disabled={busy} value={selected?.id ?? ''} onChange={e => { setSelectedMethod(e.target.value); setMessage(''); }}>
           {data.methods.map(m => <option key={m.id} value={m.id}>{label(m)}</option>)}</select></label></div>
       {bank && <p>{bank.scenes} {l('場面', 'scenes')} · {bank.duration_seconds.toFixed(3)} s · {bank.sample_rate_hz / 1000} kHz · FOA 4ch · ACN/N3D (W, Y, Z, X)<br/>
-        {bank.scenes > 1 ? l('各0.248秒の短片を無音の間隔で並べた比較用音声です。連続した長い発話ではありません。グラフの試聴例は引き続き場面0000です。', 'A montage of 0.248-second excerpts separated by silence, not a continuous utterance. The plotted audition example above remains scene 0000.') : l('0.248秒の短い比較例です。繰り返して音色や方向の差を確かめます。', 'A short 0.248-second example. Loop it to compare timbre and direction.')}</p>}
+        {bank.scenes > 1 ? l('各0.248秒の短片を無音の間隔で並べた比較用音声です。連続した長い発話ではありません。ADEPS＋αタブのグラフ・ブラウザ試聴は場面0000です。', 'A montage of 0.248-second excerpts separated by silence, not a continuous utterance. The charts and browser audition in the ADEPS + α tab use scene 0000.') : l('0.248秒の短い比較例です。繰り返して音色や方向の差を確かめます。', 'A short 0.248-second example. Loop it to compare timbre and direction.')}</p>}
       <div className="max-actions">{bank && <a className="max-download" href={asset(bank.archive_url)} download><Download size={15}/>{l('Maxパッチ＋全方式の音声を保存', 'Download Max patch + all methods')}</a>}
         <a href={asset('info/README_COMPARISON.md')} target="_blank" rel="noreferrer">{l('Maxの使い方', 'Max instructions')}</a></div>
       <ol><li>{l('ZIPを展開し、maxフォルダのADEPS_Method_Comparison.maxpatを開く。「Controllerを開始」→「同梱バンク」の順に押す。', 'Extract the ZIP and open max/ADEPS_Method_Comparison.maxpat. Click Start controller, then Load bundled bank.')}</li>
@@ -129,7 +131,7 @@ export default function MaxComparison({ language, selectedMethod, onSelect, acti
         {message && <output>{message}</output>}
         <p>{isLocalEngine ? l('応答は制御の受付を示します。実音の出力確認ではありません。再生開始と音量はMaxで操作します。', 'A reply confirms control acceptance, not audible output. Start playback and set the volume in Max.')
           : l('公開ページはMaxへ直接接続しません。ZIPだけでもMax側で全方式を選べます。Webから操作する場合は、ソース一式のADEPS-test.commandでローカル版を開きます。', 'The public page does not connect directly to Max. The ZIP lets you select every method inside Max. To control it from the web UI, run ADEPS-test.command from the source checkout.')}</p></div>
-      <p className="pla-note">{l('「ADEPS」は本プロジェクトの独自実装です。任意のライブ入力の推論、室内補正、実機への自動チャンネル割当は行いません。S1–S12と実出力は現地で照合してください。', '“ADEPS” denotes this project’s independent implementation. This does not infer arbitrary live input, correct the room or assign hardware channels automatically. Verify S1–S12 against the actual outputs on site.')}</p>
+      <p className="max-note">{l('「ADEPS」は本プロジェクトの独自実装です。任意のライブ入力の推論、室内補正、実機への自動チャンネル割当は行いません。S1–S12と実出力は現地で照合してください。', '“ADEPS” denotes this project’s independent implementation. This does not infer arbitrary live input, correct the room or assign hardware channels automatically. Verify S1–S12 against the actual outputs on site.')}</p>
     </>}
   </section>;
 }

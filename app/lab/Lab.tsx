@@ -19,7 +19,11 @@ const pages = [
 ] as const;
 type Page = typeof pages[number]['id'];
 const supportedPage = (value: string | null): Page => pages.find(page => page.id === value)?.id ?? 'workflow';
-const pageFromURL = (): Page => typeof window === 'undefined' ? 'workflow' : supportedPage(new URLSearchParams(window.location.search).get('tab'));
+const pageFromURL = (): Page => {
+  if (typeof window === 'undefined') return 'workflow';
+  const page = supportedPage(new URLSearchParams(window.location.search).get('tab'));
+  return page === 'plus' && window.location.hash === '#max-comparison' ? 'decoding' : page;
+};
 
 export default function Lab() {
   return <LocaleProvider><LabContent /></LocaleProvider>;
@@ -30,11 +34,12 @@ function LabContent() {
   const l = (jp: string, en: string) => language === 'jp' ? jp : en;
   const [tab, setTab] = useState<Page>(pageFromURL);
   useEffect(() => {
-    // Old deep links open the workflow instead of an invisible legacy page.
+    // Keep saved Max links working after moving the panel to speaker playback.
     const url = new URL(window.location.href);
     if (url.searchParams.has('tab') && url.searchParams.get('tab') !== pageFromURL()) {
-      url.searchParams.set('tab', 'workflow');
-      url.hash = '';
+      const page = pageFromURL();
+      url.searchParams.set('tab', page);
+      if (page !== 'decoding') url.hash = '';
       window.history.replaceState(null, '', url);
     }
     const restore = () => setTab(pageFromURL());
@@ -42,15 +47,18 @@ function LabContent() {
     return () => window.removeEventListener('popstate', restore);
   }, []);
   const navigate = useCallback((requested: string) => {
-    const next = supportedPage(requested);
+    const [page, section] = requested.split('#');
+    const next = supportedPage(page);
+    const anchor = next === 'decoding' && section === 'max-comparison' ? '#max-comparison' : '';
     const url = new URL(window.location.href);
-    if (url.searchParams.get('tab') !== next) {
+    if (url.searchParams.get('tab') !== next || url.hash !== anchor) {
       url.searchParams.set('tab', next);
-      url.hash = '';
+      url.hash = anchor;
       window.history.pushState(null, '', url);
     }
     setTab(next);
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    if (anchor) requestAnimationFrame(() => document.getElementById('max-comparison')?.scrollIntoView());
+    else window.scrollTo({ top: 0, behavior: 'auto' });
   }, []);
   const current = pages.find(page => page.id === tab)!;
 

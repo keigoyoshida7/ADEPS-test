@@ -1,5 +1,13 @@
-.max-comparison { display:grid; gap:16px; min-width:0; padding:24px 0; border-block:1px solid #444; scroll-margin-top:25px; }
-.plus-audition .max-comparison h4 { font-size:24px; margin:6px 0 10px; }
+.max-comparison { display:grid; gap:16px; min-width:0; padding:28px 30px; border:1px solid #444; background:#090909; color:#ddd; font-family:"Yu Mincho","YuMincho","游明朝",serif; scroll-margin-top:25px; }
+.max-comparison h3 { font-size:24px; font-weight:400; line-height:1.7; margin:6px 0 10px; }
+.max-comparison p { font-size:12px; line-height:1.9; color:#aaa; margin:8px 0; max-width:none; overflow-wrap:anywhere; }
+.max-eyebrow { font-size:10px; letter-spacing:.12em; color:#939393; }
+.max-comparison button,.max-comparison select { font:inherit; font-size:12px; border:1px solid #525252; background:#111; color:#eee; border-radius:0; min-height:38px; padding:9px 12px; cursor:pointer; }
+.max-comparison button { display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+.max-comparison button:hover { border-color:#eee; }.max-comparison select { min-width:0; max-width:100%; }
+.max-comparison label { font-size:12px; }.max-comparison a { color:#ddd; font-size:12px; text-underline-offset:4px; }
+.max-comparison button:focus-visible,.max-comparison select:focus-visible,.max-comparison a:focus-visible { outline:2px solid #ddd; outline-offset:4px; }
+.max-comparison .max-note { font-size:12px; color:#999; }
 .max-flow { display:flex; flex-wrap:wrap; align-items:center; gap:14px; padding:20px 0; border-block:1px solid #292929; font-size:12px; }
 .max-flow span { display:flex; align-items:center; gap:14px; }.max-flow b { font-weight:400; color:#888; }
 .max-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
@@ -10,4 +18,4 @@
 .max-comparison ol { list-style:decimal; padding-left:22px; margin:0; color:#bbb; font-size:12px; line-height:1.9; }.max-comparison li + li { margin-top:10px; }
 .max-connection { background:#131313; padding:18px; display:grid; gap:12px; font-size:12px; }
 .max-comparison button:disabled { opacity:.4; cursor:default; }.max-comparison button:disabled:hover { border-color:#525252; }
-@media(max-width:650px) { .max-options { grid-template-columns:1fr; }.max-flow { gap:10px; }.max-flow span { gap:10px; }.max-connection { padding:14px; } }
+@media(max-width:650px) { .max-comparison { padding:20px 16px; }.max-options { grid-template-columns:1fr; }.max-flow { gap:10px; }.max-flow span { gap:10px; }.max-connection { padding:14px; } }

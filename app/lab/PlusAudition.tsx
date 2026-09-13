@@ -7,7 +7,6 @@ import { MicrophoneArrayView } from './MicrophoneArrayView';
 import { directionalGrid, directionalRms } from './diffusionMath';
 import { Plot, fmt } from './Plots';
 import { asset } from './assets';
-import MaxComparison from './MaxComparison';
 import type { FrequencyMetrics } from './SpectralComparison';
 import './PlusAudition.css';
 
@@ -151,13 +150,6 @@ export default function PlusAudition({ url, language, active = true }: Props) {
 
   function choose(value: string) { audio.current?.pause(); setMethod(value); setListenReference(false); }
   function toggle() { audio.current?.pause(); setEnabled(value => !value); setListenReference(false); }
-  function chooseMax(value: string) {
-    audio.current?.pause();
-    if (value === 'reference') { setListenReference(true); return; }
-    setListenReference(false);
-    if (value === 'linear_tuned') { setEnabled(false); return; }
-    setEnabled(true); setMethod(value);
-  }
   function downloadCsv() {
     if (!data) return;
     const all = data.estimates;
@@ -222,7 +214,6 @@ export default function PlusAudition({ url, language, active = true }: Props) {
         'Press Play to hear audio. Switching stops playback. This is stereo from virtual cardioids at ±45°, without HRTFs or loudspeaker feeds.')}{' '}
         {l('3Dの視点や表示帯域を変えても、試聴音は変わりません。', 'Changing the 3D view or display band does not change the audio.')}<br/>
         {data.audio.sample_rate_hz / 1000} kHz · {fmt(data.audio.duration_seconds, 3)} s · {l('全方式共通の出力ゲイン', 'Shared output gain for every method')}: {data.shared_gain.toPrecision(5)}</p></div>
-    <MaxComparison language={language} selectedMethod={listenReference ? 'reference' : current.id} onSelect={chooseMax} active={active}/>
     <div className="pla-table-wrap"><table><caption>{l('この1例のFOA 4chに対する値。—は未定義で、0ではありません。', 'Metrics for this example’s four FOA channels. A dash is undefined, not zero.')}</caption>
       <thead><tr><th>{l('方式', 'Method')}</th><th>NRMSE dB ↓</th><th>Coherence ↑</th><th>SI-SDR dB ↑</th></tr></thead><tbody>
         {estimates.map(item => <tr key={item.id} data-current={item.id === current.id}><th scope="row">{name(item)}{item.id === current.id && <small>{l('表示中', 'Shown')}</small>}</th>
