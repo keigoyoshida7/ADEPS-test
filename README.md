@@ -2,7 +2,15 @@
 
 理想的なAmbisonics音声を学ぶ拡散priorと、仮想マイクの観測からの復元を調べる研究用アプリです。日本語／英語、黒背景・白字・游明朝体、3Dアレイ表示、反復過程の試聴、周波数別の誤差比較に対応します。独立した **ADEPS + α** タブでは、固定した学習済みモデルに方向推定・波形整合・観測整合を加える方式を比較します。
 
-[Web UI](https://keigoyoshida7.github.io/ADEPS-test/?v=0.7.1) · [ADEPS + α の方式と引用](docs/PLUS_METHODS.md) · [評価プロトコル](docs/PLUS_PROTOCOL.md) · [再計算とダウンロード](docs/PLUS_USAGE.md) · [学習記録](public/models/paper-prior-training.json) · [データの出所](docs/PAPER_DATA.md)
+[Web UI](https://keigoyoshida7.github.io/ADEPS-test/?v=0.7.2) · [ADEPS + α の方式と引用](docs/PLUS_METHODS.md) · [評価プロトコル](docs/PLUS_PROTOCOL.md) · [再計算とダウンロード](docs/PLUS_USAGE.md) · [学習記録](public/models/paper-prior-training.json) · [データの出所](docs/PAPER_DATA.md)
+
+## v0.7.2 — Maxで計算方式を切り替えて聴く
+
+[ADEPS + α → Maxで聴き比べる](https://keigoyoshida7.github.io/ADEPS-test/?tab=plus&v=0.7.2#max-comparison)から、Maxパッチと全方式のFOA音声をまとめて保存できます。参照＋9方式を1つの再生位置で読み、50 msの共通タイミングの切り替え、共通ゲイン、保存済み12ch配置のACN/N3Dデコーダで比較します。各方式を別々に音量正規化しません。
+
+0.248秒の場面0000と、32場面の短片を無音の間隔で並べたバンクを用意しています。これは**計算済みの音声の再生**であり、任意のライブ入力を推論する処理ではありません。Maxの音声出力は手動で開始します。ローカルWeb版はMaxへ方式選択・ミュート要求を送れますが、公開GitHub Pagesからは直接接続しません。読み込んだバンクの識別子も照合します。制御のACKは実際の音やDante経路の確認ではありません。
+
+手順: [Max README](max/README_COMPARISON.md)、[検証記録](docs/MAX_COMPARISON_VALIDATION.md)。以前のSN3D用実験パッチとは別パッチです。新パッチはN3D音声を共通デコーダで12chへ分けます。Speaker Decodingタブの配置・係数の初期値を使い、タブでの調整はダウンロード済みバンクには反映しません。
 
 ## v0.7.1 — 原論文の指標で比較
 
@@ -43,7 +51,7 @@
 
 ## Webで見る
 
-3つ目の[ADEPS + αタブ](https://keigoyoshida7.github.io/ADEPS-test/?v=0.7.1&tab=plus)は、完成した[最終評価JSON](public/models/plus-benchmark.json)を読み込み、9方式の平均・場面別誤差・周波数曲線を表示します。試聴例は結果を見る前に固定したscene 0000で、良かった例への差し替えは行いません。ファイルが未完成・未公開・不整合なら、その状態を表示して結果を補いません。公開ページでの操作は保存結果の切り替えであり、モデルの再計算ではありません。
+3つ目の[ADEPS + αタブ](https://keigoyoshida7.github.io/ADEPS-test/?v=0.7.2&tab=plus)は、完成した[最終評価JSON](public/models/plus-benchmark.json)を読み込み、9方式の平均・場面別誤差・周波数曲線を表示します。試聴例は結果を見る前に固定したscene 0000で、良かった例への差し替えは行いません。ファイルが未完成・未公開・不整合なら、その状態を表示して結果を補いません。公開ページでの操作は保存結果の切り替えであり、モデルの再計算ではありません。
 
 [音声と記録のZIP](public/models/plus-example-audio.zip)には、参照＋9方式の4ch FOA WAV、固定cardioidステレオ試聴、出典・ライセンス・設定・評価記録をまとめます。10対象すべてに共通gainを使い、3Dの共分散にも同じgainの2乗を適用します。公開例とCLIの使い分けは[利用手順](docs/PLUS_USAGE.md)を参照してください。
 

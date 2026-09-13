@@ -42,6 +42,7 @@ jobs:
       - run: npm run test:studio
       - run: npm run test:plus
       - run: npm run test:paper-metrics
+      - run: python3 -m unittest scripts.test_export_max_comparison -v
       - run: npm run build
         env:
           VITE_BASE_PATH: /ADEPS-test/

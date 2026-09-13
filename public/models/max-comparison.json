@@ -1,0 +1,422 @@
+{
+  "banks": [
+    {
+      "archive_bytes": 631959,
+      "archive_sha256": "647971509dee204873a1e91cd33fc5cc579f6a0d294b7861516337dd9ba27e51",
+      "archive_url": "models/max-comparison-bank.zip",
+      "duration_seconds": 0.248,
+      "id": "example",
+      "input_sha256": "3b0238e9d5fee0ea52d7705048bf22b135783246604d07d94719ce02605a39d7",
+      "sample_rate_hz": 16000,
+      "samples": 3968,
+      "scenes": 1,
+      "shared_gain": 2.7473758104943085,
+      "shared_gain_applied": true,
+      "title_en": "Single saved scene",
+      "title_jp": "短い同一場面"
+    },
+    {
+      "archive_bytes": 19099109,
+      "archive_sha256": "2f5c9e7221b57093af4742c54465a5e694a013ea5053eb74c2e345654667d431",
+      "archive_url": "models/max-comparison-montage-bank.zip",
+      "duration_seconds": 12.586,
+      "id": "montage",
+      "input_sha256": "178ce8aeb95dcb076e6aa4dceafeddf20575273ac5ef9aed1d28d9edb2a6136d",
+      "sample_rate_hz": 16000,
+      "samples": 201376,
+      "scenes": 32,
+      "shared_gain": 1.0450469106443918,
+      "shared_gain_applied": true,
+      "title_en": "All 32 scenes in order",
+      "title_jp": "32場面を順番に聴く"
+    }
+  ],
+  "channel_order": [
+    "W",
+    "Y",
+    "Z",
+    "X"
+  ],
+  "decoder": {
+    "channel_order": [
+      "W",
+      "Y",
+      "Z",
+      "X"
+    ],
+    "condition_number": 4.875829188755397,
+    "directions_foa": [
+      [
+        0.9662349396012463,
+        0.0,
+        0.2576626505603324
+      ],
+      [
+        0.778803182607515,
+        -0.5918904187817114,
+        0.2076808486953374
+      ],
+      [
+        0.38240428471411214,
+        -0.8718817691481757,
+        0.3059234277712898
+      ],
+      [
+        -0.38240428471411214,
+        -0.8718817691481757,
+        0.3059234277712898
+      ],
+      [
+        -0.778803182607515,
+        -0.5918904187817114,
+        0.2076808486953374
+      ],
+      [
+        -0.9662349396012463,
+        0.0,
+        0.2576626505603324
+      ],
+      [
+        -0.778803182607515,
+        0.5918904187817114,
+        0.2076808486953374
+      ],
+      [
+        -0.38240428471411214,
+        0.8718817691481757,
+        0.3059234277712898
+      ],
+      [
+        0.38240428471411214,
+        0.8718817691481757,
+        0.3059234277712898
+      ],
+      [
+        0.778803182607515,
+        0.5918904187817114,
+        0.2076808486953374
+      ],
+      [
+        0.7213873210309515,
+        0.0,
+        0.6925318281897135
+      ],
+      [
+        -0.7213873210309515,
+        0.0,
+        0.6925318281897135
+      ]
+    ],
+    "formula": "D=Y(Y^T Y+0.001 I)^-1; feeds=D*a; Y=[1,sqrt(3)dy,sqrt(3)dz,sqrt(3)dx]",
+    "layout": {
+      "channel_order_note": {
+        "en": "Saved project speaker-ID order. IDs 11/12 are reversed in an earlier screen record; verify before hardware output. These IDs do not establish Dante or amplifier channel routing.",
+        "jp": "保存プロジェクトのスピーカーID順です。以前の画面記録とは11/12が逆のため、実機出力前に照合してください。IDはDanteやアンプへの接続順を証明するものではありません。"
+      },
+      "file": "reference/speaker-layout-12ch.json",
+      "sha256": "aaba66f18c5e095634487e99874fc8a48d42290169919583a3b9a854689aacfa",
+      "source": {
+        "kind": "User-provided saved Yamaha project; current backup member",
+        "sha256": "59afef22fc0877c82b95b639a958b3e4ee392d6be7e7af96a4a3fab94015c686"
+      },
+      "speakers": [
+        {
+          "id": 1,
+          "label": "Front C",
+          "position_m": [
+            0,
+            3.75,
+            2.2
+          ]
+        },
+        {
+          "id": 2,
+          "label": "Front R",
+          "position_m": [
+            2.85,
+            3.75,
+            2.2
+          ]
+        },
+        {
+          "id": 3,
+          "label": "R1",
+          "position_m": [
+            2.85,
+            1.25,
+            2.2
+          ]
+        },
+        {
+          "id": 4,
+          "label": "R2",
+          "position_m": [
+            2.85,
+            -1.25,
+            2.2
+          ]
+        },
+        {
+          "id": 5,
+          "label": "Rear R",
+          "position_m": [
+            2.85,
+            -3.75,
+            2.2
+          ]
+        },
+        {
+          "id": 6,
+          "label": "Rear C",
+          "position_m": [
+            0,
+            -3.75,
+            2.2
+          ]
+        },
+        {
+          "id": 7,
+          "label": "Rear L",
+          "position_m": [
+            -2.85,
+            -3.75,
+            2.2
+          ]
+        },
+        {
+          "id": 8,
+          "label": "L2",
+          "position_m": [
+            -2.85,
+            -1.25,
+            2.2
+          ]
+        },
+        {
+          "id": 9,
+          "label": "L1",
+          "position_m": [
+            -2.85,
+            1.25,
+            2.2
+          ]
+        },
+        {
+          "id": 10,
+          "label": "Front L",
+          "position_m": [
+            -2.85,
+            3.75,
+            2.2
+          ]
+        },
+        {
+          "id": 11,
+          "label": "Ceiling1",
+          "position_m": [
+            0,
+            1.25,
+            2.4
+          ]
+        },
+        {
+          "id": 12,
+          "label": "Ceiling2",
+          "position_m": [
+            0,
+            -1.25,
+            2.4
+          ]
+        }
+      ],
+      "verification": {
+        "as_built": false,
+        "physical_output_routes": false,
+        "room_dimensions": false,
+        "saved_file_values": true
+      }
+    },
+    "listener_axes": "Raw saved X right, Y front, Z up",
+    "listener_is_assumed": true,
+    "listener_m": [
+      0.0,
+      0.0,
+      1.2
+    ],
+    "matrix": [
+      [
+        0.15383608078843547,
+        1.0230474782691134e-18,
+        -0.1235322724140125,
+        0.09424162903433146
+      ],
+      [
+        0.20286704329159105,
+        -0.07692452316356803,
+        -0.20943402723940158,
+        0.07596049119931812
+      ],
+      [
+        0.10649340266340315,
+        -0.1133133553416524,
+        -0.04058837489594727,
+        0.03729776399520271
+      ],
+      [
+        0.10649340266340312,
+        -0.1133133553416524,
+        -0.04058837489594726,
+        -0.03729776399520271
+      ],
+      [
+        0.20286704329159105,
+        -0.07692452316356803,
+        -0.20943402723940158,
+        -0.07596049119931812
+      ],
+      [
+        0.15383608078843544,
+        4.4322888532299255e-18,
+        -0.12353227241401248,
+        -0.09424162903433146
+      ],
+      [
+        0.20286704329159105,
+        0.07692452316356803,
+        -0.20943402723940158,
+        -0.07596049119931812
+      ],
+      [
+        0.10649340266340315,
+        0.1133133553416524,
+        -0.040588374895947285,
+        -0.03729776399520271
+      ],
+      [
+        0.10649340266340315,
+        0.1133133553416524,
+        -0.0405883748959473,
+        0.03729776399520271
+      ],
+      [
+        0.20286704329159105,
+        0.07692452316356803,
+        -0.20943402723940158,
+        0.07596049119931812
+      ],
+      [
+        -0.27276027121417823,
+        -6.648368866318511e-18,
+        0.6238602601469264,
+        0.07036044083308103
+      ],
+      [
+        -0.27276027121417823,
+        -4.103042257403069e-18,
+        0.6238602601469264,
+        -0.07036044083308103
+      ]
+    ],
+    "negative_gain": "Polarity inversion; do not replace signed coefficients with magnitudes.",
+    "normalization": "N3D",
+    "ordering": "ACN",
+    "rank": 4,
+    "raw_to_foa_matrix": [
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "regularization": 0.001,
+    "scope": "Angular mode matching only; no distance/delay compensation, measured room correction, automatic output protection or physical routing."
+  },
+  "limits_en": [
+    "Synchronized playback of saved reconstructions, not live ADEPS inference.",
+    "Each scene is a 0.248-second crop; a montage does not establish continuous long-form inference.",
+    "Four FOA channels are not speaker IDs; apply the common decoder exactly once.",
+    "Saved IDs do not establish physical output routes; resolve the earlier 11/12 discrepancy on site."
+  ],
+  "limits_jp": [
+    "計算済み音声の同期比較です。Max上で新しい音声のADEPS推論は行いません。",
+    "各場面は0.248秒の短片です。モンタージュも長い発話を連続推定したものではありません。",
+    "FOAの4chはスピーカー番号ではありません。共通デコーダを一度だけ通します。",
+    "保存IDと実機の出力経路は別です。11/12の過去記録との差は現地で照合します。"
+  ],
+  "methods": [
+    {
+      "id": "reference",
+      "label_en": "Reference synthetic field",
+      "label_jp": "参照の合成音場"
+    },
+    {
+      "id": "linear_default",
+      "label_en": "Linear · default",
+      "label_jp": "Linear・初期設定"
+    },
+    {
+      "id": "linear_tuned",
+      "label_en": "Linear · tuned",
+      "label_jp": "Linear・調整済み"
+    },
+    {
+      "id": "linear_noise",
+      "label_en": "Isotropic Wiener · known SNR",
+      "label_jp": "等方Wiener・既知SNR"
+    },
+    {
+      "id": "adeps_current",
+      "label_en": "Current independent ADEPS",
+      "label_jp": "既存ADEPS独自実装"
+    },
+    {
+      "id": "adeps_tuned",
+      "label_en": "Independent ADEPS · tuned",
+      "label_jp": "ADEPS独自実装・調整済み"
+    },
+    {
+      "id": "spatial_only",
+      "label_en": "Directional covariance only",
+      "label_jp": "方向共分散のみ"
+    },
+    {
+      "id": "consistency_only",
+      "label_en": "Linear + waveform consistency",
+      "label_jp": "Linear＋波形整合"
+    },
+    {
+      "id": "plus",
+      "label_en": "ADEPS + α · learned refinement ON",
+      "label_jp": "ADEPS + α・学習済み補正ON"
+    },
+    {
+      "id": "plus_no_denoiser",
+      "label_en": "Same α processing · learned refinement OFF",
+      "label_jp": "同じα処理・学習済み補正OFF"
+    }
+  ],
+  "normalization": "N3D",
+  "ordering": "ACN",
+  "provenance": {
+    "benchmark_sha256": "2a93066087321a836d30babb58e3c0418e23bbd9f9c0a20271af613570285a2c",
+    "exporter_sha256": "90b1b81ff3275daa00869d8a70c0a600cc44711dde002e5a565a1a47d5c33b17",
+    "metrics_unchanged": true,
+    "new_inference": false,
+    "saved_estimates_only": true,
+    "selection_lock_sha256": "dd82ca0c440ccbc410fa4268796d470fd97e811b03e879ca6f21b2d2a7e4d94e",
+    "source_audio_archive_sha256": "06a06f6fcbba10b1097955417cacba10f6ea65708eefad3bfd23e86cff0fb67b",
+    "source_example_sha256": "694db547946ddde4a5857d9545df05d6c2e80f8248305a451c00f76e6d81e81a",
+    "verification_scope": "Recorded selection-lock identity, benchmark identity, and every consumed final input/estimate SHA-256 verified. Pre-test source and development files are not re-audited during this audio packaging step."
+  },
+  "schema": "adeps-max-comparison/1"
+}

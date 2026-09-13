@@ -7,3 +7,5 @@ for name in ('numerics','capture','measurements','neural','neural_audio','spatia
     shutil.copyfile(root/f'backend/{name}.py',root/f'public/python/{name}.py')
 for name in ('ADEPS_REVIEW.md','NEURAL_PROTOCOL.md','SPATIAL_MODEL.md','DIFFUSION_STUDIO.md','MODEL_TRAINING.md','PAPER_PRIOR.md','PAPER_DATA.md','PLUS_METHODS.md','PLUS_PROTOCOL.md','PLUS_USAGE.md','PLUS_RESULTS.md','PAPER_COMPARISON.md'):
     shutil.copyfile(root/f'docs/{name}',root/f'public/info/{name}')
+
+shutil.copyfile(root/'max/README_COMPARISON.md', root/'public/info/README_COMPARISON.md')

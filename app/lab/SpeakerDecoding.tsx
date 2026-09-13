@@ -54,6 +54,8 @@ export default function SpeakerDecoding({ language, active, onNavigate }: Props)
       <h2>{l('復元した音場を、スピーカーに分ける', 'Turn reconstructed Ambisonics into speaker feeds')}</h2>
       <p>{l('ADEPSで復元するAmbisonicsと、スピーカーへ配るデコーディングは別の工程です。ここでは保存済みの12ch配置から変換行列を計算し、配置による違いを確認できます。', 'Ambisonics reconstruction and decoding to loudspeakers are separate stages. This page calculates a decoder from the saved 12-channel layout so you can inspect how that layout affects the conversion.')}</p>
       <ADEPSProcessDiagram language={language} kind="decode"/>
+      <p>{l('同じ配置で方式ごとの復元音を試すMaxパッチを、ADEPS + αページから保存できます。バンクはこのページの初期値（保存12ch・聴取点[0,0,1.2]m・λ=0.001）を固定して使います。ここで配置や係数を変えても、Maxには自動反映されません。', 'Download the method-comparison Max patch from ADEPS + α. Its bank uses this page’s defaults: the saved 12-speaker layout, listener [0,0,1.2] m and λ=0.001. Changes made here do not update Max automatically.')}</p>
+      <button type="button" onClick={() => { window.location.hash = 'max-comparison'; onNavigate('plus'); }}>{l('Maxで方式を聴き比べる', 'Compare methods in Max')} <ArrowRight size={14}/></button>
       <p className="decoding-note">{l('W/Y/Z/Xはスピーカー番号ではありません。4chをそのまま4台へつなぐと、ここで示すデコーディングにはなりません。このページは行列の確認用で、復元WAVの自動読込・音声出力・実機への送信は行いません。', 'W/Y/Z/X are not speaker numbers. Connecting the four channels directly to four speakers does not perform this decoding. This page inspects the matrix; it does not automatically load reconstructed WAVs, play audio, or send signals to hardware.')}</p>
     </section>
 

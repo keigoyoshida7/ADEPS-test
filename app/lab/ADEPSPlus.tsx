@@ -143,7 +143,7 @@ export default function ADEPSPlus({ language, active = true, onNavigate }: { lan
       <h2>{l('復元の違いを、精度で確かめる。', 'Measure what the reconstruction changes.')}</h2>
       <p>{l('Linear、独自ADEPS、改善方法を同じ観測から比較します。平均の改善だけでなく、悪化した場面と結果の不確実性まで記録します。',
         'Compare Linear, our independent ADEPS and the proposed improvement on identical observations. Inspect regressions and uncertainty alongside average gains.')}</p>
-      <div className="ap-toolbar"><span>{l('計算済みの評価記録を表示', 'Saved evaluation results')}</span><button type="button" disabled={load.state === 'loading'} onClick={() => { setLoad({ state: 'loading' }); setRevision(v => v + 1); }}><RefreshCw size={14}/>{l('再読込', 'Reload')}</button></div>
+      <div className="ap-toolbar"><span>{l('計算済みの評価記録を表示', 'Saved evaluation results')}</span><a href="#max-comparison">{l('Maxで聴き比べる ↓', 'Compare in Max ↓')}</a><button type="button" disabled={load.state === 'loading'} onClick={() => { setLoad({ state: 'loading' }); setRevision(v => v + 1); }}><RefreshCw size={14}/>{l('再読込', 'Reload')}</button></div>
     </header>
     <ol className="ap-flow" aria-label={l('比較までの工程', 'Evaluation flow')}>{phases.map(([title, detail], i) => <li key={title}><span className="ap-step-number">0{i + 1}</span><div><strong>{title}</strong><small>{detail}</small></div>{i < phases.length - 1 && <ArrowRight size={16} aria-hidden="true"/>}</li>)}</ol>
     <p className="ap-scope">{l('原著ADEPSの公式モデルや公表精度を再現した評価ではありません。原著を上回ったかは未確認です。ここでの値は合成音声の復元誤差で、実会場の測定値ではありません。',
