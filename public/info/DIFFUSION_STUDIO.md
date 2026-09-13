@@ -40,6 +40,18 @@
 
 この小型priorは時間・周波数の各点を独立に処理します。隣り合うフレームや周波数の文脈を学習する音声モデルではないため、途中の音にノイズや音色の変化、復元の悪化が出ることがあります。
 
+### アレイ配置を3Dで見る（v0.5.2）
+
+「アレイ配置 3D」は、復元を実行する前から表示できます。本数・球面／水平リング・半径を変えると、同じ配置生成式でプレビューを更新します。入力順のM1…を選んで座標を確認でき、上・正面・左側への視点切替、回転、拡大縮小、座標表に対応します。座標はX前・Y左・Z上、保存値m／画面の数値cmです。マーカーの寸法は実際のカプセル径ではありません。
+
+「現在の設定」は入力欄のプレビュー、「復元Nで使用」はその結果に保存された `microphone_positions_m` です。配置の設定を変えると現在のプレビューへ切り替えますが、保存済みの音と推定は変わりません。復元の履歴を選ぶと、その復元に使った配置が選択されます。3Dカメラの操作は視点だけを変え、マイクの物理配置を回転させません。
+
+「学習モデル比較」と「マイク → Ambisonics」でも、計算結果に含まれる配置を表示します。学習モデル比較の合成配置はseedに応じて回転するため、現在の入力値から配置を推測せず、実際の結果の座標を使います。入力に座標がない場合は配置情報なしと表示します。
+
+**English.** The **Microphone array 3D** view is available before reconstruction. Microphone count, sphere/ring layout and radius update a geometry-only preview using the same formula as the observation generator. Numbered microphones retain input-channel order. Rotate, zoom, choose top/front/left views, and inspect XYZ coordinates and extents. Coordinates use X front, Y left, Z up; stored metres are displayed in centimetres. Markers do not represent capsule dimensions.
+
+**Current settings** previews the form; **Run N geometry** uses coordinates stored in that result. Editing geometry switches to the draft preview without changing saved audio or estimates. Selecting history shows that run’s geometry. Camera movement only changes the viewpoint. Learned-model comparison and linear capture show returned result coordinates, never guessed placements for inputs without positions.
+
 ### 3D表示の意味
 
 3Dの形は、FOA複素スペクトルの**帯域別チャンネル共分散に基づく方向別RMS**です。推論の途中で得られた信号から計算しており、推論確率や確信度ではありません。部屋の中の位置ごとの音圧分布、音源位置を同定した地図、実測したスピーカー指向性でもありません。

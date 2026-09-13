@@ -4,6 +4,8 @@ import { useLanguage } from './i18n';
 import { analysisApi, cancelAnalysis, isLocalEngine, onAnalysisProgress, type AnalysisProgress } from './scientificClient';
 import DiffusionScene from './DiffusionScene';
 import ModelProvenance from './ModelProvenance';
+import MicrophoneArrayView from './MicrophoneArrayView';
+import { virtualArrayPositions } from './arrayGeometry';
 import { Plot, fmt } from './Plots';
 import './DiffusionStudio.css';
 
@@ -11,7 +13,7 @@ type Band = 'broadband' | 'low' | 'mid' | 'high';
 type Covariance = Record<Band, number[][]>;
 type Metrics = { nrmse_db?: number | null; coherence?: number | null; encoded_residual?: number | null; si_sdr_db?: number | null };
 type Estimate = { id: string; label: string; stage: string; step: number; sigma: number; covariance: Covariance; preview_wav_base64: string; metrics: Metrics };
-type Configuration = { microphones: number; radius_m: number; geometry: string; snr_db: number; observation_seed: number; seed: number; eta_prime: number; steps: number };
+type Configuration = { microphones: number; radius_m: number; geometry: 'sphere' | 'ring'; snr_db: number; observation_seed: number; seed: number; eta_prime: number; steps: number };
 type StudioResult = {
   configuration: Configuration; input_sha256: string; microphone_positions_m: number[][];
   source_directions: { id: string; direction: number[] }[];
@@ -35,6 +37,8 @@ export default function DiffusionStudio({ active = true }: { active?: boolean })
   const [stepIndex, setStepIndex] = useState(0);
   const [enabled, setEnabled] = useState(true);
   const [band, setBand] = useState<Band>('broadband');
+  const [spatialView, setSpatialView] = useState<'array' | 'soundfield'>('array');
+  const [arraySource, setArraySource] = useState<'settings' | 'run'>('settings');
   const [overlay, setOverlay] = useState<'reference' | 'linear' | 'previous' | 'none'>('reference');
   const [sharedScale, setSharedScale] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -46,6 +50,10 @@ export default function DiffusionStudio({ active = true }: { active?: boolean })
   const counter = useRef(0);
   const run = runs.find(item => item.id === selectedId) ?? runs.at(-1);
   const result = run?.result;
+  const previewPositions = useMemo(() => virtualArrayPositions(config.microphones, config.radius_m, config.geometry), [config.microphones, config.radius_m, config.geometry]);
+  const savedArray = arraySource === 'run' && !!result;
+  const arrayPositions = savedArray ? result.microphone_positions_m : previewPositions;
+  const arrayConfig = savedArray ? result.configuration : config;
   const checkpoint = result?.checkpoints[Math.min(stepIndex, result.checkpoints.length - 1)];
   const estimate = enabled ? checkpoint : result?.linear;
   const previous = runs.filter(item => item.id !== run?.id && item.result.input_sha256 === result?.input_sha256).at(-1);
@@ -69,7 +77,12 @@ export default function DiffusionStudio({ active = true }: { active?: boolean })
   const bandNames: Record<Band, string> = {
     broadband: l('全帯域 · 62.5 Hz–8 kHz', 'Broadband · 62.5 Hz–8 kHz'), low: l('低域 · 62.5–437.5 Hz', 'Low · 62.5–437.5 Hz'), mid: l('中域 · 500–1937.5 Hz', 'Mid · 500–1937.5 Hz'), high: l('高域 · 2–8 kHz', 'High · 2–8 kHz'),
   };
-  const set = (key: keyof Configuration, value: number | string) => setConfig(c => ({ ...c, [key]: value }));
+  const set = (key: keyof Configuration, value: number | string) => {
+    setConfig(c => ({ ...c, [key]: value }));
+    if (key === 'microphones' || key === 'radius_m' || key === 'geometry') {
+      setArraySource('settings'); setSpatialView('array');
+    }
+  };
   async function reconstruct(next = config) {
     setBusy(true); setError(''); setProgress(undefined); audioRef.current?.pause();
     try {
@@ -77,6 +90,7 @@ export default function DiffusionStudio({ active = true }: { active?: boolean })
       const id = ++counter.current;
       setRuns(items => [...items, { id, created: new Date().toLocaleTimeString(), result: response }].slice(-6));
       setSelectedId(id); setStepIndex(response.checkpoints.length - 1); setEnabled(true); setListening('selected');
+      setArraySource('run'); setSpatialView('soundfield');
     } catch (e) { setError(e instanceof Error ? e.message : String(e)); }
     finally { setBusy(false); }
   }
@@ -86,6 +100,7 @@ export default function DiffusionStudio({ active = true }: { active?: boolean })
   }
   function selectRun(item: Run) {
     setSelectedId(item.id); setStepIndex(item.result.checkpoints.length - 1); setListening('selected');
+    setArraySource('run');
   }
   function download() {
     if (!result) return;
@@ -136,15 +151,30 @@ export default function DiffusionStudio({ active = true }: { active?: boolean })
         <p className="ds-caption">{l('ブラウザ内で計算します。試聴ボタンを押すまで音は出ません。', 'Computed in your browser. Audio plays only when you press play.')}</p>
       </form>
       <div className="ds-result panel">
-        <div className="ds-result-head"><div><span className="eyebrow">03 / SPATIAL VIEW</span><h3>{result ? `${l('復元', 'Run')} ${run!.id}` : l('音場を見て、聴く', 'See and hear the reconstruction')}</h3></div>
+        <div className="ds-result-head"><div><span className="eyebrow">03 / SPATIAL VIEW</span><h3>{result ? `${l('復元', 'Run')} ${run!.id}` : l('マイクアレイと音場', 'Microphone array and soundfield')}</h3></div>
           {result && <button role="switch" aria-checked={enabled} onClick={() => { setEnabled(!enabled); setListening('selected'); }} className={enabled ? 'ds-on' : ''}>{l('拡散', 'Diffusion')} {enabled ? 'ON' : 'OFF'}</button>}
         </div>
-        {changed && <p className="ds-pending">{l('設定を変更しました。表示と音は、選択中の復元結果のままです。', 'Settings changed. The view and audio still show the selected saved run.')}</p>}
+        {changed && <p className="ds-pending">{l('設定を変更しました。推定と音は、選択中の復元結果のままです。アレイ表示では現在の設定と復元に使用した配置を選べます。', 'Settings changed. The estimate and audio remain from the selected saved run. In the array view, choose current settings or the geometry used for that run.')}</p>}
+        <div className="ds-spatial-tabs" role="group" aria-label={l('3D表示を選ぶ', 'Choose a 3D view')}>
+          <button aria-pressed={spatialView === 'array'} onClick={() => setSpatialView('array')}>{l('アレイ配置 3D', 'Microphone array 3D')}</button>
+          <button aria-pressed={spatialView === 'soundfield'} onClick={() => setSpatialView('soundfield')}>{l('復元した音場', 'Reconstructed soundfield')}</button>
+        </div>
+        {spatialView === 'array' && <div className="ds-array-view">
+          <div className="ds-array-source" role="group" aria-label={l('表示する配置', 'Array geometry source')}>
+            <button aria-pressed={!savedArray} onClick={() => setArraySource('settings')}>{l('現在の設定', 'Current settings')}</button>
+            <button aria-pressed={savedArray} disabled={!result} onClick={() => setArraySource('run')}>{result ? `${l('復元', 'Run')} ${run!.id} ${l('で使用', 'geometry')}` : l('復元に使った配置', 'Saved run geometry')}</button>
+          </div>
+          <p className="ds-caption">{savedArray ? l('選択した復元結果に保存されたマイク座標です。', 'Microphone coordinates stored with the selected run.') : l('現在の設定のプレビューです。復元を実行しなくても配置を確認できます。', 'Preview of the current settings. Inspect the geometry without running reconstruction.')} {arrayConfig.microphones} MIC · {arrayConfig.geometry === 'ring' ? l('水平リング', 'Horizontal ring') : l('球面', 'Sphere')} · {l('半径', 'radius')} {fmt(arrayConfig.radius_m * 100, 1)} cm</p>
+          {active && <MicrophoneArrayView positions={arrayPositions} language={language} />}
+          <p className="ds-caption">{l('点はマイク素子の位置です。カメラの回転は視点だけを変え、配置・録音条件は変えません。実機の筐体や指向性を再現する図ではありません。', 'Points are microphone-element positions. Camera rotation changes only the viewpoint, not the geometry or recording conditions. This does not model a physical microphone housing or directivity.')}</p>
+        </div>}
+        {spatialView === 'soundfield' && <>
         <div className="ds-view-options"><label>{l('表示帯域', 'View band')} <select value={band} onChange={e => setBand(e.target.value as Band)}>{Object.entries(bandNames).map(([key, label]) => <option value={key} key={key}>{label}</option>)}</select></label>
           <label>{l('重ねて比較', 'Overlay')} <select value={overlay} onChange={e => setOverlay(e.target.value as typeof overlay)}><option value="reference">{l('合成の正解', 'Synthetic reference')}</option><option value="linear">{l('線形推定 / OFF', 'Linear / OFF')}</option><option value="previous" disabled={!previous}>{l('同じ入力の別候補', 'Another candidate, same input')}</option><option value="none">{l('なし', 'None')}</option></select></label>
         </div>
         {active && <DiffusionScene covariance={currentCovariance} referenceCovariance={overlay === 'reference' ? compareCovariance : undefined} comparisonCovariance={overlay !== 'reference' ? compareCovariance : undefined} microphonePositions={result?.microphone_positions_m ?? []} sourceDirections={result?.source_directions.map(source => source.direction) ?? []} language={language} commonScale={scale} />}
-        {!result && <p className="ds-empty">{l('「復元する」で音と3D表示を生成します。まだ推定データはありません。', 'Select Reconstruct to generate audio and the 3D view. No estimate has been computed yet.')}</p>}
+        {!result && <p className="ds-empty">{l('「復元する」で音と音場を生成します。アレイ配置は復元前から確認できます。', 'Select Reconstruct to generate audio and the soundfield. Array geometry is available before reconstruction.')}</p>}
+        </>}
         {result && <>
           <div className="ds-scale"><label><input type="checkbox" checked={sharedScale} onChange={e => setSharedScale(e.target.checked)} />{l('同じ入力の全ステップ・候補で表示スケールを共通化', 'Use one visual scale across all steps and candidates with this input')}</label></div>
           <p className="ds-caption">{l('実線面：選択中の推定 ／ 比較面：', 'Solid surface: selected estimate / overlay: ')}{overlay === 'reference' ? l('合成の正解', 'synthetic reference') : overlay === 'linear' ? l('線形推定', 'linear') : overlay === 'previous' ? `Run ${previous?.id ?? '—'}` : l('なし', 'none')}{!sharedScale && l('。表示ごとにスケールが変わります。', '. Scale changes between views.')}</p>

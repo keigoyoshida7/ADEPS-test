@@ -31,6 +31,13 @@
 .ds-view-options { display:flex; gap:14px; flex-wrap:wrap; border-top:1px solid #333; padding-top:16px; }
 .ds-view-options label { font-size:12px; display:flex; align-items:center; gap:8px; }
 .ds-view-options select { font-size:12px; max-width:205px; }
+.ds-spatial-tabs { display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 18px; }
+.ds-spatial-tabs button { flex:1; min-width:160px; padding:13px 10px; font-weight:400; font-size:13px; }
+.ds-spatial-tabs button[aria-pressed="true"] { background:#eee; color:#080808; border-color:#eee; }
+.ds-array-source { display:flex; flex-wrap:wrap; gap:6px; }
+.ds-array-source button { font-size:11px; font-weight:400; }
+.ds-array-source button[aria-pressed="true"] { border-color:#eee; color:#eee; background:#151515; }
+.ds-array-view { min-width:0; }
 .ds-scale { margin:12px 0; }
 .ds-scale label, .ds-loop { display:flex; gap:9px; align-items:center; font-size:12px; line-height:1.6; }
 .ds-scale input, .ds-loop input { flex-shrink:0; }

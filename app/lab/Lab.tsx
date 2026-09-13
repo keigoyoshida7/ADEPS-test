@@ -1,5 +1,5 @@
 'use client';
-import { useT, LocaleProvider, LanguageToggle } from './i18n';
+import { useT, useLanguage, LocaleProvider, LanguageToggle } from './i18n';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Activity,
@@ -27,6 +27,7 @@ import MaxReference from './MaxReference';
 import NeuralInference from './NeuralInference';
 import ModelLab from './ModelLab';
 import DiffusionStudio from './DiffusionStudio';
+import MicrophoneArrayView from './MicrophoneArrayView';
 import { analysisApi as api, isLocalEngine } from './scientificClient';
 import { Plot, Heatmap, fmt } from './Plots';
 
@@ -192,6 +193,7 @@ export default function Lab() {
 }
 function LabContent() {
   const t = useT();
+  const language = useLanguage();
 
   const [tab, setTab] = useState(() => {
     const requested = new URLSearchParams(window.location.search).get('tab');
@@ -356,7 +358,7 @@ function LabContent() {
         {
           export_schema: 'adeps-test-lab-run/1',
           exported_at: new Date().toISOString(),
-          app_version: '0.5.1',
+          app_version: '0.5.2',
           result,
         },
       );
@@ -425,7 +427,7 @@ function LabContent() {
             Max {status?.max_reply ? t('応答あり') : t('応答なし')}
           </div>
           <p>
-            RESEARCH PROTOTYPE · 0.5.1
+            RESEARCH PROTOTYPE · 0.5.2
             <br />
             2026.09.13 / RESEARCH USE
           </p>
@@ -789,6 +791,7 @@ function LabContent() {
                       <div className="playback-provenance">
                         <p>{t('このグラフは、仮想配置・直接音・一次反射から作った伝達行列を線形計算した結果です。学習データやニューラルモデルは使っていません。')}</p>
                         <button onClick={() => setTab('paper')}><CircleHelp size={15} />{t('モデルのデータ出所・学習方法を見る')}</button>
+                        <button onClick={() => setTab('diffusion')}><Box size={15} />{t('マイクアレイを3Dで見る')}</button>
                       </div>
                       <ResultHeader
                         title={t('入力チャンネルごとの未使用点での誤差')}
@@ -1392,12 +1395,8 @@ function LabContent() {
                     )}
                   </div>
                 </div>
-                <details>
-                  <summary>{t('マイク座標 / m')}</summary>
-                  <pre>
-                    {JSON.stringify(capture.microphone_positions_m, null, 2)}
-                  </pre>
-                </details>
+                <h3>{t('マイクアレイを3Dで見る')}</h3>
+                <MicrophoneArrayView positions={capture.microphone_positions_m ?? []} language={language} />
                 <h3>{t('読み込み形式')}</h3>
                 <p>
                   {t(

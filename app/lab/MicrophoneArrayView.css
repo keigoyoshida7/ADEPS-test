@@ -1,0 +1,35 @@
+.mic-array-view { min-width: 0; color: #e6e6e6; background: #080808; border: 1px solid #363636; font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", serif; }
+.mav-heading { padding: 20px 22px 15px; }
+.mav-heading > span { font-size: 9px; letter-spacing: .16em; color: #999; }
+.mic-array-view .mav-heading h3 { font-size: 18px; line-height: 1.7; margin: 6px 0; font-weight: 400; }
+.mic-array-view .mav-heading p, .mic-array-view .mav-caption { font-size: 11px; line-height: 1.9; color: #aaa; margin: 0; max-width: none; }
+.mav-toolbar { border-block: 1px solid #303030; padding: 8px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.mav-toolbar > div { display: flex; flex-wrap: wrap; gap: 4px; }
+.mic-array-view button { border: 1px solid #383838; border-radius: 0; background: transparent; color: #ccc; font: inherit; font-size: 11px; padding: 7px 12px; line-height: 1.7; cursor: pointer; min-height: 34px; }
+.mic-array-view button:hover, .mic-array-view button[aria-pressed="true"] { color: #fff; border-color: #b0b0b0; background: #181818; }
+.mic-array-view button:focus-visible, .mav-coordinates summary:focus-visible { outline: 2px solid #eee; outline-offset: 3px; }
+.mic-array-view button:disabled { opacity: .35; cursor: default; }
+.mav-viewport { position: relative; min-width: 0; height: clamp(320px, 35vw, 450px); overflow: hidden; }
+.mav-viewport canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.mav-guide, .mav-scale { position: absolute; bottom: 12px; z-index: 2; pointer-events: none; background: #080808d9; font-size: 10px; line-height: 1.7; color: #999; padding: 3px 5px; }
+.mav-guide { left: 12px; }.mav-scale { right: 12px; }
+.mic-array-view .mav-fallback { position: absolute; inset: 0; z-index: 3; display: grid; place-content: center; padding: 30px; margin: 0; background: #080808; color: #bbb; text-align: center; font-size: 13px; line-height: 1.9; }
+.mav-extents { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid #303030; margin: 0; }
+.mav-extents > div { padding: 14px 18px; min-width: 0; }.mav-extents > div + div { border-left: 1px solid #303030; }
+.mav-extents dt { color: #999; font-size: 10px; margin-bottom: 6px; }.mav-extents dd { margin: 0; font-size: 13px; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.mav-extents small { font-size: 10px; color: #aaa; }.mav-extents dd span { display: block; color: #888; font-size: 10px; margin-top: 5px; }
+.mav-selection { padding: 17px 22px; }.mav-selection > span { color: #aaa; font-size: 11px; }
+.mav-numbers { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; padding: 0; border: 0; min-width: 0; }.mic-array-view .mav-numbers button { min-width: 42px; padding-inline: 8px; }
+.mav-readout { display: block; font-size: 11px; line-height: 2; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.mav-coordinates { padding: 15px 22px; border-top: 1px solid #303030; }.mav-coordinates summary { color: #bbb; cursor: pointer; font-size: 11px; }
+.mav-coordinates > div { overflow-x: auto; margin-top: 15px; }.mav-coordinates table { width: 100%; border-collapse: collapse; text-align: right; font-size: 11px; font-variant-numeric: tabular-nums; }
+.mav-coordinates caption { text-align: left; color: #888; padding-bottom: 12px; font-size: 10px; }.mav-coordinates td, .mav-coordinates th { white-space: nowrap; border-bottom: 1px solid #252525; padding: 8px; font-weight: 400; }
+.mav-coordinates th:first-child { text-align: left; }.mav-coordinates tr[data-selected="true"] { background: #1a1a1a; color: #fff; }
+.mic-array-view .mav-caption { padding: 15px 22px 19px; border-top: 1px solid #282828; }
+.mic-array-view .mav-empty { margin: 0; padding: 35px 22px; font-size: 13px; line-height: 2; color: #bbb; }
+@media (max-width: 560px) {
+  .mav-heading, .mav-selection, .mav-coordinates { padding-inline: 14px; }.mic-array-view .mav-caption { padding-inline: 14px; }
+  .mav-toolbar { padding-inline: 8px; gap: 5px; }.mic-array-view .mav-toolbar button { padding: 7px 8px; font-size: 10px; }
+  .mav-viewport { height: 320px; }.mav-guide { bottom: 32px; }.mav-guide, .mav-scale { font-size: 9px; }
+  .mav-extents > div { padding: 12px 10px; }.mav-extents dd { font-size: 11px; }
+}

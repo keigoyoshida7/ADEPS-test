@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { directionalGrid, directionalRms } from '../app/lab/diffusionMath.ts';
+import { virtualArrayPositions } from '../app/lab/arrayGeometry.ts';
 
 const near = (actual, expected, tolerance = 1e-10) =>
   assert.ok(Math.abs(actual - expected) <= tolerance, `${actual} differs from ${expected}`);
@@ -64,4 +66,29 @@ test('sphere samples follow XYZ with positive Z at the pole and positive Y after
   expectedEquator.forEach((expected, i) => expected.forEach((value, axis) => near(directions[5 + i][axis], value)));
   directions.slice(0, 5).forEach(direction => near(direction[2], 1));
   directions.slice(10).forEach(direction => near(direction[2], -1));
+});
+
+test('draft microphone coordinates match independent Python observation fixtures channel by channel', () => {
+  const fixture = JSON.parse(readFileSync(new URL('./fixtures/diffusion-geometry.json', import.meta.url), 'utf8'));
+  assert.equal(fixture.schema, 'adeps-test-diffusion-array-geometry/1');
+  assert.equal(fixture.cases.length, 6);
+  for (const example of fixture.cases) {
+    const actual = virtualArrayPositions(example.microphones, example.radius_m, example.geometry);
+    assert.equal(actual.length, example.microphone_positions_m.length, `${example.geometry}, ${example.microphones} microphones`);
+    example.microphone_positions_m.forEach((expected, channel) => {
+      assert.equal(actual[channel].length, 3);
+      expected.forEach((value, axis) => near(actual[channel][axis], value, 1e-12));
+      near(Math.hypot(...actual[channel]), example.radius_m, 1e-12);
+    });
+  }
+});
+
+test('invalid draft array settings produce no invented coordinates', () => {
+  for (const count of [0, -1, 4.5, NaN, Infinity, '6']) {
+    assert.deepEqual(virtualArrayPositions(count, .06, 'sphere'), [], `Invalid count: ${count}`);
+  }
+  for (const radius of [0, -.06, NaN, Infinity]) {
+    assert.deepEqual(virtualArrayPositions(6, radius, 'sphere'), [], `Invalid radius: ${radius}`);
+  }
+  assert.deepEqual(virtualArrayPositions(6, .06, 'line'), []);
 });

@@ -5,6 +5,7 @@ import { useLanguage } from './i18n';
 import { analysisApi, cancelAnalysis, isLocalEngine, onAnalysisProgress, type AnalysisProgress } from './scientificClient';
 import { asset } from './assets';
 import ModelProvenance from './ModelProvenance';
+import MicrophoneArrayView from './MicrophoneArrayView';
 import { Plot, fmt } from './Plots';
 import sharedErrors from './neural-errors.json';
 import './ModelLab.css';
@@ -22,6 +23,7 @@ type SpatialResult = {
   kind: string;
   frequencies_hz: number[];
   microphones: number;
+  microphone_positions_m?: number[][];
   frames: number;
   model: { name?: string; architecture?: string; parameter_count?: number; weights_sha256?: string; input_features?: number; training?: { steps?: number; selected_step?: number }; [key: string]: unknown };
   configuration: Record<string, unknown>;
@@ -285,6 +287,12 @@ export default function ModelLab() {
         </>}
       </section>
     </div>
+
+    {result && <section className="panel model-record">
+      <div className="panel-head"><h2>{l('この比較に使ったアレイ · 3D', 'Array used in this comparison · 3D')}</h2></div>
+      <p className="neural-small">{l('結果に保存された座標を表示します。入力欄を変更しても、再計算するまでこの配置は変わりません。座標が付属しない入力では配置を表示しません。', 'These coordinates come from the computed result. Changing input settings does not change this geometry until you recompute. Inputs without coordinates have no geometry display.')}</p>
+      <MicrophoneArrayView positions={result.microphone_positions_m ?? []} language={language} />
+    </section>}
 
     {result && <section className="panel model-record">
       <div className="panel-head"><h2>{l('何を計算したか', 'What was computed')}</h2><span>03 — RECORD</span></div>
