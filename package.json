@@ -1,6 +1,6 @@
 {
   "name": "adeps-test",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -14,7 +14,8 @@
     "test:numerics": "PYTHONPATH=backend python3 -m unittest discover -s tests -v",
     "test:max": "node --test max/*.test.js",
     "dev:local": "VITE_ANALYSIS_MODE=local npm run dev",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:studio": "node --experimental-strip-types --test tests/diffusion_math.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

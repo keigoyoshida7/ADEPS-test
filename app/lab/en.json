@@ -671,5 +671,7 @@
   "データのない帯域には曲線を描きません。": "No curve is drawn where data are unavailable.",
   "学習モデル比較": "Learned model comparison",
   "旧小型モデルの拡散推論": "Legacy small-model diffusion",
-  "独自学習モデル · 実験用": "Independent learned models · Experimental"
+  "独自学習モデル · 実験用": "Independent learned models · Experimental",
+  "拡散・音場スタジオ": "Diffusion soundfield studio",
+  "音は試聴ボタンで再生します": "Audio plays on preview"
 }

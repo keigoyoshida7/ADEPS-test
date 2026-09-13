@@ -39,6 +39,7 @@ jobs:
       - run: npm run typecheck
       - run: npm run test:numerics
       - run: npm run test:max
+      - run: npm run test:studio
       - run: npm run build
         env:
           VITE_BASE_PATH: /ADEPS-test/

@@ -33,6 +33,11 @@ def _adeps_dispatch_json(operation, config_json):
         elif operation == "neural":
             from neural import run_neural
             result = run_neural(config, progress=_adeps_report)
+        elif operation == "diffusion-studio":
+            from diffusion_studio import run_studio
+            result, archive = run_studio(config, progress=_adeps_report)
+            Path("/tmp/adeps-test-neural-output.zip").write_bytes(archive)
+            result.update(filename="ADEPS_test_diffusion_studio.zip", mime="application/zip")
         elif operation == "spatial":
             from spatial import run_spatial
             result = run_spatial(config, progress=_adeps_report)
@@ -78,7 +83,7 @@ export function createAnalysisEngine({ loadPyodide, loadSource, loadModel, progr
     progress("numpy");
     await py.loadPackage("numpy");
     py.FS.mkdirTree("/app/backend");
-    const names = ["numerics", "capture", "measurements", "neural", "neural_audio", "spatial", "spatial_model"];
+    const names = ["numerics", "capture", "measurements", "neural", "neural_audio", "spatial", "spatial_model", "diffusion_studio"];
     const sources = await Promise.all(names.map(name => loadSource(name)));
     names.forEach((name, i) => py.FS.writeFile(`/app/backend/${name}.py`, sources[i], { encoding: "utf8" }));
     py.runPython(PYTHON_ADAPTER);
@@ -88,7 +93,7 @@ export function createAnalysisEngine({ loadPyodide, loadSource, loadModel, progr
   }
 
   async function execute({ operation, config = {}, bytes }) {
-    if (!["status", "playback", "capture", "ir", "example-ir", "neural", "neural-audio", "neural-example", "spatial", "spatial-audio", "spatial-source", "spatial-example"].includes(operation)) {
+    if (!["status", "playback", "capture", "ir", "example-ir", "neural", "neural-audio", "neural-example", "spatial", "spatial-audio", "spatial-source", "spatial-example", "diffusion-studio"].includes(operation)) {
       throw new Error("This hosted version has no Max, Dante, or audio-device connection");
     }
     const configJson = JSON.stringify(config);
@@ -100,14 +105,14 @@ export function createAnalysisEngine({ loadPyodide, loadSource, loadModel, progr
     }
     ready ||= boot();
     const py = await ready;
-    if (["capture", "ir", "example-ir", "neural", "neural-audio", "neural-example", "spatial", "spatial-audio", "spatial-source", "spatial-example"].includes(operation)) {
+    if (["capture", "ir", "example-ir", "neural", "neural-audio", "neural-example", "spatial", "spatial-audio", "spatial-source", "spatial-example", "diffusion-studio"].includes(operation)) {
       if (!scipyReady) {
         progress("scipy");
         scipyReady = py.loadPackage("scipy");
       }
       await scipyReady;
     }
-    if (["neural", "neural-audio"].includes(operation) || (operation.startsWith("spatial") && config.include_legacy)) {
+    if (["neural", "neural-audio", "diffusion-studio"].includes(operation) || (operation.startsWith("spatial") && config.include_legacy)) {
       modelReady ||= (async () => {
         progress("model");
         py.FS.mkdirTree("/app/public/models");
@@ -136,7 +141,7 @@ export function createAnalysisEngine({ loadPyodide, loadSource, loadModel, progr
         scipy_version: scipyReady ? py.runPython("__import__('scipy').__version__") : null,
         max_available: false,
         dante_available: false,
-        audio_output: "none",
+        audio_output: "user-triggered stereo preview only; no device routing",
         data_processing: "browser memory",
       };
     }
@@ -153,8 +158,8 @@ export function createAnalysisEngine({ loadPyodide, loadSource, loadModel, progr
         error.name = envelope.error.name;
         throw error;
       }
-      if (["example-ir", "neural-example", "neural-audio", "spatial-example", "spatial-audio", "spatial-source"].includes(operation)) {
-        const path = ["neural-audio", "spatial-audio", "spatial-source"].includes(operation) ? "/tmp/adeps-test-neural-output.zip" : "/tmp/adeps-test-example.zip";
+      if (["example-ir", "neural-example", "neural-audio", "spatial-example", "spatial-audio", "spatial-source", "diffusion-studio"].includes(operation)) {
+        const path = ["neural-audio", "spatial-audio", "spatial-source", "diffusion-studio"].includes(operation) ? "/tmp/adeps-test-neural-output.zip" : "/tmp/adeps-test-example.zip";
         const zip = py.FS.readFile(path).slice();
         return { ...envelope.result, bytes: zip.buffer };
       }

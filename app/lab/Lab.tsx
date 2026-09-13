@@ -26,6 +26,7 @@ import { asset } from './assets';
 import MaxReference from './MaxReference';
 import NeuralInference from './NeuralInference';
 import ModelLab from './ModelLab';
+import DiffusionStudio from './DiffusionStudio';
 import { analysisApi as api, isLocalEngine } from './scientificClient';
 import { Plot, Heatmap, fmt } from './Plots';
 
@@ -55,6 +56,7 @@ const pages = [
   },
   { id: 'playback', name: '再生系の実験', en: 'PLAYBACK', icon: Box },
   { id: 'paper', name: '論文と実装の範囲', en: 'EVIDENCE', icon: CircleHelp },
+  { id: 'diffusion', name: '拡散・音場スタジオ', en: 'DIFFUSION STUDIO', icon: AudioLines },
   { id: 'model', name: '学習モデル比較', en: 'LEARNED MODEL A/B', icon: FlaskConical },
   { id: 'neural', name: '旧小型モデルの拡散推論', en: 'LEGACY DIFFUSION', icon: FlaskConical },
   {
@@ -191,7 +193,10 @@ export default function Lab() {
 function LabContent() {
   const t = useT();
 
-  const [tab, setTab] = useState('layout'),
+  const [tab, setTab] = useState(() => {
+    const requested = new URLSearchParams(window.location.search).get('tab');
+    return pages.some(page => page.id === requested) ? requested! : 'layout';
+  }),
     [view, setView] = useState('curves');
   const [profile, setProfile] = useState<string>('virtual');
   const [play, setPlay] = useState<Result | null>(null),
@@ -345,7 +350,7 @@ function LabContent() {
         {
           export_schema: 'adeps-test-lab-run/1',
           exported_at: new Date().toISOString(),
-          app_version: '0.4.0',
+          app_version: '0.5.0',
           result,
         },
       );
@@ -414,13 +419,13 @@ function LabContent() {
             Max {status?.max_reply ? t('応答あり') : t('応答なし')}
           </div>
           <p>
-            RESEARCH PROTOTYPE · 0.4
+            RESEARCH PROTOTYPE · 0.5
             <br />
-            2026.09.11 / RESEARCH USE
+            2026.09.13 / RESEARCH USE
           </p>
           <span className="silent">
             <VolumeX size={14} />
-            {t('ブラウザから音は出ません')}
+            {t('音は試聴ボタンで再生します')}
           </span>
         </div>
       </aside>
@@ -456,6 +461,7 @@ function LabContent() {
         )}
         <div hidden={tab !== 'neural'}><NeuralInference /></div>
         <div hidden={tab !== 'model'}><ModelLab /></div>
+        <div hidden={tab !== 'diffusion'}><DiffusionStudio active={tab === 'diffusion'} /></div>
         {tab === 'layout' && (
           <LayoutReference
             onExperiment={(id: LayoutId) => {

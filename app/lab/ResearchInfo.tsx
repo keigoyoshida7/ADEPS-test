@@ -87,6 +87,8 @@ export default function ResearchInfo({
         </p>
         <p>{l('新しい「学習モデル比較」では、物理モデルで条件付けした教師あり残差ネットワークを独自学習しました。旧小型モデルと区別し、同一入力のON / OFF、未使用条件での評価、Maxの音源ファイルを使う検証を追加しています。',
           'The new “Learned model comparison” independently trains a physics-conditioned supervised residual network. It is separate from the legacy small model and adds paired ON / OFF comparison, held-out evaluation and tests using source files from Max.')}</p>
+        <p>{l('「拡散スタジオ」は、既存の小型priorによる実際の反復推論を、途中のFOA・方向別レベル・音で調べる追加画面です。仮想マイク配置を変える実験と、同じ観測に対して拡散seedを変える実験を区別します。',
+          '“Diffusion studio” adds an interface for exploring actual iterative inference with the existing small prior through intermediate FOA, directional levels and audio. Changing the virtual array is a separate experiment from changing the diffusion seed for the same observation.')}</p>
       </div>
       <div className="info-status-grid">
         <div>
@@ -127,6 +129,16 @@ export default function ResearchInfo({
             <ArrowRight size={14} />
           </button>
         </div>
+        <div>
+          <span>{l('04 / 拡散の過程を調べる', '04 / Explore the diffusion process')}</span>
+          <h3>{l('途中のFOAを形と音で比較', 'Compare intermediate FOA as shape and audio')}</h3>
+          <p>{l('独自の小型priorを使う反復推論。seed・観測整合の強さを変え、保存した中間推定と最終出力を確認します。',
+            'Iterative inference with an independent small prior. Explore seeds and guidance strengths, then inspect saved intermediate estimates and the final output.')}</p>
+          <button onClick={() => onNavigate('diffusion')}>
+            {l('拡散スタジオへ', 'Open diffusion studio')}
+            <ArrowRight size={14} />
+          </button>
+        </div>
       </div>
       <div className="info-toc" aria-label={t('研究ノートの目次')}>
         {[
@@ -138,6 +150,7 @@ export default function ResearchInfo({
           ['geometry', t('配置・測定・外部制御')],
           ['status', t('未実装と次の段階')],
           ['learned', l('独自学習モデルと比較', 'Independent learned model')],
+          ['diffusion', l('拡散スタジオの読み方', 'Reading the diffusion studio')],
           ['references', t('参考文献')],
         ].map(([id, label], i) => (
           <a key={id} href={`#info-${id}`}>
@@ -955,7 +968,42 @@ export default function ResearchInfo({
           <a href={asset('/info/SPATIAL_MODEL.md')} target="_blank" rel="noreferrer">{l('手法・学習・失敗例の詳細', 'Method, training and failure analysis')}</a>
           <a href={asset('/examples/ADEPS_Max_Experiment.zip')} download>{l('Max実験パッチ', 'Max experiment patch')}</a></div>
       </Section>
-      <Section id="info-references" n="09" title={t('参考文献・参照資料')}>
+      <Section id="info-diffusion" n="09" title={l('拡散スタジオ：反復・形・音の意味', 'Diffusion studio: iterations, shape and audio')}>
+        <p>{l('この画面は、既存のTinyDenoiserと拡散サンプラーを使って実際に推論します。24,072パラメータの小型MLPは独自の合成空間係数で学習したもので、各時間・周波数点を独立に処理します。論文の音声priorや公式重みではなく、論文と同等の品質・再現性を示すものではありません。「学習モデル比較」の教師あり残差ネットワークとは別の処理です。',
+          'This interface runs the existing TinyDenoiser and diffusion sampler. The 24,072-parameter MLP was trained on independently generated spatial coefficients and processes each time–frequency bin separately. It is not the paper’s speech prior or official weights, and does not establish paper-level quality or reproduction. It is separate from the supervised residual network in “Learned model comparison”.')}</p>
+        <p>{l('既定の音源区間は0.35秒・16 kHz、FFT 256・hop 128です。DCを除く解析点は62.5 Hz〜8 kHzを62.5 Hz刻みで扱います。別の合成スペクトル実験の1 Hz〜20 kHz表示とは範囲が異なります。画面内の履歴は最新6件までで、残したい結果はZIPへ保存します。',
+          'The default segment is 0.35 seconds at 16 kHz, with FFT 256 and hop 128. Non-DC analysis bins cover 62.5 Hz–8 kHz in 62.5 Hz steps, a different range from the separate 1 Hz–20 kHz synthetic-spectrum experiment. The interface retains the latest six runs; save ZIPs for results you want to keep.')}</p>
+        <p>{l('参照したのは、観測と物理モデルを分ける考え方、圧縮した線形符号化空間での観測整合、denoiserを通る勾配を使った反復更新です。3D表示、途中の試聴、操作画面は本試作独自の追加です。',
+          'The referenced ideas are the separation of observations and the physical model, observation consistency in compressed linearly encoded space, and iterative updates using gradients through the denoiser. The 3D view, intermediate audition and interface are independent additions.')}
+          <Cite at="S2.E2">{l('観測モデル', 'Observation model')}</Cite>
+          <Cite at="S3.E10">{l('式(10)', 'Eq. (10)')}</Cite>
+          <Cite at="algorithm1">Algorithm 1</Cite>
+        </p>
+        <div className="table-scroll"><table><thead><tr><th>{l('操作・表示', 'Control or display')}</th><th>{l('意味', 'Meaning')}</th></tr></thead><tbody>
+          <tr><td>{l('仮想アレイの配置', 'Virtual array layout')}</td><td>{l('音源を仮想マイクで拾う条件を変え、Vと観測を再計算します。実際のマイクを移動させたり、施設の配置を変更したりする操作ではありません。',
+            'Changes the simulated capture conditions and recomputes V and the observations. It does not move a physical microphone or change a venue layout.')}</td></tr>
+          <tr><td>{l('拡散seed', 'Diffusion seed')}</td><td>{l('音源・仮想アレイ・観測ノイズの条件を固定したまま、反復開始時の乱数を変えます。違う出力が得られても、正解や品質の向上を意味しません。',
+            'Changes the random initialization while source, virtual array and observation-noise conditions stay fixed. A different output is not evidence of a correct or better reconstruction.')}</td></tr>
+          <tr><td>{l('観測整合の強さ η′', 'Observation guidance η′')}</td><td>{l('観測へ整合させる更新の強さです。0でこの勾配更新を止めますが、初期値には観測が残るため、完全に無条件の生成にはなりません。大きくしても品質が単調に上がるわけではありません。',
+            'Scales updates toward observation consistency. Zero disables this gradient update, but the initialization still contains the observation, so generation is not fully unconditional. Increasing it does not guarantee better quality.')}</td></tr>
+          <tr><td>{l('途中の形と音', 'Intermediate shape and audio')}</td><td>{l('保存した反復時点のノイズ除去後のFOA推定を使います。反復番号は音源の再生時刻ではありません。最終出力は最後の反復更新後の結果として別に確認します。',
+            'Uses denoised FOA estimates saved at selected iterations. An iteration number is not an audio playback time. The final output is inspected separately as the result after the last update.')}</td></tr>
+          <tr><td>{l('3Dの方向別RMS', '3D directional RMS')}</td><td>{l('選択したFOA複素スペクトルの帯域別共分散から、方向ごとの合成信号のRMSを計算します。音源位置の地図、推定確率、部屋の中の音圧分布ではありません。再生系の配置・音圧マッチングの図とも異なります。',
+            'Computes the RMS of a directional synthesis from the band-wise covariance of the selected complex FOA spectra. It is not a source-position map, probability distribution or room-pressure field. It also differs from playback-layout and pressure-matching views.')}</td></tr>
+        </tbody></table></div>
+        <h3>{l('試聴とMaxでの利用', 'Audition and use in Max')}</h3>
+        <p>{l('ブラウザのステレオ試聴は、FOAから作った左右の仮想カーディオイドです。HRTFを使うバイノーラル再生ではないため、上下や前後の聴こえ方の評価には使いません。保存する4ch FOAはACN/N3D・W,Y,Z,X順です。Maxではこの規約に合う外部Ambisonicsデコーダーへ入力します。既存のMax比較パッチのSN3D経路へ入れる場合は、規約の変換が必要です。',
+          'Browser stereo audition uses left and right virtual cardioids derived from FOA. It does not use HRTFs and is not suitable for evaluating elevation or front–back binaural cues. Exported four-channel FOA uses ACN/N3D in W,Y,Z,X order. In Max, use an external Ambisonics decoder configured for that convention. The existing Max comparison patch’s SN3D path requires a normalization conversion.')}</p>
+        <p>{l('3D表示では試行ごとの書き出しゲインを除き、共通スケールがONなら同じ入力の履歴を共通の尺度で比較します。ブラウザの試聴も、対象の切り替え時に同じ入力の履歴内でゲインを揃えます。手動でプレーヤー音量を変えると比較条件が変わります。ZIPのWAVには試行ごとのゲインが残るため、Maxで別試行を比較する場合は保存したゲインを確認して揃えます。',
+          'The 3D view removes run-specific export gain and, with shared scale enabled, compares history with the same input on one visual scale. Changing the audition target also aligns browser playback gain across that input’s history. Manually changing player volume changes the comparison condition. ZIP WAVs retain run-specific gains; inspect and align those gains when comparing different runs in Max.')}</p>
+        <p>{l('同じ区間・同じ再生条件で比較し、音や形が魅力的かという制作上の判断と、参照信号にどれだけ近いかという復元精度は別に記録します。',
+          'Compare the same segment and playback conditions. Record creative preferences about sound and shape separately from reconstruction accuracy against a reference.')}</p>
+        <div className="source-links">
+          <button onClick={() => onNavigate('diffusion')}>{l('拡散スタジオへ', 'Open diffusion studio')}<ArrowRight size={14}/></button>
+          <a href={asset('/info/DIFFUSION_STUDIO.md')} target="_blank" rel="noreferrer">{l('操作と表示の詳細 · JP / EN', 'Controls and display details · JP / EN')}</a>
+        </div>
+      </Section>
+      <Section id="info-references" n="10" title={t('参考文献・参照資料')}>
         <ol className="bibliography">
           <li id="ref-1">
             <b>{t('Milstein, Shlezinger & Rafaely（2026）')}</b>

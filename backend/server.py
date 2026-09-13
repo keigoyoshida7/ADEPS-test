@@ -84,6 +84,10 @@ class Handler(BaseHTTPRequestHandler):
                 elif path=='/api/neural':
                     from neural import run_neural
                     result=run_neural(cfg)
+                elif path=='/api/diffusion-studio':
+                    from diffusion_studio import run_studio
+                    result,archive=run_studio(cfg)
+                    result.update(zip_base64=base64.b64encode(archive).decode(),filename='ADEPS_test_diffusion_studio.zip')
                 elif path=='/api/spatial':
                     from spatial import run_spatial
                     result=run_spatial(cfg)

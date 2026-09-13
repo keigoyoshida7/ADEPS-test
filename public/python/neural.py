@@ -130,7 +130,15 @@ def schedule(steps, sigma_max=20., sigma_min=.002, rho=10.):
                   (sigma_min ** (1 / rho) - sigma_max ** (1 / rho))) ** rho, 0.]
 
 
-def sample(y, EV, denoiser, steps=150, eta_prime=50., seed=42, progress=None):
+def sample(y, EV, denoiser, steps=150, eta_prime=50., seed=42, progress=None, snapshot=None):
+    """Sample with an optional observational hook, without changing the trajectory.
+
+    ``snapshot(metadata, coefficients)`` receives an independent, uncompressed
+    copy of D(x_i, sigma_i) BEFORE update i+1, with ``step=i`` completed updates.
+    A final ``final_sample`` event contains the actual returned x_M, expanded,
+    after the terminal update. The caller remains responsible for restoring
+    the observation scale. These are estimates, not clean reference signals.
+    """
     sigmas = schedule(steps)
     if not np.isfinite(eta_prime) or not 0 <= eta_prime <= 1000:
         raise ValueError('eta_prime must be between 0 and 1000')
@@ -142,6 +150,9 @@ def sample(y, EV, denoiser, steps=150, eta_prime=50., seed=42, progress=None):
     start = time.perf_counter()
     for i, (sigma, following) in enumerate(zip(sigmas[:-1], sigmas[1:])):
         clean, loss, grad = consistency(x, sigma, y, EV, denoiser)
+        if snapshot:
+            snapshot({'stage': 'denoised_estimate', 'step': i, 'iteration': i + 1,
+                      'sigma': float(sigma)}, expand(clean).copy())
         norm = float(np.linalg.norm(grad))
         score = (clean - x) / sigma ** 2
         guidance = -eta_prime * grad / (sigma * norm) if norm > 1e-20 else np.zeros_like(grad)
@@ -159,7 +170,11 @@ def sample(y, EV, denoiser, steps=150, eta_prime=50., seed=42, progress=None):
         trace.append(row)
         if progress:
             progress({'stage': 'inference', **row, 'total': steps})
-    return expand(x), trace
+    final = expand(x)
+    if snapshot:
+        snapshot({'stage': 'final_sample', 'step': steps, 'iteration': steps,
+                  'sigma': 0.}, final.copy())
+    return final, trace
 
 
 def synthetic_bundle(config):

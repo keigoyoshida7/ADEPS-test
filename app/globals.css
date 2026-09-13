@@ -181,6 +181,10 @@ nav {
   flex-direction: column;
   gap: 7px;
 }
+@media (min-width: 741px) {
+  .sidebar nav { min-height: 0; overflow-y: auto; flex: 1; }
+  .sidebar > .brand, .sidebar > .sidebar-label, .sidebar > .sidebar-bottom { flex-shrink: 0; }
+}
 nav button {
   width: 100%;
   justify-content: flex-start;

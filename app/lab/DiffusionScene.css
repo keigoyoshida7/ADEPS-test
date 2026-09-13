@@ -1,0 +1,38 @@
+.diffusion-scene { min-width: 0; border: 1px solid #363636; background: #080808; color: #e8e8e8; font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", serif; }
+.diffusion-scene-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 13px 15px; border-bottom: 1px solid #303030; }
+.diffusion-scene-modes { display: flex; gap: 3px; flex-wrap: wrap; border: 0; margin: 0; padding: 0; min-width: 0; }
+.diffusion-scene .diffusion-scene-toolbar button { border: 1px solid transparent; border-radius: 0; color: #a5a5a5; background: transparent; font: inherit; font-size: 11px; padding: 8px 10px; cursor: pointer; line-height: 1.6; }
+.diffusion-scene .diffusion-scene-modes button[aria-pressed="true"] { color: #f4f4f4; border-color: #777; }
+.diffusion-scene .diffusion-scene-toolbar button:hover { color: #fff; border-color: #777; }
+.diffusion-scene .diffusion-scene-toolbar button:focus-visible { outline: 2px solid #eee; outline-offset: 3px; }
+.diffusion-scene .diffusion-scene-toolbar button:disabled { opacity: .4; cursor: default; }
+.diffusion-scene-reset { flex: 0 0 auto; }
+.diffusion-scene-viewport { position: relative; height: clamp(330px, 39vw, 490px); min-width: 0; overflow: hidden; margin: 0; }
+.diffusion-scene-viewport canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.diffusion-scene-guide, .diffusion-scene-unit { position: absolute; z-index: 2; bottom: 13px; pointer-events: none; color: #999; font-size: 10px; line-height: 1.6; background: #080808d9; padding: 4px 6px; }
+.diffusion-scene-guide { left: 10px; }
+.diffusion-scene-unit { right: 10px; text-align: right; }
+.diffusion-scene-fallback { position: absolute; inset: 0; z-index: 3; display: grid; place-content: center; padding: 35px; background: #080808; color: #c3c3c3; font-size: 13px; line-height: 2; text-align: center; }
+.diffusion-scene-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 13px 22px; padding: 15px 20px 4px; }
+.diffusion-scene-legend span { display: flex; align-items: center; gap: 8px; color: #c0c0c0; font-size: 11px; line-height: 1.7; }
+.diffusion-scene-legend i { display: inline-block; width: 20px; height: 10px; flex: 0 0 auto; }
+.diffusion-scene-solid { background: #d6d6d6; opacity: .8; }
+.diffusion-scene-wire { border: 1px solid #bbb; }
+.diffusion-scene-dashed { border-top: 1px dashed #aaa; transform: translateY(4px); }
+.diffusion-scene .diffusion-scene-caption { margin: 0; padding: 15px 20px 18px; font-size: 11px; line-height: 1.9; color: #a5a5a5; max-width: none; }
+.diffusion-scene-values { border-top: 1px solid #303030; padding: 14px 20px; }
+.diffusion-scene-values summary { cursor: pointer; color: #c2c2c2; font-size: 11px; line-height: 1.8; }
+.diffusion-scene-table-wrap { overflow-x: auto; margin-top: 16px; }
+.diffusion-scene-values table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: right; }
+.diffusion-scene-values caption { text-align: left; color: #aaa; padding-bottom: 10px; font-size: 10px; line-height: 1.8; }
+.diffusion-scene-values th, .diffusion-scene-values td { padding: 9px 8px; border-bottom: 1px solid #252525; font-weight: 400; white-space: nowrap; }
+.diffusion-scene-values th:first-child { text-align: left; }
+@media (max-width: 560px) {
+  .diffusion-scene-toolbar { padding: 10px 8px; gap: 5px; }
+  .diffusion-scene .diffusion-scene-toolbar button { padding: 7px; font-size: 10px; }
+  .diffusion-scene-viewport { height: 330px; }
+  .diffusion-scene-guide, .diffusion-scene-unit { font-size: 9px; }
+  .diffusion-scene-guide { bottom: 31px; }
+  .diffusion-scene-legend { padding-inline: 13px; gap: 10px 15px; }
+  .diffusion-scene .diffusion-scene-caption, .diffusion-scene-values { padding-inline: 13px; }
+}
