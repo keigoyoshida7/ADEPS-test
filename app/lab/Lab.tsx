@@ -208,7 +208,7 @@ function LabContent() {
     [dirty, setDirty] = useState(false),
     [capDirty, setCapDirty] = useState(false);
   const [selected, setSelected] = useState(0),
-    [freqIndex, setFreqIndex] = useState(35),
+    [freqIndex, setFreqIndex] = useState(0),
     [matrix, setMatrix] = useState('G'),
     [phase, setPhase] = useState(false);
   const [busy, setBusy] = useState(false),
@@ -241,6 +241,12 @@ function LabContent() {
         ...cfg,
         geometry_profile: nextProfile,
         ...(!reset && geometry ? { speaker_positions: geometry } : {}),
+      });
+      const frequencies = r.frequencies_hz as number[];
+      setFreqIndex(current => {
+        const target = play?.frequencies_hz[current] ?? 1000;
+        return frequencies.reduce((best, hz, i) =>
+          Math.abs(Math.log(hz / target)) < Math.abs(Math.log(frequencies[best] / target)) ? i : best, 0);
       });
       setPlay(r);
       setProfile(nextProfile);
@@ -350,7 +356,7 @@ function LabContent() {
         {
           export_schema: 'adeps-test-lab-run/1',
           exported_at: new Date().toISOString(),
-          app_version: '0.5.0',
+          app_version: '0.5.1',
           result,
         },
       );
@@ -419,7 +425,7 @@ function LabContent() {
             Max {status?.max_reply ? t('応答あり') : t('応答なし')}
           </div>
           <p>
-            RESEARCH PROTOTYPE · 0.5
+            RESEARCH PROTOTYPE · 0.5.1
             <br />
             2026.09.13 / RESEARCH USE
           </p>
@@ -735,7 +741,8 @@ function LabContent() {
                       <ResultHeader
                         title={t('目標からの誤差')}
                         sub={t(
-                          '80–8,000 Hz / 64周波数。複素振幅と位相を含むNRMSE。',
+                          '${min}–${max} Hz / ${count}周波数。複素振幅と位相を含むNRMSE。',
+                          [play.frequencies_hz[0].toLocaleString(), play.frequencies_hz.at(-1).toLocaleString(), play.frequencies_hz.length],
                         )}
                       >
                         <button onClick={exportCSV}>
@@ -743,6 +750,7 @@ function LabContent() {
                           CSV
                         </button>
                       </ResultHeader>
+                      <p className="neural-small">{t('各周波数で合成の伝達モデルを計算しています。線は計算点を結んだもので、連続帯域の測定や機材の再生可能帯域を示しません。')}</p>
                       <Plot frequency
                         x={play.frequencies_hz}
                         label={t('誤差が低いほど良好')}
@@ -778,6 +786,10 @@ function LabContent() {
                           },
                         ]}
                       />
+                      <div className="playback-provenance">
+                        <p>{t('このグラフは、仮想配置・直接音・一次反射から作った伝達行列を線形計算した結果です。学習データやニューラルモデルは使っていません。')}</p>
+                        <button onClick={() => setTab('paper')}><CircleHelp size={15} />{t('モデルのデータ出所・学習方法を見る')}</button>
+                      </div>
                       <ResultHeader
                         title={t('入力チャンネルごとの未使用点での誤差')}
                         sub={t(
@@ -891,7 +903,7 @@ function LabContent() {
                           <input
                             type="range"
                             min="0"
-                            max="63"
+                            max={play.frequencies_hz.length - 1}
                             value={freqIndex}
                             onChange={(e) => setFreqIndex(+e.target.value)}
                           />

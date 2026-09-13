@@ -673,5 +673,10 @@
   "旧小型モデルの拡散推論": "Legacy small-model diffusion",
   "独自学習モデル · 実験用": "Independent learned models · Experimental",
   "拡散・音場スタジオ": "Diffusion soundfield studio",
-  "音は試聴ボタンで再生します": "Audio plays on preview"
+  "音は試聴ボタンで再生します": "Audio plays on preview",
+  "${min}–${max} Hz / ${count}周波数。複素振幅と位相を含むNRMSE。": "${min}–${max} Hz / ${count} frequencies. NRMSE includes complex amplitude and phase.",
+  "各周波数で合成の伝達モデルを計算しています。線は計算点を結んだもので、連続帯域の測定や機材の再生可能帯域を示しません。": "The synthetic transfer model is computed at every frequency. Lines connect sampled calculations; they do not represent continuous-band measurements or hardware bandwidth.",
+  "このグラフは、仮想配置・直接音・一次反射から作った伝達行列を線形計算した結果です。学習データやニューラルモデルは使っていません。": "This graph uses a linear calculation on transfer matrices from virtual geometry, direct sound and first-order reflections. It uses no training data or neural model.",
+  "モデルのデータ出所・学習方法を見る": "View model data sources and training methods",
+  "1–20,000 Hzの256点（対数間隔）。列ノルム上限は単一入力時のモデル内の駆動エネルギー制約で、同時入力のピークや会場SPLを保証しない。": "256 logarithmically spaced points from 1 to 20,000 Hz. The column-norm cap bounds model drive energy for one input, not simultaneous-input peaks or venue SPL."
 }

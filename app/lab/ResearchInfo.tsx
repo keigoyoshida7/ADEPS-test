@@ -1,6 +1,7 @@
 'use client';
 import { useLanguage, useT } from './i18n';
 import { asset } from './assets';
+import ModelProvenance from './ModelProvenance';
 import { useState, type ReactNode } from 'react';
 import { ArrowRight, Copy, Download, ExternalLink } from 'lucide-react';
 const PAPER = 'https://arxiv.org/html/2608.24558v2';
@@ -501,6 +502,8 @@ export default function ResearchInfo({
             'ここからは本試作の設計です。音源表現と会場の物理応答を別々に扱う構成を採り、スピーカーから測定位置までの応答Hに対して、補正Gを計算します。これは従来の正則化した音圧マッチングであり、ADEPSの式(10)をスピーカーにそのまま適用する処理ではありません。',
           )}
         </p>
+        <p>{l('再生系の「目標からの誤差」の図は、学習済みニューラルモデルを使いません。距離・音速・一次反射から合成応答Hを作り、その都度、正則化した行列の問題を解きます。「調整点」はGを合わせる位置であり、ニューラルネットワークの学習データではありません。',
+          'The playback chart “Error from target” uses no trained neural network. It generates H from distance, sound speed and first-order reflections, then solves a regularized matrix problem for each run. Calibration points are positions used to fit G, not neural-network training data.')}</p>
         <div className="flow">
           <div>
             {t('入力 u')}
@@ -570,7 +573,7 @@ export default function ResearchInfo({
                 <td>{t('周波数とレベル制約')}</td>
                 <td>
                   {t(
-                    '80–8,000 Hzの64点。列ノルム上限は単一入力時のモデル内の駆動エネルギー制約で、同時入力のピークや会場SPLを保証しない。',
+                    '1–20,000 Hzの256点（対数間隔）。列ノルム上限は単一入力時のモデル内の駆動エネルギー制約で、同時入力のピークや会場SPLを保証しない。',
                   )}
                 </td>
               </tr>
@@ -932,7 +935,8 @@ export default function ResearchInfo({
           {t('アダプター接続条件 JSON')}
         </a>
       </Section>
-      <Section id="info-learned" n="08" title={l('独自学習モデル：何を変え、どう比較するか', 'Independent learned model: changes and evaluation')}>
+      <Section id="info-learned" n="08" title={l('学習データの出典と独自モデルの比較', 'Training-data provenance and independent models')}>
+        <ModelProvenance />
         <p>{l('新しいモデルは、論文と同じ課題である「マイク観測と既知の応答VからFOAを推定する」ための独自手法です。拡散の反復を増やす代わりに、教師あり残差ネットワークによる一度の予測を使います。論文を上回る性能は目標であり、現在の結果から達成したとは主張しません。',
           'The new model addresses the same task—estimating FOA from microphone observations and a known response V—using an independent method. It uses a single supervised residual-network prediction instead of repeated diffusion updates. Exceeding the paper’s performance is an objective, not an established result.')}
           <Cite at="S2.E2">{l('観測モデル', 'Observation model')}</Cite></p>
@@ -943,8 +947,6 @@ export default function ResearchInfo({
           'The network receives the linear estimate âₗᵢₙ = E p, resolution matrix R = E V, temporal covariance and powers of the 36 channels. It predicts 36 complex fifth-order spatial coefficients from 465 features. An optional update proportional to E(p − Vâ) is implemented, but separate tuning validation selected a prediction blend of 1 and an additional consistency coefficient of 0. The bundled configuration therefore omits that update. These settings were frozen before final testing.')}</p>
         <p>{l('学習の損失では、評価対象となる一次・4成分のFOAを重視します。参照FOAは学習と評価のために使い、推定器の入力には渡しません。マイクの位置だけから実機の応答Vを推測できるという前提も置きません。',
           'The training loss emphasizes the four first-order FOA components used for evaluation. Reference FOA is used for training and scoring, never as estimator input. Microphone coordinates alone are not assumed to determine a real device’s response V.')}</p>
-        <p>{l('今回の同梱モデルは隠れ層4層・幅512・1,063,496パラメータです。時間共分散やパワーは入力した区間の全フレームから計算するため、未来のフレームも利用するオフライン処理です。リアルタイムの因果モデルではありません。',
-          'The bundled model has four hidden layers of width 512 and 1,063,496 parameters. Temporal covariance and power use every frame of the supplied window, including future frames. This is offline, noncausal processing rather than a real-time causal model.')}</p>
         <div className="table-scroll"><table><thead><tr><th>{l('比較するもの', 'Comparison')}</th><th>{l('今回の扱い', 'Current treatment')}</th></tr></thead><tbody>
           <tr><td>{l('OFF：線形推定', 'OFF: linear encoding')}</td><td>{l('同じ観測p・応答V・正則化で計算した線形出力。ON / OFFを押すたびに入力を生成し直しません。', 'Linear output from the same p, V and regularization. Toggling ON / OFF never regenerates the input.')}</td></tr>
           <tr><td>{l('調整済みの線形法', 'Tuned linear encoding')}</td><td>{l('ベンチマークでは、別の検証セットで線形法の正則化を選んだ比較対象も追加。既定値の線形法に対する改善だけで判断しません。', 'The benchmark also includes a stronger linear baseline whose regularization was selected on separate validation data. Improvement over the default baseline alone is not the sole criterion.')}</td></tr>
@@ -953,10 +955,8 @@ export default function ResearchInfo({
           <tr><td>{l('論文のADEPS', 'ADEPS from the paper')}</td><td>{l('課題・観測モデル・線形ベースライン・評価の目的を参照。学習データ・ネットワーク・公式重みが一致していないため、公表スコアと本試作の数値を直接競わせません。', 'Referenced for the task, observation model, linear baseline and evaluation goals. Because the training data, network and official weights differ, published scores are not directly ranked against this prototype.')}</td></tr>
         </tbody></table></div>
         <h3>{l('学習・調整・最終評価を分ける', 'Separate training, tuning and final evaluation')}</h3>
-        <p>{l('学習データは、方向を持つ音場と位相遅延を含む合成データです。実際の音声コーパスや部屋の測定値ではありません。学習用、モデル選択用の検証、混合率などの調整用、最終テストで生成seedを分けます。使用した条件とseedは「学習モデル比較」の評価記録に保存します。最終結果を見てモデルを選び直す場合、そのテストは調整用となり、新しい最終テストが必要です。',
-          'Training uses synthetic directional fields with phase delays, not recorded speech corpora or measured rooms. Separate generator seeds are used for training, model-validation, inference tuning and final tests. Conditions and seeds are saved in the comparison’s evaluation record. If test results inform another model selection, that test becomes tuning data and a new final test is needed.')}</p>
-        <p>{l('今回の学習は3,072シーン（seed 10000〜13071）、モデル検証は64シーン（20000〜20063）。12,000ステップ学習し、モデル検証で選んだ10,400ステップ時点の重みを採用しました。別の36シーン（25000〜25035）で推論条件と線形比較対象を調整し、最終テストは90000以降、WAVテストは91000以降の別seedを使います。',
-          'This run trains on 3,072 scenes (seeds 10000–13071) and validates the model on 64 scenes (20000–20063). Training runs for 12,000 steps; model validation selected the checkpoint at step 10,400. A separate 36 scenes (25000–25035) tune inference settings and the linear baseline. Final tests use seeds starting at 90000 and WAV tests starting at 91000.')}</p>
+        <p>{l('上記の学習・モデル選択とは別に、36シーン（seed 25000〜25035）で残差モデルの推論条件と線形比較対象を調整し、最終テストは90000以降、WAVテストは91000以降のseedを使います。最終結果を見てモデルを選び直す場合、そのテストは調整用となり、新しい最終テストが必要です。',
+          'Separate from training and model selection above, 36 scenes (seeds 25000–25035) tune residual-model inference and the linear baseline. Final tests use seeds starting at 90000; WAV tests use seeds starting at 91000. If final results inform a new model selection, that test becomes tuning data and a new final test is needed.')}</p>
         <p>{l('改善した割合に加えて、悪化した条件、平均・中央値、信頼区間を確認します。NRMSEが改善してもcoherenceや聴感が悪化する場合があります。参照のない実録音では復元品質の数値を空欄にし、観測残差だけで成功とは判定しません。',
           'Inspect regressions, mean and median changes, confidence intervals and the fraction improved. Better NRMSE may coexist with poorer coherence or listening quality. For real recordings without a reference, reconstruction-quality fields remain unavailable; observation residual alone is not treated as success.')}</p>
         <h3>{l('Maxと実録音を使う検証', 'Testing with Max and recordings')}</h3>

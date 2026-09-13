@@ -1,5 +1,5 @@
 import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v314.0.6/full/pyodide.mjs";
-import { createAnalysisEngine } from "./analysis-core.mjs?v=0.5.0";
+import { createAnalysisEngine } from "./analysis-core.mjs?v=0.5.1";
 
 const request = createAnalysisEngine({
   loadPyodide,

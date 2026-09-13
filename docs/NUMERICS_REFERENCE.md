@@ -88,14 +88,30 @@ all other electronics are ideal. The same fault applies to that source's direct
 and reflected paths. The target keeps only the ideal direct paths, with no fault.
 
 The seed is accepted and recorded, but the current model is entirely
-deterministic and does not introduce stochastic noise. Sixty-four frequencies
-are logarithmically sampled from 80 to 8000 Hz. No source directivity, higher
+deterministic and does not introduce stochastic noise. From v0.5.1, 256 frequencies
+are logarithmically sampled from 1 to 20000 Hz. Each point is calculated from the
+transfer model; no old response is extrapolated or interpolated. No source directivity, higher
 reflections, diffuse scattering, air absorption, microphone response, measurement
 noise, jitter, nonlinearities, or speaker headroom is modeled.
 
-## Initial numeric result
+## Full-band numeric result (v0.5.1)
 
-The defaults above currently calculate:
+The default 1 Hz–20 kHz / 256-point grid calculates:
+
+| Evaluation points | Raw complex NRMSE | Corrected complex NRMSE | Improvement |
+|---|---:|---:|---:|
+| Nine fitted training points | −2.4868 dB | −23.8895 dB | +21.4028 dB |
+| Six unused points | −3.1574 dB | −3.3082 dB | +0.1509 dB |
+
+The aggregate is a ratio of summed complex energies at these log-spaced samples,
+not a continuous-frequency integral or a listening score. The grid change alters
+the aggregate; comparing it with the older numbers below is not evidence that the
+method improved. The model is analytical and uses no training data. No hardware
+response at 1 Hz or 20 kHz is established by this simulation.
+
+## Historical numeric result (80 Hz–8 kHz / 64 points)
+
+Before v0.5.1, the same physical parameters on the narrower grid calculated:
 
 | Evaluation points | Raw complex NRMSE | Corrected complex NRMSE | Improvement |
 |---|---:|---:|---:|
@@ -118,7 +134,7 @@ needed.
 
 ## UI field guide
 
-- `frequencies_hz`: common 64-sample x axis.
+- `frequencies_hz`: common 256-sample x axis from 1 Hz to 20 kHz.
 - `geometry`: room, sources, training positions, held-out positions, reference
   position. Use different visible markers for fit and evaluation locations.
 - `metrics.training` / `metrics.heldout`: overall raw/corrected NRMSE,

@@ -4,6 +4,7 @@ import { ArrowRight, CircleHelp, Download, FileAudio, LoaderCircle, Play, Square
 import { useLanguage } from './i18n';
 import { analysisApi, cancelAnalysis, isLocalEngine, onAnalysisProgress, type AnalysisProgress } from './scientificClient';
 import { asset } from './assets';
+import ModelProvenance from './ModelProvenance';
 import { Plot, fmt } from './Plots';
 import sharedErrors from './neural-errors.json';
 import './ModelLab.css';
@@ -172,6 +173,7 @@ export default function ModelLab() {
     <div className="note"><CircleHelp size={17}/><div>{l('独自学習・独自手法です。論文の公式ADEPSモデルとの直接比較は未実施です。ここで線形法に勝っても、論文を上回ったことにはなりません。改善・悪化・評価できない条件をすべて残します。',
       'This is an independently trained method. No direct evaluation against the authors’ ADEPS model has been performed. Beating linear encoding here does not establish an improvement over the paper. Improvements, regressions and unevaluable cases are retained.')}</div></div>
 
+    <details className="panel model-settings"><summary>{l('モデルの学習データと学習方法', 'Model training data and method')}</summary><ModelProvenance kind="spatial" /></details>
     <div className="model-workspace">
       <section className="panel model-settings">
         <div className="panel-head"><h2>{l('入力を選ぶ', 'Choose the input')}</h2><span>01 — INPUT</span></div>

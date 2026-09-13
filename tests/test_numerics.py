@@ -118,14 +118,32 @@ class MimoReferenceTests(unittest.TestCase):
         demo = run_demo()
         encoded = json.dumps(demo, allow_nan=False)
         self.assertEqual(encoded, json.dumps(run_demo(), allow_nan=False))
-        self.assertEqual(len(demo["frequencies_hz"]), 64)
+        self.assertEqual(len(demo["frequencies_hz"]), 256)
+        self.assertEqual(demo["frequencies_hz"][0], 1.)
+        self.assertEqual(demo["frequencies_hz"][-1], 20000.)
         self.assertEqual(len(demo["geometry"]["speakers_m"]), 12)
         train = np.array(demo["geometry"]["training_points_m"])
         held = np.array(demo["geometry"]["heldout_points_m"])
         self.assertGreater(np.linalg.norm(train[:, None] - held[None], axis=2).min(), 0.05)
         self.assertEqual(len(demo["regularization_tradeoff"]), 6)
         self.assertIsNone(to_jsonable(float("inf")))
-        self.assertEqual(len(demo["heatmaps"]["G"]["magnitude_db"]), 64)
+        self.assertEqual(len(demo["heatmaps"]["G"]["magnitude_db"]), 256)
+
+    def test_full_band_samples_follow_known_gain_delay_not_extrapolated_edges(self):
+        # With one speaker and no reflections, every observation differs from
+        # its target only by a known scalar electronics response.
+        result = run_demo(speaker_positions=[[1.5, 2., 3.6]], reflection=0.,
+                          fault_gain_db=-6., fault_delay_ms=3.)
+        f = np.array(result['frequencies_hz'])
+        electronics = 10**(-6/20) * np.exp(-2j*np.pi*f*.003)
+        expected_error = 20*np.log10(abs(electronics-1))
+        self.assertEqual((f[0], f[-1], len(f)), (1., 20000., 256))
+        self.assertTrue(np.all(np.diff(f) > 0))
+        self.assertTrue(np.any(f < 80) and np.any(f > 8000))
+        for split in ('training', 'heldout'):
+            metric = result['metrics'][split]
+            np.testing.assert_allclose(metric['raw_error_db_by_frequency'], expected_error, atol=1e-11)
+            self.assertTrue(np.isfinite(metric['corrected_error_db_by_frequency']).all())
 
 
 if __name__ == "__main__":

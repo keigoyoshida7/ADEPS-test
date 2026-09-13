@@ -1841,3 +1841,7 @@ html[lang='en'] .metric p {
 @media (max-width: 700px) { .neural-flow { grid-template-columns: 1fr 1fr; } .neural-settings, .neural-results, .neural-trace, .neural-field-guide { padding: 17px; } .neural-comparison strong { font-size: 29px; } }
 
 .plot-coverage { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 8px 0 18px; color: #a5a5a5; font-size: 11px; line-height: 1.8; }
+
+.playback-provenance { margin: 18px 0 30px; padding: 16px 0; border-block: 1px solid #303030; }
+.playback-provenance p { color: #aaa; font-size: 13px; line-height: 1.85; }
+.playback-provenance button { font-size: 12px; }

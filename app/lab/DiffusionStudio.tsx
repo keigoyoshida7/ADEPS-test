@@ -3,6 +3,7 @@ import { Download, LoaderCircle, Play, Shuffle, Square, Trash2 } from 'lucide-re
 import { useLanguage } from './i18n';
 import { analysisApi, cancelAnalysis, isLocalEngine, onAnalysisProgress, type AnalysisProgress } from './scientificClient';
 import DiffusionScene from './DiffusionScene';
+import ModelProvenance from './ModelProvenance';
 import { Plot, fmt } from './Plots';
 import './DiffusionStudio.css';
 
@@ -106,6 +107,7 @@ export default function DiffusionStudio({ active = true }: { active?: boolean })
       <p>{l('仮想マイクが拾った同じ音から、初期ノイズと観測への拘束を変えて復元。途中の推定を聴き、Ambisonicsの形を見比べます。', 'Reconstruct the same virtual microphone observation with different initial noise and observation guidance. Listen to intermediate estimates and compare their Ambisonics shapes.')}</p>
       <p className="ds-caption">{l('独自学習の小型拡散モデルによる実験です。論文と同等の精度は未検証で、学習モデル比較タブのMLPとは別モデルです。', 'An experiment with an independently trained small diffusion model. Paper-level accuracy is unverified. This is a separate model from the MLP in Learned Model A/B.')}</p>
     </div>
+    <details className="panel ds-settings"><summary>{l('モデルの学習データと学習方法', 'Model training data and method')}</summary><ModelProvenance kind="diffusion" /></details>
     <div className="ds-workspace">
       <form className="ds-settings panel" onSubmit={event => { event.preventDefault(); void reconstruct(); }}>
         <fieldset disabled={busy}>

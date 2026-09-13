@@ -31,6 +31,9 @@ import numpy as np
 
 SPEED_OF_SOUND = 343.0
 DB_FLOOR = -300.0
+PLAYBACK_FREQUENCY_MIN_HZ = 1.0
+PLAYBACK_FREQUENCY_MAX_HZ = 20000.0
+PLAYBACK_FREQUENCY_COUNT = 256
 
 
 def _finite_array(value: Any, name: str, ndim: int, *, complex_ok: bool = False) -> np.ndarray:
@@ -336,11 +339,12 @@ def run_demo(
     for API stability; this version introduces no random perturbations or noise.
     Custom speaker/training positions are accepted; held-out positions stay fixed
     and are never fitted. Overlapping custom training and held-out points reject.
-    All curves use 64 LOG-SPACED frequencies, not a broadband time-domain score.
+    All curves use 256 LOG-SPACED frequencies from 1 Hz to 20 kHz, not a
+    broadband time-domain score or evidence of hardware bandwidth.
     Only speaker 1 has the supplied electronics fault; all others are normal.
     """
     room = np.array([12.0, 9.0, 4.0])
-    freqs = np.geomspace(80.0, 8000.0, 64)
+    freqs = np.geomspace(PLAYBACK_FREQUENCY_MIN_HZ, PLAYBACK_FREQUENCY_MAX_HZ, PLAYBACK_FREQUENCY_COUNT)
     speakers = np.array([[x, y, 3.6] for x in (1.5, 4.5, 7.5, 10.5) for y in (2.0, 4.5, 7.0)]) if speaker_positions is None else _positions(speaker_positions, "speaker_positions")
     training = np.array([[x, y, 1.2] for x in (2.4, 6.0, 9.6) for y in (2.0, 4.5, 7.0)]) if microphone_positions is None else _positions(microphone_positions, "microphone_positions")
     heldout = np.array([[x, y, z] for y, z in ((3.2, 1.2), (5.8, 1.5)) for x in (3.1, 6.1, 9.1)])
@@ -395,7 +399,7 @@ def run_demo(
         "experiment_kind": "synthetic_playback_pressure_matching_not_ADEPS",
         "provenance": {"geometry": geometry_source, "geometry_profile": geometry_profile, "speaker_positions_override_supplied": speaker_positions is not None, "speaker_positions_edited": not np.array_equal(speakers, reference_speakers), "source_file_sha256": source_sha256, "as_built_verified": False, "room": "Assumed synthetic enclosure, not measured dimensions", "measurement_points": "SYNTHETIC positions", "speaker_processing": "Project EQ/delay/routing NOT modeled; only explicit synthetic faults", "transfer": "SIMULATED, NOT measured", "seed": int(seed), "randomness": "none"},
         "model_limits": ["Not an ADEPS reproduction or microphone-array neural reconstruction", "Direct path plus six first-order image sources only", "No speaker directivity, higher reflections, diffuse noise, latency jitter or hardware saturation", "Independent frequency solutions; causal filter design is not implemented", "Held-out scores cover only the specified simulated points", "Column norm cap is not an SPL or simultaneous-input peak limiter"],
-        "configuration": {"geometry_profile": geometry_profile, "lambda_relative": lambda_relative, "reflection_pressure_amplitude": reflection, "fault_gain_db": fault_gain_db, "fault_delay_ms": fault_delay_ms, "fault_speaker_index": 0, "max_column_norm": max_column_norm, "speed_of_sound_m_s": SPEED_OF_SOUND, "frequency_sampling": "64 logarithmically spaced samples; aggregate score is ratio of summed sampled complex energies", "db_display_floor": DB_FLOOR},
+        "configuration": {"geometry_profile": geometry_profile, "lambda_relative": lambda_relative, "reflection_pressure_amplitude": reflection, "fault_gain_db": fault_gain_db, "fault_delay_ms": fault_delay_ms, "fault_speaker_index": 0, "max_column_norm": max_column_norm, "speed_of_sound_m_s": SPEED_OF_SOUND, "frequency_sampling": "256 logarithmically spaced samples from 1 Hz to 20 kHz; aggregate score is ratio of summed sampled complex energies, not a continuous-band integral", "frequency_min_hz": PLAYBACK_FREQUENCY_MIN_HZ, "frequency_max_hz": PLAYBACK_FREQUENCY_MAX_HZ, "frequency_count": PLAYBACK_FREQUENCY_COUNT, "db_display_floor": DB_FLOOR},
         "geometry": {"profile": geometry_profile, "speaker_names": speaker_names, "room_origin_m": origin, "room_dimensions_m": room, "speakers_m": speakers, "training_points_m": training, "heldout_points_m": heldout, "reference_point_m": reference_point, "units": "metres", "coordinate_axes": "x=width, y=depth, z=height"},
         "frequencies_hz": freqs,
         "metrics": {"training": train_metrics, "heldout": held_metrics},
