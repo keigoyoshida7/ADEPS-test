@@ -32,6 +32,48 @@
 
 平面リングでは上下を分ける観測情報が不足します。拡散priorがZ成分や上下方向に形を作っても、その情報をマイクが測定できたことを意味しません。参照との誤差と、周波数ごとのFOA rankも確認します。
 
+### ノイズスケジュールの図（v0.5.3）
+
+「ノイズスケジュール」で、横軸を完了したEuler更新の数（0〜M）、縦軸をノイズ尺度σとして表示します。予定の点は実装と同じ式から生成し、復元後に「復元Nの記録」を選ぶと、実行ログの `sigma` / `next_sigma` から直接表示します。現在の設定と保存結果は区別します。
+
+```text
+σ_i = [σ_max^(1/ρ) + i/(M−1) × (σ_min^(1/ρ) − σ_max^(1/ρ))]^ρ
+       i = 0,…,M−1
+σ_M = 0   （本実装で明示した最終更新先）
+```
+
+式は[ADEPSの式(11)](https://arxiv.org/html/2608.24558v3#S3.SS2)と、その参考文献[19]の[EDM](https://arxiv.org/abs/2206.00364)を参照しています。現在は推論開始σ=20、最後の正σ=0.002、ρ=10を固定し、UIの推論ステップ数M（8〜80）に合わせて離散点が変わります。M個の正のノイズ水準＋終端0で、更新はM回です。学習で使ったσ分布は別で、[学習記録](MODEL_TRAINING.md)に記載しています。
+
+縦軸は対数／通常目盛を切り替えられます。対数ではσ=0を軸上の小さな正値に置き換えず、終端として別に表示します。点を選ぶとσ、次のσ、差分を確認でき、全点のCSVを書き出せます。保存済みの復元段階に対応する点だけ「この時点の復元を見る」から3D音場と試聴対象を選択できます。保存していない中間点の音は作りません。
+
+σは正規化・圧縮した係数領域のノイズ尺度です。録音時間（秒）、マイク観測のSNR、再生音に実際に残るノイズ量、推定精度そのものではありません。図が0へ到達しても完全な復元を意味しません。
+
+**English.** The **Noise schedule** view plots completed Euler updates (0…M) against the scheduled noise scale σ. **Current settings** calculates the planned points using the same formula; **Run N record** reads the actual `sigma`/`next_sigma` execution trace. Inference fixes σmax=20, σmin=0.002 and ρ=10, while M follows the existing 8–80-step control. M positive levels plus an explicit terminal zero give M Euler updates. Training-noise sampling is separate.
+
+Switch between logarithmic and linear sigma axes. Zero is shown separately from the logarithmic axis, never clamped to a positive value. Inspect a point and export all schedule rows to CSV. Only steps with stored reconstructions offer **View this reconstruction**, selecting the corresponding existing 3D and audio output. Sigma is a normalized compressed-coefficient noise scale, not playback seconds, microphone SNR, measured residual audio noise or a reconstruction-accuracy score.
+
+### 学習済みノイズ除去器の精度を確認する（v0.5.3）
+
+画面下部の「学習済みノイズ除去器の検証」は、同梱の `tiny-spatial-v1` の重みを固定して行った**1回のノイズ除去の評価**です。推論の反復回数、最終FOAの誤差、部屋の測定精度とは異なります。ノイズスケジュールが下がるだけでは、精度の改善を確認したことにはなりません。
+
+- **正解データ**：学習と同じ生成方法から、別のseed（17319）で生成した2,048個の5次・36複素係数ベクトル。学習48,000個のseed 7319、元の検証2,048個のseed 7320とは別です。実録音や別の部屋を分けた検証ではありません。
+- **入力**：圧縮した正解 `H(a)` の実部・虚部へ、それぞれ標準偏差σの正規ノイズを加えます。ノイズseedは17320。全σ・全手法で同じ正解と標準ノイズを使います。
+- **比較**：未処理の入力、`σdata²/(σdata²+σ²)` 倍する単純ガウス縮小、学習済みモデルの3種類。縮小法のσdataは学習済みカードの固定値を使い、検証データに合わせて調整しません。正解は入力の生成と採点に使い、除去器へ追加情報として渡しません。
+- **条件**：σ = 0.002, 0.01, 0.03, 0.1, 0.3, 1, 3, 10, 20, 80。80は学習ノイズの範囲内ですが、現在のスタジオの推論範囲（σ≤20）外です。周波数Hzの比較ではありません。
+- **指標**：NRMSEは全2,048×36複素係数をまとめた `20 log10(‖推定−正解‖₂/‖正解‖₂)` で、小さいほど良好です。MSEは実部・虚部を別の座標として、誤差の二乗和を `2×2,048×36` で割ります。いずれも圧縮した係数領域の値です。
+
+グラフ・σ選択・全条件の表・JSONで確認できます。差の符号は **単純縮小のNRMSE − 学習済みのNRMSE** なので、正が改善、負が悪化です。重みのSHA-256が現在のモデルカードと一致しない記録は、現在の精度として表示しません。seed、評価コード、生成・学習コード、推論コードとそのハッシュも保存します。
+
+**今回の結果**：未処理から改善したのは10条件中7条件ですが、単純ガウス縮小からの改善は3条件です。最大でもσ=1で約 **0.033 dB**、残り7条件は悪化しました。単純縮小との差は全条件で0.1 dB未満です。これを大きな学習効果や論文同等の性能とは解釈できません。σごとの結果は同じベクトルとノイズを使うため、独立した10回の試験でもありません。
+
+この更新では重みの再学習や最適化は行っていません。独立した合成ベクトルへの評価であり、声・音楽・残響・時間方向の連続性・実マイクの応答V・会場録音は未評価です。実際の逆推定では観測から正規化するため、この学習領域の評価と分布が一致する保証もありません。[評価JSON](../public/models/tiny-denoiser-evaluation.json)と[評価コード](../scripts/evaluate_tiny_denoiser.py)を参照してください。
+
+**English.** The **Trained denoiser validation** panel evaluates one direct call to the frozen `tiny-spatial-v1` denoiser on 2,048 newly generated fifth-order coefficient vectors. Generator seed 17319 and noise seed 17320 are separate from the original training/validation seeds. Data come from the same procedural family as training, not held-out rooms or recordings. Independent Gaussian noise is added to each real and imaginary coordinate of `H(a)`; the same clean targets and standard noise are reused at ten sigma values from 0.002 to 80.
+
+Compare unchanged noisy input, Gaussian shrinkage using the model card's fixed σdata, and the learned denoiser. Aggregate complex NRMSE in dB and MSE per real coordinate are reported in the compressed domain. Positive **shrinkage NRMSE minus learned NRMSE** means improvement. The UI verifies the weight hash against the bundled model card and exposes all conditions, seeds, code hashes and the downloadable record. Sigma 80 lies outside the studio's usual inference range.
+
+The trained denoiser improved over noisy input at 7/10 tested levels, but over simple shrinkage at only 3/10. Its largest gain over shrinkage was approximately 0.033 dB at σ=1; it regressed at the other seven levels. All differences were below 0.1 dB. This update evaluates existing weights without retraining and does not establish paper-level performance, final inverse-problem accuracy, temporal consistency, or improvement on speech, music, microphones or real rooms.
+
 ### 反復番号と途中の音
 
 反復中の保存対象は、Euler更新前にモデルが予測したノイズ除去後の係数 `D(xᵢ, σᵢ)` です。圧縮を戻し、FOAの4成分を取り出して試聴と表示に使います。反復番号は音源の再生時刻ではありません。
@@ -73,6 +115,12 @@ rms_B(d) = sqrt(max(0, y(d) R_B y(d)ᵀ))
 保存された共分散には、その試行の書き出しゲインの二乗が適用されています。**3D表示では、そのゲインの二乗で割って元の係数レベルへ戻します。** 「同じ入力の全ステップ・候補で表示スケールを共通化」がONなら、同じ入力ハッシュの履歴を共通の尺度で表示するため、試行ごとの書き出し減衰が図の比較に混ざりません。OFFでは表示ごとに尺度が変わり、図の大きさで試行間の振幅差を判断できません。
 
 ### 音の比較とMax
+
+**「復元過程を続けて聴く」（v0.5.3）** は、復元後に「過程を再生」を押すと、保存済み中間点から最終出力へ順に進みます。同じ短い音を各段階で1・2・4回（既定2回）繰り返すため、推定による音の変化を聴き比べられます。選択中の段階・指標・3D表示が再生位置に追従します。再生開始時に音場表示へ移りますが、途中でノイズスケジュールへ切り替えると、実行ログ上の対応する保存点でも進行を確認できます。
+
+全段階に共通のゲインを適用し、各短音の両端だけ約5 msフェードします。段階同士を重ねたり、各段階を別々に音量正規化したりしません。「停止」、個別試聴、段階の手動選択、再計算、別の履歴やタブへの移動で連続試聴を停止します。自動再生はありません。**保存した推定の順次試聴であり、現場の音へリアルタイムに適応したり、その場で学習したりする機能ではありません。** σの進行は音声内の時間とは異なります。初期の推定が弱い音、ノイズ、音色の変化として聞こえても、改善は参照誤差と別に判断します。
+
+**English.** After a reconstruction, **Play the process** sequences stored intermediate estimates through the final output. Repeat each short clip once, twice (default), or four times. The stage selector, metrics and 3D display follow audio playback; switching to the saved noise-schedule view shows the corresponding stored step. Every clip uses the same gain and approximately 5 ms edge fades, without overlapping different reconstructions or individually normalizing them. Stop, manual audition/stage selection, recomputing, changing runs, or leaving the tab cancels the sequence. Playback requires an explicit click. This auditions saved estimates, not live acoustic adaptation or online learning; diffusion sigma is not audio time.
 
 - ブラウザのステレオ試聴は、FOAから作った正面左右45°の**仮想カーディオイド**です。HRTFを使うバイノーラルではありません。上下・前後の知覚を検証する用途には使いません。
 - 線形、参照、保存した中間点、最終出力には、同じ試行で共通の書き出しゲインを使います。さらにブラウザで試聴対象を切り替える際、同じ入力ハッシュの履歴内で最小の書き出しゲインに揃えるよう、プレーヤー音量を調整します。手動でプレーヤー音量を変えると、この比較条件も変わります。

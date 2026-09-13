@@ -22,6 +22,7 @@ export function Plot({
   log = true,
   xLabel,
   frequency = false,
+  xFormatter,
 }: {
   x: number[];
   series: Series[];
@@ -30,6 +31,7 @@ export function Plot({
   log?: boolean;
   xLabel?: string;
   frequency?: boolean;
+  xFormatter?: (value: number) => string;
 }) {
   const t = useT();
 
@@ -132,7 +134,7 @@ export function Plot({
         {ticks.map(value => <g key={value}>
           {frequency && <line x1={xPosition(value)} x2={xPosition(value)} y1={T} y2={H-B} stroke="#242424" />}
           <text x={xPosition(value)} y={H - 9} textAnchor="middle">
-            {frequency ? frequencyLabel(value) : value >= 1000 ? `${fmt(value / 1000, 1)}k` : fmt(value, 0)}
+            {xFormatter ? xFormatter(value) : frequency ? frequencyLabel(value) : value >= 1000 ? `${fmt(value / 1000, 1)}k` : fmt(value, 0)}
           </text>
         </g>)}
         {series.map((s) => (
@@ -168,7 +170,7 @@ export function Plot({
         {activeIndex != null ? (
           <>
             <strong>
-              {fmt(x[activeIndex], frequency ? 2 : 0)} {xLabel || (logarithmic ? 'Hz' : '')}
+              {xFormatter ? xFormatter(x[activeIndex]) : fmt(x[activeIndex], frequency ? 2 : 0)} {xLabel || (logarithmic ? 'Hz' : '')}
             </strong>
             {series.map((s) => (
               <span key={s.name} style={{ color: s.color }}>

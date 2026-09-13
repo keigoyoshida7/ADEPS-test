@@ -1,0 +1,26 @@
+.noise-schedule { min-width: 0; border: 1px solid #363636; background: #080808; color: #ddd; font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", serif; }
+.nsv-heading { padding: 19px 22px 15px; }.nsv-heading > span { font-size: 9px; letter-spacing: .16em; color: #888; }
+.noise-schedule .nsv-heading h3 { font-size: 19px; font-weight: 400; margin: 7px 0 10px; line-height: 1.7; }
+.noise-schedule p { font-size: 11px; line-height: 1.9; color: #aaa; max-width: none; }.noise-schedule .nsv-source { color: #ddd; margin-bottom: 8px; }
+.nsv-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 18px; border-block: 1px solid #303030; }
+.nsv-toolbar fieldset { padding: 0; margin: 0; border: 0; display: flex; gap: 4px; }.nsv-toolbar > span { font-size: 10px; color: #aaa; }
+.noise-schedule button, .nsv-toolbar a { font: inherit; font-size: 11px; line-height: 1.6; padding: 7px 12px; border: 1px solid #404040; border-radius: 0; color: #ccc; background: transparent; cursor: pointer; text-decoration: none; }
+.noise-schedule button:hover, .noise-schedule button[aria-pressed="true"], .nsv-toolbar a:hover { border-color: #bbb; color: #fff; background: #191919; }
+.noise-schedule button:focus-visible, .noise-schedule a:focus-visible, .noise-schedule summary:focus-visible, .noise-schedule input:focus-visible { outline: 2px solid #eee; outline-offset: 3px; }
+.nsv-plot { overflow-x: auto; padding-top: 12px; }.nsv-plot svg { display: block; width: 100%; min-width: 560px; height: auto; touch-action: pan-y; }
+.nsv-plot text { font-family: inherit; font-size: 12px; fill: #999; }.nsv-plot .nsv-axis-name { fill: #bbb; }.nsv-grid { stroke: #292929; stroke-width: 1; }
+.nsv-curve { fill: none; stroke: #e5e5e5; stroke-width: 1.5; }.nsv-point { fill: #ddd; }.nsv-saved { fill: #080808; stroke: #fff; stroke-width: 1.5; }.nsv-active { fill: none; stroke: #ddd; stroke-width: 1; }
+.nsv-inspect-line { stroke: #777; stroke-width: 1; stroke-dasharray: 3 4; }.nsv-zero-gutter { fill: #141414; stroke: #333; stroke-dasharray: 3 4; }
+.nsv-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 4px 22px 16px; font-size: 10px; color: #aaa; }
+.nsv-inspector { padding: 17px 22px; border-top: 1px solid #303030; }.nsv-inspector label { display: flex; justify-content: space-between; color: #bbb; font-size: 11px; }
+.nsv-inspector strong { color: #eee; font-weight: 400; }.nsv-inspector input { display: block; width: 100%; margin: 15px 0 19px; accent-color: #ddd; cursor: pointer; }
+.nsv-readout { display: flex; flex-wrap: wrap; gap: 9px 22px; font-size: 11px; line-height: 1.8; color: #999; font-variant-numeric: tabular-nums; }.nsv-readout strong { margin-left: 7px; }
+.noise-schedule .nsv-open { margin-top: 14px; }.noise-schedule .nsv-inspect-note { margin: 12px 0 0; color: #888; font-size: 10px; }
+.nsv-details { border-top: 1px solid #303030; padding: 15px 22px; }.nsv-details summary { color: #bbb; cursor: pointer; font-size: 11px; line-height: 1.8; }
+.nsv-table-wrap { overflow: auto; max-height: 330px; margin-top: 16px; }.nsv-details table { width: 100%; border-collapse: collapse; text-align: right; font-size: 11px; font-variant-numeric: tabular-nums; }
+.nsv-details caption { text-align: left; font-size: 10px; color: #888; padding-bottom: 12px; line-height: 1.8; }.nsv-details th, .nsv-details td { white-space: nowrap; padding: 9px 8px; border-bottom: 1px solid #272727; font-weight: 400; }
+.nsv-details th:first-child { text-align: left; }.nsv-details tr[data-inspected="true"] { background: #1b1b1b; color: #fff; }.nsv-method p { margin: 14px 0 0; }
+.nsv-method code { display: block; margin-top: 16px; padding: 14px; background: #141414; border: 1px solid #303030; font-family: inherit; font-size: 12px; line-height: 2; overflow-wrap: anywhere; }
+.nsv-method a { color: #ddd; text-decoration: underline; text-underline-offset: 3px; }.noise-schedule .nsv-parameters { color: #ccc; font-variant-numeric: tabular-nums; }
+.noise-schedule .nsv-empty { padding: 22px; margin: 0; }
+@media (max-width: 560px) { .nsv-heading, .nsv-toolbar, .nsv-inspector, .nsv-details { padding-inline: 14px; }.nsv-legend { padding-inline: 14px; }.nsv-readout { gap: 8px 14px; } }

@@ -358,7 +358,7 @@ function LabContent() {
         {
           export_schema: 'adeps-test-lab-run/1',
           exported_at: new Date().toISOString(),
-          app_version: '0.5.2',
+          app_version: '0.5.3',
           result,
         },
       );
@@ -427,7 +427,7 @@ function LabContent() {
             Max {status?.max_reply ? t('応答あり') : t('応答なし')}
           </div>
           <p>
-            RESEARCH PROTOTYPE · 0.5.2
+            RESEARCH PROTOTYPE · 0.5.3
             <br />
             2026.09.13 / RESEARCH USE
           </p>

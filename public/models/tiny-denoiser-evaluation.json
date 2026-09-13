@@ -1,0 +1,324 @@
+{
+  "schema": "adeps-test-tiny-denoiser-evaluation/1",
+  "generated_at_utc": "2026-09-13T08:21:19.224767+00:00",
+  "evaluation_kind": "Frozen-model denoising of held-out procedural coefficients; not array reconstruction or real audio",
+  "model": {
+    "id": "tiny-spatial-v1",
+    "parameter_count": 24072,
+    "weights_sha256": "a5c7e36437b4ed932ff5bbf04a56ab96b3e12954b49c2bb699035370608e48cb",
+    "weights_checksum_verified": true,
+    "sigma_data": 2.218841552734375,
+    "training_seed": 7319,
+    "training_steps": 4000,
+    "official_model": false
+  },
+  "dataset": {
+    "vectors": 2048,
+    "complex_channels": 36,
+    "real_coordinates_per_vector": 72,
+    "generator_seed": 17319,
+    "noise_seed": 17320,
+    "training_seed": 7319,
+    "validation_seed": 7320,
+    "training_validation_noise_seed": 7321,
+    "same_noise_across_sigma": true,
+    "generation_family": "Same procedural family as tiny-prior training: 1–2 plane waves plus 3 weak rays; random directions, complex phases and gains. New independent seed; not held-out recording environments.",
+    "normalization": "clean = H(a), H uses alpha=.67 and beta=3. Real ACN/N3D, order5, 36 complex coefficients. No per-vector RMS fitting, no target-derived normalization at evaluation.",
+    "noise_definition": "One frozen epsilon with independent N(0,1) real and imaginary coordinates. Input=clean+sigma*epsilon. Sigma is in compressed coefficient units; it is not microphone SNR, acoustic noise level or SPL.",
+    "epsilon_real_coordinate_mse": 0.9926784352277254,
+    "clean_real_coordinate_mean_square": 5.029852864413589,
+    "clean_sha256": "8186ec47cd0d504c935a9efad94203f13385e7b6fd7d66a36a8937eea5f43e0f",
+    "epsilon_sha256": "bb9bf4036cb61b9ffc6430f8f208676b80aee16f012be43611a16a7f8e0ff1d3"
+  },
+  "protocol": {
+    "sigma_values": [
+      0.002,
+      0.01,
+      0.03,
+      0.1,
+      0.3,
+      1.0,
+      3.0,
+      10.0,
+      20.0,
+      80.0
+    ],
+    "inference_sigma_range": [
+      0.002,
+      20.0
+    ],
+    "training_sigma_range": [
+      0.002,
+      80.0
+    ],
+    "db_floor": -300.0,
+    "shrink_definition": "c_skip*x, c_skip=sigma_data^2/(sigma^2+sigma_data^2); sigma_data comes only from the training model card. This is the isotropic zero-mean Gaussian-prior baseline, with no fitted test-data statistics.",
+    "metric_definitions": {
+      "nrmse_db": "20 log10(||estimate-clean||_2/||clean||_2), aggregated over all 36 complex channels and all vectors. Exact zero error displays at -300 dB; zero-energy references yield null.",
+      "real_coordinate_mse": "sum(real(error)^2+imag(error)^2)/(2*vectors*36). No averaging in decibels.",
+      "learned_improvement_db": "Baseline aggregate NRMSE minus learned aggregate NRMSE; positive means learned has lower error.",
+      "learned_win_fraction_vs_shrink": "Fraction of vectors whose summed squared complex error is strictly below shrink error. Ties use exact floating-point equality. This is not a general accuracy percentage."
+    }
+  },
+  "cases": [
+    {
+      "sigma": 0.002,
+      "within_inference_range": true,
+      "shrink_coefficient": 0.9999991875305168,
+      "noisy": {
+        "nrmse_db": -61.026867022855605,
+        "real_coordinate_mse": 3.970713740910901e-06
+      },
+      "shrink": {
+        "nrmse_db": -61.026824912394126,
+        "real_coordinate_mse": 3.970752242297787e-06
+      },
+      "learned": {
+        "nrmse_db": -61.02135408618442,
+        "real_coordinate_mse": 3.975757367749866e-06
+      },
+      "learned_improvement_over_noisy_db": -0.005512936671188129,
+      "learned_improvement_over_shrink_db": -0.005470826209709401,
+      "learned_win_fraction_vs_shrink": 0.45263671875,
+      "learned_wins_vs_shrink": 927,
+      "learned_ties_vs_shrink": 0,
+      "learned_losses_vs_shrink": 1121
+    },
+    {
+      "sigma": 0.01,
+      "within_inference_range": true,
+      "shrink_coefficient": 0.9999796886589747,
+      "noisy": {
+        "nrmse_db": -47.04746693613523,
+        "real_coordinate_mse": 9.926784352277253e-05
+      },
+      "shrink": {
+        "nrmse_db": -47.04732490289069,
+        "real_coordinate_mse": 9.927109006746478e-05
+      },
+      "learned": {
+        "nrmse_db": -47.04265942415964,
+        "real_coordinate_mse": 9.937779094426595e-05
+      },
+      "learned_improvement_over_noisy_db": -0.004807511975592149,
+      "learned_improvement_over_shrink_db": -0.004665478731055828,
+      "learned_win_fraction_vs_shrink": 0.45361328125,
+      "learned_wins_vs_shrink": 929,
+      "learned_ties_vs_shrink": 0,
+      "learned_losses_vs_shrink": 1119
+    },
+    {
+      "sigma": 0.03,
+      "within_inference_range": true,
+      "shrink_coefficient": 0.9998172276295869,
+      "noisy": {
+        "nrmse_db": -37.505041841741985,
+        "real_coordinate_mse": 0.0008934105917049527
+      },
+      "shrink": {
+        "nrmse_db": -37.505129655435276,
+        "real_coordinate_mse": 0.0008933925272593302
+      },
+      "learned": {
+        "nrmse_db": -37.501510110563906,
+        "real_coordinate_mse": 0.0008941374186571308
+      },
+      "learned_improvement_over_noisy_db": -0.003531731178078701,
+      "learned_improvement_over_shrink_db": -0.0036195448713698397,
+      "learned_win_fraction_vs_shrink": 0.47021484375,
+      "learned_wins_vs_shrink": 963,
+      "learned_ties_vs_shrink": 0,
+      "learned_losses_vs_shrink": 1085
+    },
+    {
+      "sigma": 0.1,
+      "within_inference_range": true,
+      "shrink_coefficient": 0.9979729419519205,
+      "noisy": {
+        "nrmse_db": -27.04746693613523,
+        "real_coordinate_mse": 0.009926784352277255
+      },
+      "shrink": {
+        "nrmse_db": -27.05375086896522,
+        "real_coordinate_mse": 0.009912431386427356
+      },
+      "learned": {
+        "nrmse_db": -27.05255676679377,
+        "real_coordinate_mse": 0.009915157205822945
+      },
+      "learned_improvement_over_noisy_db": 0.005089830658540961,
+      "learned_improvement_over_shrink_db": -0.0011941021714498845,
+      "learned_win_fraction_vs_shrink": 0.50927734375,
+      "learned_wins_vs_shrink": 1043,
+      "learned_ties_vs_shrink": 0,
+      "learned_losses_vs_shrink": 1005
+    },
+    {
+      "sigma": 0.3,
+      "within_inference_range": true,
+      "shrink_coefficient": 0.9820476019902292,
+      "noisy": {
+        "nrmse_db": -17.505041841741985,
+        "real_coordinate_mse": 0.08934105917049527
+      },
+      "shrink": {
+        "nrmse_db": -17.57474233954764,
+        "real_coordinate_mse": 0.08791865734327586
+      },
+      "learned": {
+        "nrmse_db": -17.582462096470085,
+        "real_coordinate_mse": 0.08776251725134113
+      },
+      "learned_improvement_over_noisy_db": 0.07742025472809999,
+      "learned_improvement_over_shrink_db": 0.007719756922444532,
+      "learned_win_fraction_vs_shrink": 0.6162109375,
+      "learned_wins_vs_shrink": 1262,
+      "learned_ties_vs_shrink": 0,
+      "learned_losses_vs_shrink": 786
+    },
+    {
+      "sigma": 1.0,
+      "within_inference_range": true,
+      "shrink_coefficient": 0.8311739877507086,
+      "noisy": {
+        "nrmse_db": -7.0474669361352325,
+        "real_coordinate_mse": 0.9926784352277254
+      },
+      "shrink": {
+        "nrmse_db": -7.810409619489194,
+        "real_coordinate_mse": 0.8327493820857484
+      },
+      "learned": {
+        "nrmse_db": -7.843240360407011,
+        "real_coordinate_mse": 0.8264778999606915
+      },
+      "learned_improvement_over_noisy_db": 0.7957734242717782,
+      "learned_improvement_over_shrink_db": 0.03283074091781657,
+      "learned_win_fraction_vs_shrink": 0.7001953125,
+      "learned_wins_vs_shrink": 1434,
+      "learned_ties_vs_shrink": 0,
+      "learned_losses_vs_shrink": 614
+    },
+    {
+      "sigma": 3.0,
+      "within_inference_range": true,
+      "shrink_coefficient": 0.353599559390573,
+      "noisy": {
+        "nrmse_db": 2.494958158258015,
+        "real_coordinate_mse": 8.934105917049529
+      },
+      "shrink": {
+        "nrmse_db": -1.915112356103847,
+        "real_coordinate_mse": 3.236264769421815
+      },
+      "learned": {
+        "nrmse_db": -1.9387096432485438,
+        "real_coordinate_mse": 3.2187282871179215
+      },
+      "learned_improvement_over_noisy_db": 4.433667801506559,
+      "learned_improvement_over_shrink_db": 0.023597287144696777,
+      "learned_win_fraction_vs_shrink": 0.65771484375,
+      "learned_wins_vs_shrink": 1347,
+      "learned_ties_vs_shrink": 0,
+      "learned_losses_vs_shrink": 701
+    },
+    {
+      "sigma": 10.0,
+      "within_inference_range": true,
+      "shrink_coefficient": 0.04692246445329952,
+      "noisy": {
+        "nrmse_db": 12.952533063864767,
+        "real_coordinate_mse": 99.26784352277254
+      },
+      "shrink": {
+        "nrmse_db": -0.20411872328982994,
+        "real_coordinate_mse": 4.798918879614578
+      },
+      "learned": {
+        "nrmse_db": -0.20374299495913445,
+        "real_coordinate_mse": 4.799334074339356
+      },
+      "learned_improvement_over_noisy_db": 13.1562760588239,
+      "learned_improvement_over_shrink_db": -0.0003757283306954906,
+      "learned_win_fraction_vs_shrink": 0.48583984375,
+      "learned_wins_vs_shrink": 995,
+      "learned_ties_vs_shrink": 0,
+      "learned_losses_vs_shrink": 1053
+    },
+    {
+      "sigma": 20.0,
+      "within_inference_range": true,
+      "shrink_coefficient": 0.01215849606280945,
+      "noisy": {
+        "nrmse_db": 18.97313297714439,
+        "real_coordinate_mse": 397.07137409109015
+      },
+      "shrink": {
+        "nrmse_db": -0.04924698175906062,
+        "real_coordinate_mse": 4.973138826894026
+      },
+      "learned": {
+        "nrmse_db": -0.046151311264814684,
+        "real_coordinate_mse": 4.976684966197947
+      },
+      "learned_improvement_over_noisy_db": 19.019284288409207,
+      "learned_improvement_over_shrink_db": -0.0030956704942459376,
+      "learned_win_fraction_vs_shrink": 0.45751953125,
+      "learned_wins_vs_shrink": 937,
+      "learned_ties_vs_shrink": 0,
+      "learned_losses_vs_shrink": 1111
+    },
+    {
+      "sigma": 80.0,
+      "within_inference_range": false,
+      "shrink_coefficient": 0.0007686677322975422,
+      "noisy": {
+        "nrmse_db": 31.01433280370364,
+        "real_coordinate_mse": 6353.141985457442
+      },
+      "shrink": {
+        "nrmse_db": -0.0020740342344958335,
+        "real_coordinate_mse": 5.027451361085413
+      },
+      "learned": {
+        "nrmse_db": 0.002911884388423558,
+        "real_coordinate_mse": 5.033226441980773
+      },
+      "learned_improvement_over_noisy_db": 31.011420919315213,
+      "learned_improvement_over_shrink_db": -0.004985918622919392,
+      "learned_win_fraction_vs_shrink": 0.4375,
+      "learned_wins_vs_shrink": 896,
+      "learned_ties_vs_shrink": 0,
+      "learned_losses_vs_shrink": 1152
+    }
+  ],
+  "summary": {
+    "sigma_count": 10,
+    "learned_better_than_noisy_sigma_count": 7,
+    "learned_better_than_shrink_sigma_count": 3,
+    "inference_sigma_count": 9,
+    "elapsed_seconds": 0.152083875000244
+  },
+  "provenance": {
+    "evaluation_script": "scripts/evaluate_tiny_denoiser.py",
+    "evaluation_script_sha256": "00f5946f5538c9d622c046d7646fa8ee6246db102e776f59a069a8b2dba54436",
+    "generator_training_script": "scripts/train_tiny_prior.py",
+    "generator_training_script_sha256": "1e62c64b0f7743343fee0ad5f65157c1b3f97682b789e5f5bf500b12f4b15aee",
+    "generator_loading": "AST extraction of the vectors function from the hashed training source; NumPy/SciPy only; no training-script top-level code executes.",
+    "inference_source": "backend/neural.py",
+    "inference_source_sha256": "37276054c0c48c5bef31e357a666a4c0dde73473553aa9fff34d04eab19b11f8",
+    "sh_source": "backend/capture.py",
+    "sh_source_sha256": "a6ceee0694a31d4dd608fa047d4c4aaa63ffd72cc2362a8e0f482c40234c3a23",
+    "numpy_version": "2.1.3"
+  },
+  "limits": [
+    "The existing 24,072-parameter independently trained tiny model is evaluated without training or changing its weights.",
+    "New procedural vectors from the same generator family; no real speech, room impulse responses, HARP, VCTK, microphone recording, array response V, or venue data.",
+    "This tests the denoiser directly in compressed 36-channel coefficient space. It does not measure full ADEPS inverse-problem accuracy, FOA audio quality, physical soundfield recovery, or the paper checkpoint.",
+    "Gaussian shrink is a simple calibrated baseline. Beating noisy input alone is weaker evidence than beating this baseline; failures are retained.",
+    "The same epsilon and clean vectors are reused across sigma for paired comparisons. Sigma rows are correlated experiments, not independent trials.",
+    "The denoiser receives only noisy coefficients and sigma; clean coefficients are used to form the corruption and calculate scores, never as an additional network input.",
+    "No listening or temporal consistency evaluation: each vector is independent and represents one time-frequency coefficient set, not a recording.",
+    "Inference elsewhere normalizes from the observed input. This standalone training-domain denoising benchmark does not establish matched distributions after that normalization."
+  ]
+}
