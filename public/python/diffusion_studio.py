@@ -25,6 +25,18 @@ BANDS = {'broadband': (20., 8000.), 'low': (20., 500.),
 _diagonal = .5 / np.sqrt(6.)
 PREVIEW_MATRIX = np.array([[.5, _diagonal, 0., _diagonal],
                            [.5, -_diagonal, 0., _diagonal]])
+MAGNITUDE_FLOOR_RELATIVE = 1e-12
+FREQUENCY_METRIC_DEFINITIONS = {
+    'domain': 'Uncompressed ACN/N3D FOA W,Y,Z,X STFT coefficients after the declared real-valued DC/Nyquist projection, before shared export gain, iSTFT, or stereo rendering.',
+    'magnitude_spectrum_error_db': 'Gen-A Eq.5: mean over all four coefficients and all time frames of abs(20*log10(abs(reference)/abs(estimate))), evaluated separately at each frequency; lower is better.',
+    'magnitude_zero_policy': 'Both magnitudes use the same positive floor: max(global reference magnitude peak*1e-12, smallest positive normal float64). This reference-only floor is identical for every method and stage. All time/coefficient cells remain in the mean, including reference-silent cells, so generated energy there is not discarded. A frequency with entirely zero reference is null. Floor handling is an additional numerical convention, not specified by the paper.',
+    'magnitude_squared_coherence': 'Gen-A Eq.6: per coefficient, abs(sum_time(conj(reference)*estimate))^2 / (sum_time(abs(reference)^2)*sum_time(abs(estimate)^2)); then average over the shared reference-active coefficient set. Time and coefficients are not flattened together. Higher is better.',
+    'coherence_zero_policy': 'The common coefficient mask is reference nonzero at any frame. Reference-inactive coefficients are excluded for every method. If any reference-active coefficient has an entirely zero estimate, or no reference coefficient is active, that frequency is null rather than averaging a method-dependent subset. Finite results are clipped to [0,1] only for rounding. These zero policies are additional conventions.',
+    'coherence_limit': 'Coherence can equal one despite a constant gain or phase error, and with one nonzero frame it is trivial. It does not by itself establish correct direction or spatial reconstruction.',
+    'scope': 'One synthetic matched-order run, effective_order=prior_order=5, evaluated on FOA first four coefficients. Not the paper test-set average, order-15 mismatch experiment, or Parametric baseline.',
+    'sources': ['https://arxiv.org/html/2608.24558v3#S4',
+                'https://arxiv.org/html/2501.08047v1#S3.SS4'],
+}
 
 
 def _integer(config, key, default, lower, upper):
@@ -169,6 +181,49 @@ def covariance(spectra, frequencies):
     return result
 
 
+def frequency_metrics(estimate, reference, frequencies):
+    """Gen-A Eq.5/6 on FOA, with explicit reference-common zero conventions.
+
+    Inputs are never compressed, gain-normalized, projected, or mutated here.
+    The caller supplies the same representation and reference for all methods.
+    """
+    actual = np.asarray(estimate, dtype=np.complex128)
+    target = np.asarray(reference, dtype=np.complex128)
+    f = np.asarray(frequencies, dtype=float)
+    if f.ndim != 1 or not len(f) or not np.all(np.isfinite(f)) or f[0] < 0 or np.any(np.diff(f) <= 0):
+        raise ValueError('Frequency metrics require finite, increasing, nonnegative frequencies')
+    if (actual.shape != target.shape or target.ndim != 3 or target.shape[:2] != (len(f), 4)
+            or target.shape[2] < 1 or not np.all(np.isfinite(target)) or not np.all(np.isfinite(actual))):
+        raise ValueError('Frequency metrics require matching finite [frequency,4,time] coefficients')
+    ref_magnitude, est_magnitude = np.abs(target), np.abs(actual)
+    floor = max(float(ref_magnitude.max())*MAGNITUDE_FLOOR_RELATIVE, np.finfo(np.float64).tiny)
+    ref_scale, est_scale = ref_magnitude.max(axis=2), est_magnitude.max(axis=2)
+    reference_active = ref_scale > 0
+    valid_coherence = reference_active & (est_scale > 0)
+    active_count, valid_count = reference_active.sum(axis=1), valid_coherence.sum(axis=1)
+    # Difference of logs avoids overflowing the ratio itself at very low levels.
+    magnitude_error = np.mean(np.abs(20*(np.log10(np.maximum(ref_magnitude, floor))
+                                           - np.log10(np.maximum(est_magnitude, floor)))), axis=(1, 2))
+    # Separate per-channel scales cancel in MSC and prevent power overflow/underflow.
+    ref_unit = np.divide(target, ref_scale[:, :, None], out=np.zeros_like(target), where=ref_scale[:, :, None] > 0)
+    est_unit = np.divide(actual, est_scale[:, :, None], out=np.zeros_like(actual), where=est_scale[:, :, None] > 0)
+    cross = np.sum(ref_unit.conj()*est_unit, axis=2)
+    denominator = np.sum(np.abs(ref_unit)**2, axis=2)*np.sum(np.abs(est_unit)**2, axis=2)
+    channel_msc = np.divide(np.abs(cross)**2, denominator, out=np.zeros_like(denominator), where=denominator > 0)
+    channel_msc = np.clip(channel_msc, 0., 1.)
+    coherence = np.divide(np.sum(channel_msc*reference_active, axis=1), active_count,
+                          out=np.zeros(len(f)), where=active_count > 0)
+    return {'schema': 'adeps-test-spectral-metrics/1', 'frequency_hz': f.tolist(),
+            'magnitude_spectrum_error_db': [float(value) if count > 0 else None for value, count in zip(magnitude_error, active_count)],
+            'magnitude_squared_coherence': [float(value) if count > 0 and valid == count else None
+                                           for value, count, valid in zip(coherence, active_count, valid_count)],
+            'reference_active_channels': active_count.tolist(), 'coherence_valid_channels': valid_count.tolist(),
+            'reference_below_floor_cells': np.sum(ref_magnitude < floor, axis=(1, 2)).tolist(),
+            'estimate_below_floor_cells': np.sum(est_magnitude < floor, axis=(1, 2)).tolist(),
+            'magnitude_floor_absolute': float(floor), 'magnitude_floor_relative': MAGNITUDE_FLOOR_RELATIVE,
+            'channels': 4, 'frames': int(target.shape[2])}
+
+
 def _preview_pcm16(rate, audio):
     stereo = audio @ PREVIEW_MATRIX.T
     data = np.rint(np.clip(stereo, -1., 1.)*32767).astype(np.int16)
@@ -240,7 +295,8 @@ def run_studio(config, progress=None):
         metric['si_sdr'] = si_sdr(signal, signals[0])
         item = {**meta, 'covariance': covariance(foa*gain, data['frequencies']),
                 'preview_wav_base64': base64.b64encode(_preview_pcm16(audio['sample_rate_hz'], signal*gain)).decode('ascii'),
-                'metrics': metric, 'wav_filename': f"{meta['id']}_FOA_ACN_N3D.wav"}
+                'metrics': metric, 'frequency_metrics': frequency_metrics(foa, foas[0], data['frequencies']),
+                'wav_filename': f"{meta['id']}_FOA_ACN_N3D.wav"}
         items.append(item)
     singular = np.linalg.svd(v[:, :, :4], compute_uv=False)
     ranks = np.sum(singular > np.maximum(singular[:, :1]*1e-8, 1e-15), axis=1)
@@ -261,6 +317,7 @@ def run_studio(config, progress=None):
               'frequency_time_bins': int(len(data['frequencies'])*p.shape[2]),
               'foa_rank_by_frequency': ranks, 'rank_deficient_bins': int(np.sum(ranks < 4)),
               'audio': audio, 'trace': trace,
+              'frequency_metric_definitions': FREQUENCY_METRIC_DEFINITIONS,
               'covariance_definition': 'R_b = Re mean_{frequency in band,time}(a a^H), using real-wave-projected ACN/N3D FOA and shared export gain. Directional coefficient RMS = sqrt(max(0,Y R_b Y^T)); Y=[1,sqrt(3)d_y,sqrt(3)d_z,sqrt(3)d_x]. This is a directional representation at the array centre, not a room pressure map or microphone response.',
               'checkpoint_semantics': 'Intermediate items are D(x_i,sigma_i), expanded, before Euler update i+1; step counts completed updates. Final item is the actual expanded state after the terminal Euler update, not another denoiser call. All FOA endpoints undergo the declared real-wave projection.',
               'reference': items[0], 'linear': items[1], 'checkpoints': items[2:],

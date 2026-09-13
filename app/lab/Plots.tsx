@@ -23,6 +23,7 @@ export function Plot({
   xLabel,
   frequency = false,
   xFormatter,
+  yDomain,
 }: {
   x: number[];
   series: Series[];
@@ -32,6 +33,7 @@ export function Plot({
   xLabel?: string;
   frequency?: boolean;
   xFormatter?: (value: number) => string;
+  yDomain?: [number, number];
 }) {
   const t = useT();
 
@@ -63,6 +65,9 @@ export function Plot({
   const pad = (hi - lo) * 0.12;
   lo -= pad;
   hi += pad;
+  if (yDomain && yDomain.every(Number.isFinite) && yDomain[1] > yDomain[0]) {
+    [lo, hi] = yDomain;
+  }
   const xPosition = (value: number) =>
     L +
     ((W - L - R) *

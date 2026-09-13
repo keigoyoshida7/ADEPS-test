@@ -20,6 +20,77 @@ class LinearTestDenoiser:
         return .7*x, lambda upstream: .7*upstream
 
 
+class FrequencyMetricTests(unittest.TestCase):
+    def test_identity_and_twofold_gain_have_closed_form_metrics(self):
+        reference = np.ones((2, 4, 8), dtype=complex)*(1+2j)
+        untouched = reference.copy()
+        identity = studio.frequency_metrics(reference, reference, [100., 200.])
+        doubled = studio.frequency_metrics(2*reference, reference, [100., 200.])
+        np.testing.assert_allclose(identity['magnitude_spectrum_error_db'], 0., atol=1e-14)
+        np.testing.assert_allclose(identity['magnitude_squared_coherence'], 1., atol=1e-14)
+        np.testing.assert_allclose(doubled['magnitude_spectrum_error_db'], 20*np.log10(2), atol=1e-13)
+        np.testing.assert_allclose(doubled['magnitude_squared_coherence'], 1., atol=1e-14)
+        self.assertEqual(identity['magnitude_floor_absolute'], doubled['magnitude_floor_absolute'])
+        np.testing.assert_array_equal(reference, untouched)
+
+    def test_msc_aggregates_time_before_channels_and_retains_phase_ambiguity(self):
+        reference = np.ones((2, 4, 4), dtype=complex)
+        estimate = reference.copy()
+        estimate[0] *= np.array([1., -1., 1., -1.])  # Orthogonal over time in each channel.
+        estimate[1] *= np.array([1., -1., 1., -1.])[:, None]  # Fixed but different channel phase.
+        result = studio.frequency_metrics(estimate, reference, [100., 200.])
+        np.testing.assert_allclose(result['magnitude_spectrum_error_db'], [0., 0.], atol=1e-14)
+        np.testing.assert_allclose(result['magnitude_squared_coherence'], [0., 1.], atol=1e-14)
+        estimate[0, 2:] = reference[0, 2:]
+        mixed = studio.frequency_metrics(estimate, reference, [100., 200.])
+        self.assertAlmostEqual(mixed['magnitude_squared_coherence'][0], .5)
+
+    def test_zero_reference_is_null_and_zero_estimate_does_not_hide_bad_channels(self):
+        reference = np.ones((3, 4, 4), dtype=complex)
+        reference[0] = 0
+        estimate = reference.copy()
+        estimate[0] = 2  # No reference at this frequency: never report perfect recovery.
+        estimate[1, 1] = 0
+        reference[2, 1:] = 0
+        estimate[2, 1:] = 1  # Generated energy in silent reference channels must be penalized.
+        result = studio.frequency_metrics(estimate, reference, [0., 100., 200.])
+        self.assertEqual(result['magnitude_spectrum_error_db'][0], None)
+        self.assertEqual(result['magnitude_squared_coherence'], [None, None, 1.])
+        self.assertEqual(result['reference_active_channels'], [0, 4, 1])
+        self.assertEqual(result['coherence_valid_channels'], [0, 3, 1])
+        np.testing.assert_allclose(result['magnitude_spectrum_error_db'][1:], [60., 180.], atol=1e-12)
+        self.assertEqual(result['reference_below_floor_cells'], [16, 0, 12])
+        self.assertEqual(result['estimate_below_floor_cells'], [0, 4, 0])
+        json.dumps(result, allow_nan=False)
+        silent = studio.frequency_metrics(np.zeros((1, 4, 2)), np.zeros((1, 4, 2)), [100.])
+        self.assertEqual(silent['magnitude_spectrum_error_db'], [None])
+        self.assertEqual(silent['magnitude_squared_coherence'], [None])
+        json.dumps(silent, allow_nan=False)
+
+    def test_shared_gain_does_not_change_metrics_or_coherence_at_extreme_scales(self):
+        reference = np.ones((1, 4, 4), dtype=complex)
+        estimate = 2*reference
+        original = studio.frequency_metrics(estimate, reference, [125.])
+        for gain in (1e-150, .031, 1e150):
+            result = studio.frequency_metrics(estimate*gain, reference*gain, [125.])
+            np.testing.assert_allclose(result['magnitude_spectrum_error_db'], original['magnitude_spectrum_error_db'], atol=1e-12)
+            np.testing.assert_allclose(result['magnitude_squared_coherence'], [1.], atol=1e-14)
+            self.assertAlmostEqual(result['magnitude_floor_absolute']/original['magnitude_floor_absolute']/gain, 1.)
+
+    def test_invalid_shapes_frequencies_and_nonfinite_coefficients_are_rejected(self):
+        reference = np.ones((2, 4, 4), dtype=complex)
+        cases = [(reference[:1], reference, [100., 200.]),
+                 (reference[:, :3], reference[:, :3], [100., 200.]),
+                 (reference[:, :, :0], reference[:, :, :0], [100., 200.]),
+                 (reference*np.nan, reference, [100., 200.]),
+                 (reference, reference, [100., 100.]),
+                 (reference, reference, [-1., 100.]),
+                 (reference, reference, [100., np.inf])]
+        for args in cases:
+            with self.subTest(args=args), self.assertRaises(ValueError):
+                studio.frequency_metrics(*args)
+
+
 class DiffusionSnapshotHookTests(unittest.TestCase):
     def test_hook_is_observational_and_final_is_exact_return(self):
         rng = np.random.default_rng(1)
@@ -126,6 +197,19 @@ class DiffusionStudioTests(unittest.TestCase):
             self.assertNotIn('preview_wav_base64', metadata_text)
             metadata = json.loads(metadata_text)
             self.assertEqual(metadata['input_sha256'], result['input_sha256'])
+            self.assertEqual(metadata['frequency_metric_definitions'], result['frequency_metric_definitions'])
+            exported_items = [metadata['reference'], metadata['linear'], *metadata['checkpoints']]
+            for item, exported in zip(items, exported_items):
+                curves = item['frequency_metrics']
+                self.assertEqual(curves, exported['frequency_metrics'])
+                self.assertEqual(curves['frequency_hz'], result['frequencies_hz'])
+                self.assertEqual(curves['reference_active_channels'], items[0]['frequency_metrics']['reference_active_channels'])
+                self.assertEqual(curves['magnitude_floor_absolute'], items[0]['frequency_metrics']['magnitude_floor_absolute'])
+                self.assertEqual(curves['channels'], 4)
+                self.assertEqual(curves['frames'], result['frames'])
+                for name in ('magnitude_spectrum_error_db', 'magnitude_squared_coherence'):
+                    self.assertEqual(len(curves[name]), len(result['frequencies_hz']))
+                    self.assertTrue(all(value is None or np.isfinite(value) for value in curves[name]))
             for item in items:
                 rate, audio = wavfile.read(io.BytesIO(archive.read(item['wav_filename'])))
                 self.assertEqual((rate, audio.shape), (16000, (1280, 4)))
@@ -162,6 +246,8 @@ class DiffusionStudioTests(unittest.TestCase):
             _, actual_linear = wavfile.read(io.BytesIO(archive.read('linear_FOA_ACN_N3D.wav')))
             np.testing.assert_array_equal(actual_linear, expected_linear.astype(np.float32))
         self.assertEqual(result['checkpoints'][-1]['covariance'], expected_covariance)
+        self.assertEqual(result['checkpoints'][-1]['frequency_metrics'], studio.frequency_metrics(
+            expected_foa, studio.real_wave_foa(data['reference']), result['frequencies_hz']))
 
     def test_ring_reports_unobservable_elevation_without_claiming_recovery(self):
         result, _ = studio.run_studio({**self.config, 'geometry': 'ring'})

@@ -8,6 +8,7 @@ import MicrophoneArrayView from './MicrophoneArrayView';
 import NoiseScheduleView from './NoiseScheduleView';
 import DenoiserValidation from './DenoiserValidation';
 import ProcessAudition from './ProcessAudition';
+import SpectralComparison, { type SpectralEstimate } from './SpectralComparison';
 import { noiseSchedule, fromNoiseTrace } from './noiseSchedule';
 import { virtualArrayPositions } from './arrayGeometry';
 import { Plot, fmt } from './Plots';
@@ -16,7 +17,7 @@ import './DiffusionStudio.css';
 type Band = 'broadband' | 'low' | 'mid' | 'high';
 type Covariance = Record<Band, number[][]>;
 type Metrics = { nrmse_db?: number | null; coherence?: number | null; encoded_residual?: number | null; si_sdr_db?: number | null };
-type Estimate = { id: string; label: string; stage: string; step: number; sigma: number; covariance: Covariance; preview_wav_base64: string; metrics: Metrics };
+type Estimate = { id: string; label: string; stage: string; step: number; sigma: number; covariance: Covariance; preview_wav_base64: string; metrics: Metrics; frequency_metrics?: SpectralEstimate['frequency_metrics'] };
 type Configuration = { microphones: number; radius_m: number; geometry: 'sphere' | 'ring'; snr_db: number; observation_seed: number; seed: number; eta_prime: number; steps: number };
 type StudioResult = {
   configuration: Configuration & { sigma_max: number; sigma_min: number; rho: number }; input_sha256: string; microphone_positions_m: number[][];
@@ -235,6 +236,8 @@ export default function DiffusionStudio({ active = true }: { active?: boolean })
         </>}
       </div>
     </div>
+    {result && checkpoint && <SpectralComparison language={language} runId={run!.id} inputSha256={result.input_sha256}
+      linear={result.linear} diffusion={checkpoint} checkpoints={result.checkpoints} />}
     <DenoiserValidation language={language} />
     {runs.length > 0 && <section className="panel ds-history"><div className="ds-history-heading"><div><span className="eyebrow">04 / RECONSTRUCTION LOG</span><h3>{l('復元ごとの記録', 'Reconstruction history')}</h3></div><button onClick={() => { audioRef.current?.pause(); setRuns([]); setSelectedId(undefined); }} disabled={busy}><Trash2 size={14} />{l('履歴を消す', 'Clear history')}</button></div>
       <p className="ds-caption">{l('このタブで直近6件を保持します。再読み込みで消えるため、残したい結果はZIPで保存してください。', 'The latest six runs stay in this tab. Reloading clears them; download a ZIP to keep a result.')}</p>

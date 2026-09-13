@@ -32,6 +32,36 @@
 
 平面リングでは上下を分ける観測情報が不足します。拡散priorがZ成分や上下方向に形を作っても、その情報をマイクが測定できたことを意味しません。参照との誤差と、周波数ごとのFOA rankも確認します。
 
+### Linear / ADEPS-testを周波数ごとに比較する（v0.5.4）
+
+復元結果の下に、同じ合成FOA参照を使った**振幅スペクトル誤差**と**Magnitude-Squared Coherence（MSC）**のグラフを表示します。破線がそのrunのLinear、実線が選択中の保存済み拡散推定です。中間段階・最終結果・履歴を選ぶと更新され、「過程を再生」でも再生中の段階に追従します。拡散OFFで音をLinearに切り替えていても、この比較では選択中の拡散結果を保持します。
+
+横軸は対数の1 Hz〜20 kHzです。現在の計算は16 kHz・FFT256なので非DCビンは62.5 Hz〜8 kHzで、計算外の帯域や評価が未定義の点は空白にします。誤差の縦軸は同じrunの全保存段階で共通、MSCは0〜1に固定します。周波数を選んで双方の値と差を読み、表・CSVへ保存できます。ZIPの `metadata.json` にも各保存段階の `frequency_metrics` を含めます。
+
+#### 指標と引用
+
+[ADEPS §4とFig.1](https://arxiv.org/html/2608.24558v3#S4)が参照する[Gen-A §III-D、式(5)(6)](https://arxiv.org/html/2501.08047v1#S3.SS4)に基づきます。`b`は合成参照、`b̂`は推定、`t`はSTFTフレーム、`c`はFOAの4チャンネル（W,Y,Z,X）です。
+
+```text
+S(f) = mean_(t,c) |20 log10(|b(t,f,c)| / |b̂(t,f,c)|)|
+C(f) = mean_c [ |sum_t conj(b(t,f,c)) b̂(t,f,c)|²
+                 / (sum_t |b(t,f,c)|² × sum_t |b̂(t,f,c)|²) ]
+```
+
+S(f)は小さいほど、MSCは1に近いほど参照に一致します。MSCはチャンネルごとに時間方向の相関を計算してからチャンネル平均し、時間・チャンネルをまとめた単一の相関にはしません。振幅スペクトル誤差は既存の複素NRMSEとは異なる指標です。一定のゲイン差や位相差があってもMSCだけは1になる場合があるので、2つの図を合わせて読みます。
+
+採点には、表示とWAV生成に使う**未圧縮FOAのSTFT係数**を使います。DC/Nyquistの実数化後、共通書き出しゲインを適用する前に比較し、各推定の独立した音量正規化やWAVの再解析は行いません。
+
+原典にはεや無音時の詳細処理がないため、次は本実装の追加条件です。振幅には参照全体の最大振幅×10⁻¹²の共通floorを両手法へ適用し、全フレーム×4チャンネルで平均します。参照が無音の周波数は評価しません。MSCでは参照に有効なエネルギーがある共通チャンネル集合を使います。その中で推定のエネルギーが0になるチャンネルがあれば、その周波数のMSCを未定義（null）にし、残りの良いチャンネルだけの平均に変えません。floorや有効チャンネル数は結果に記録します。
+
+ここでの「ADEPS-test」は既存の独自TinyDenoiserによる推論です。参照生成・推論とも5次のモデルであり、論文の15次音場によるMismatched条件やParam法はこの図へ追加していません。図は1回の短い合成クリップの計算結果で、論文の多数のテスト信号の集計とは異なります。論文の曲線を複写した値でも、論文と同等の精度を証明した結果でもありません。
+
+**English.** Each reconstruction now compares its fixed Linear baseline with the selected stored diffusion stage using frequency-dependent magnitude-spectrum error and magnitude-squared coherence. Stage changes, saved-run selection and process audition update the comparison. Switching diffusion OFF for playback does not replace the diffusion comparison curve with Linear. The spectrum-error axis is shared across all stored stages in that run; coherence is fixed to 0…1. The frequency axis spans 1 Hz…20 kHz, with actual non-DC data at 62.5 Hz…8 kHz. Uncomputed or undefined values remain blank. Inspect numerical values, export CSV, or retain every stage's `frequency_metrics` in the ZIP metadata.
+
+The definitions follow [Gen-A Eq. (5)(6)](https://arxiv.org/html/2501.08047v1#S3.SS4), as cited by [ADEPS §4/Fig.1](https://arxiv.org/html/2608.24558v3#S4). Magnitude error averages the absolute dB-magnitude discrepancy over time and FOA channels. MSC computes temporal cross-power per channel before channel averaging. Evaluation uses uncompressed FOA STFTs after real-wave endpoint projection and before export gain. This is not the compressed denoiser benchmark or complex NRMSE.
+
+The original equations do not specify zero handling. Our extension applies a common reference-peak ×10⁻¹² magnitude floor, marks silent reference frequencies undefined, and uses the same reference-active channel set for all methods' MSC. A zero-energy estimate in any of those channels makes that frequency's MSC undefined rather than averaging only the remaining channels. Inspect the recorded floor/counts. These are single synthetic-clip results from the independent tiny model with matched order-5 generation and inversion, not the paper's aggregate curves, Param baseline, or order-15 mismatched experiment.
+
 ### ノイズスケジュールの図（v0.5.3）
 
 「ノイズスケジュール」で、横軸を完了したEuler更新の数（0〜M）、縦軸をノイズ尺度σとして表示します。予定の点は実装と同じ式から生成し、復元後に「復元Nの記録」を選ぶと、実行ログの `sigma` / `next_sigma` から直接表示します。現在の設定と保存結果は区別します。
