@@ -2,7 +2,13 @@
 
 理想的なAmbisonics音声を学ぶ拡散priorと、仮想マイクの観測からの復元を調べる研究用アプリです。日本語／英語、黒背景・白字・游明朝体、3Dアレイ表示、反復過程の試聴、周波数別の誤差比較に対応します。独立した **ADEPS + α** タブでは、固定した学習済みモデルに方向推定・波形整合・観測整合を加える方式を比較します。
 
-[Web UI](https://keigoyoshida7.github.io/ADEPS-test/?v=0.7.0) · [ADEPS + α の方式と引用](docs/PLUS_METHODS.md) · [評価プロトコル](docs/PLUS_PROTOCOL.md) · [再計算とダウンロード](docs/PLUS_USAGE.md) · [学習記録](public/models/paper-prior-training.json) · [データの出所](docs/PAPER_DATA.md)
+[Web UI](https://keigoyoshida7.github.io/ADEPS-test/?v=0.7.1) · [ADEPS + α の方式と引用](docs/PLUS_METHODS.md) · [評価プロトコル](docs/PLUS_PROTOCOL.md) · [再計算とダウンロード](docs/PLUS_USAGE.md) · [学習記録](public/models/paper-prior-training.json) · [データの出所](docs/PAPER_DATA.md)
+
+## v0.7.1 — 原論文の指標で比較
+
+「ADEPS + α」上部に、原著v3のTable 1–3の引用値と本実装の再評価を追加しました。SI-SDR、振幅スペクトル誤差、MSC、ILD誤差、IC誤差の5列で、全32場面・9方式を表示します。周波数図、場面選択、同じ入力での方式比較、CSV/JSONの保存に対応します。
+
+スペクトル/MSCは引用先Gen-Aの式に従う値と、−120 dBの参照共通floorを使う独自の感度評価を切り替えます。ILD/ICは実測SADIE II KU100 HRTFによる独自ERB代理指標です。**原著と同じ評価コード・音声・アレイ条件ではないため、原著に対する勝敗は判定しません。** 新たな学習や推論はせず、v0.7.0の保存結果を追加採点しています。旧主指標・評価記録は不変です。[式・出典・再評価手順](docs/PAPER_COMPARISON.md)を参照してください。
 
 ## v0.7.0 — ADEPS + α
 
@@ -37,7 +43,7 @@
 
 ## Webで見る
 
-3つ目の[ADEPS + αタブ](https://keigoyoshida7.github.io/ADEPS-test/?v=0.7.0&tab=plus)は、完成した[最終評価JSON](public/models/plus-benchmark.json)を読み込み、9方式の平均・場面別誤差・周波数曲線を表示します。試聴例は結果を見る前に固定したscene 0000で、良かった例への差し替えは行いません。ファイルが未完成・未公開・不整合なら、その状態を表示して結果を補いません。公開ページでの操作は保存結果の切り替えであり、モデルの再計算ではありません。
+3つ目の[ADEPS + αタブ](https://keigoyoshida7.github.io/ADEPS-test/?v=0.7.1&tab=plus)は、完成した[最終評価JSON](public/models/plus-benchmark.json)を読み込み、9方式の平均・場面別誤差・周波数曲線を表示します。試聴例は結果を見る前に固定したscene 0000で、良かった例への差し替えは行いません。ファイルが未完成・未公開・不整合なら、その状態を表示して結果を補いません。公開ページでの操作は保存結果の切り替えであり、モデルの再計算ではありません。
 
 [音声と記録のZIP](public/models/plus-example-audio.zip)には、参照＋9方式の4ch FOA WAV、固定cardioidステレオ試聴、出典・ライセンス・設定・評価記録をまとめます。10対象すべてに共通gainを使い、3Dの共分散にも同じgainの2乗を適用します。公開例とCLIの使い分けは[利用手順](docs/PLUS_USAGE.md)を参照してください。
 

@@ -51,6 +51,7 @@ export default function ResearchInfo({ onNavigate }: { onNavigate: (page: string
       <p>{l('別タブでは、同じ学習済みモデルに方向共分散・波形としてのSTFT整合・観測補正を組み合わせた独自方式を比較します。学習済み補正をOFFにした比較も掲載し、何が改善に寄与したかを分けて確認します。重みの再学習や、原著ADEPSを上回ったという主張は含みません。', 'The separate tab compares an independent combination of the same trained model, directional covariance, STFT waveform consistency and observation correction. A learned-refinement OFF control separates the contribution of each part. This does not retrain the checkpoint or establish superiority over the original ADEPS paper.')}</p>
       <button type="button" onClick={() => onNavigate('plus')}>{l('ADEPS + αの比較へ', 'Open ADEPS + α comparison')}<ArrowRight size={14}/></button>
       <Source href={asset('info/PLUS_METHODS.md')}>{l('実装方法と引用元', 'Methods and citations')}</Source>
+      <Source href={asset('info/PAPER_COMPARISON.md')}>{l('原論文の5指標との対応・追加評価', 'Alignment with the paper’s five metrics')}</Source>
       <Source href={asset('info/PLUS_PROTOCOL.md')}>{l('評価条件と判定方法', 'Evaluation protocol')}</Source>
       <Source href={asset('info/PLUS_USAGE.md')}>{l('自分の入力で再計算', 'Recompute with your input')}</Source>
     </section>

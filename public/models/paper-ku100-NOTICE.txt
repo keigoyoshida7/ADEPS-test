@@ -1,0 +1,38 @@
+SADIE II D1 Neumann KU100 — derived first-order decoder
+
+Copyright 2018, University of York.
+The source measurement data and this derived data asset are distributed under
+the Apache License, Version 2.0. See paper-ku100-LICENSE.txt.
+
+Dataset: SADIE II, AudioLab, Department of Electronic Engineering,
+University of York, United Kingdom.
+Dataset page: https://www.york.ac.uk/sadie-project/database.html
+Citation: Armstrong, C.; Thresh, L.; Murphy, D.; Kearney, G.
+“A Perceptual Evaluation of Individual and Non-Individual HRTFs: A Case Study
+of the SADIE II Database.” Applied Sciences 8(11), 2029 (2018).
+https://doi.org/10.3390/app8112029
+
+Original measured file:
+https://sofacoustics.org/data/database/sadie/D1_48K_24bit_256tap_FIR_SOFA.sofa
+SHA256: e6c72a84dd947b5ef75438ab96a9c2a32ed10f033472b9c4c11a49aff00a8a31
+Source data: 8802 directions, 2 ears, 256 samples at 48000 Hz.
+Source file history includes low-frequency extension, diffuse-field
+equalization and windowing. These are processed measured HRTFs, not raw
+uncompensated measurements.
+
+Changes made for ADEPS-test:
+1. Spherical Voronoi-area-weighted least-squares projection into real,
+   first-order ACN/N3D coefficients [W,Y,Z,X].
+2. Evaluation of the projected 48 kHz filters at the 16 kHz / FFT512
+   frequency grid, 0–8000 Hz in 31.25 Hz steps, using their DTFT.
+3. Real DC and Nyquist coefficients for compatibility with a real 16 kHz
+   waveform. No model, scene, result or test score is used to fit this decoder.
+
+Rebuild with the checksum-pinned source file, NumPy, SciPy and h5py:
+python backend/paper_binaural_metrics.py prepare --sofa PATH_TO_SOURCE_SOFA
+
+This is an independently chosen first-order decoder for supplementary
+reference-based binaural metrics. The original ADEPS article does not identify
+the precise KU100 measurement file or decoder configuration; this asset is
+not claimed to be that article’s original renderer. No endorsement by the
+dataset authors, University of York, Neumann, or ADEPS authors is implied.

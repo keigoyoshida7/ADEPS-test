@@ -1,6 +1,6 @@
 {
   "name": "adeps-test",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -17,7 +17,8 @@
     "typecheck": "tsc --noEmit",
     "test:studio": "node --experimental-strip-types --test tests/diffusion_math.test.mjs tests/noise_schedule.test.mjs tests/process_audition.test.mjs tests/decoding_math.test.mjs",
     "test:training": "python3 -m unittest discover -s training_tests -v",
-    "test:plus": "python3 -m unittest discover -s scripts -p 'test_*plus*.py' -v"
+    "test:plus": "python3 -m unittest discover -s scripts -p 'test_*plus*.py' -v",
+    "test:paper-metrics": "python3 -m unittest discover -s scripts -p 'test_*paper_comparison*.py' -v && node --experimental-strip-types --test tests/paper_comparison_data.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

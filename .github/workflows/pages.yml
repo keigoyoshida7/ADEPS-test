@@ -41,6 +41,7 @@ jobs:
       - run: npm run test:max
       - run: npm run test:studio
       - run: npm run test:plus
+      - run: npm run test:paper-metrics
       - run: npm run build
         env:
           VITE_BASE_PATH: /ADEPS-test/

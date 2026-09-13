@@ -114,7 +114,7 @@ Avoid blanket claims that all metrics improve:
 
 - Table 1 ideal coherence: Q4 .81 linear vs .80 ADEPS; Aria .76 vs .73. Parametric Aria spectral error 6.04 dB is better than ADEPS 6.67. Parametric Q4 ILD .98 dB is slightly better than ADEPS 1.02.
 - Table 2 mismatch coherence: linear [.82,.82,.83,.76] versus ADEPS [.74,.76,.80,.64], all worse. Aria spectrum error: parametric 7.36 vs ADEPS 7.43 dB. Aria IC error: parametric .08 vs ADEPS .10. Several ILD/IC entries favor the parametric baseline.
-- Table 3: U-Net coherence .85 vs ADEPS .78, though SI-SDR 8.03 vs 11.67 dB favors ADEPS.
+- Table 3 (updated against [v3, PDF p. 4](https://arxiv.org/pdf/2608.24558v3#page=4), checked 2026-09-13): Linear / U-Net / Diff-Enc. / ADEPS SI-SDR is 6.63 / 6.16 / 9.52 / 9.23 dB and coherence is .80 / .83 / .78 / .71. Diff-Enc. has the highest SI-SDR; U-Net has the highest coherence and the lowest spectral error (5.83 dB versus ADEPS 5.88 dB). These v3 values supersede this review’s earlier Table 3 transcription; they are not results from the application’s independent implementation.
 - Figure 1 plots frequency-dependent spectrum error and coherence averaged across the test signals. It shows low-frequency benefit and high-frequency losses under mismatch; do not manufacture a measured loudspeaker frequency response from this figure.
 
 The table contains counterexamples to the prose's broad assertion of best spectral error across geometries. Prefer actual table numbers.

@@ -1,0 +1,659 @@
+{
+  "schema": "adeps-paper-reference/1",
+  "source": {
+    "arxiv_id": "2608.24558",
+    "version": "v3",
+    "date": "2026-09-08",
+    "title": "Array-Agnostic Ambisonics Encoding via Diffusion Posterior Sampling",
+    "authors": [
+      "Amit Milstein",
+      "Nir Shlezinger",
+      "Boaz Rafaely"
+    ],
+    "html_url": "https://arxiv.org/html/2608.24558v3",
+    "pdf_url": "https://arxiv.org/pdf/2608.24558v3",
+    "retrieved_at": "2026-09-13T13:14:16.833054Z",
+    "license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "html_sha256": "d19189682bc31300e50ecfd164784640f751b7d4502b5303788f011468c8c939",
+    "verification": {
+      "html_tables": [
+        1,
+        2,
+        3
+      ],
+      "pdf_pages": [
+        4
+      ],
+      "method": "All 140 printed values cross-checked between versioned HTML and PDF text; values transcribed without re-estimation.",
+      "table3_note": "PDF confirms SI-SDR 6.63 and 6.16; the apparent leading zeros in HTML are formatting placeholders.",
+      "table2_note": "Param., 5 Mics, ILD error is 2.54 dB in both HTML and PDF; retained as printed."
+    },
+    "changes": "Numeric tables transcribed to structured JSON; labels translated and definitions, source links, and comparison limitations added. No affiliation or endorsement implied."
+  },
+  "metric_order": [
+    "si_sdr_db",
+    "spectral_error_db",
+    "coherence",
+    "ild_error_db",
+    "ic_error"
+  ],
+  "metrics": [
+    {
+      "id": "si_sdr_db",
+      "label": "SI-SDR",
+      "label_jp": "SI-SDR：波形の再構成品質",
+      "label_en": "SI-SDR: waveform reconstruction",
+      "unit": "dB",
+      "higher_is_better": true,
+      "definition": "Scale-invariant signal-to-distortion ratio: alpha = dot(reference, estimate) / dot(reference, reference); target = alpha * reference; score = 10 log10(sum(target^2) / sum((estimate - target)^2)). This projects the estimate onto the reference direction.",
+      "source_url": "https://arxiv.org/abs/1811.02508",
+      "paper_reference": 33,
+      "limitations": "ADEPS does not fully state mean removal, per-channel aggregation, signal length, alignment, or silence handling. This is not NRMSE or absolute-level accuracy."
+    },
+    {
+      "id": "spectral_error_db",
+      "label": "Mean magnitude spectrum error",
+      "label_jp": "振幅スペクトル誤差",
+      "label_en": "Magnitude spectrum error",
+      "unit": "dB",
+      "higher_is_better": false,
+      "definition": "S(f) = mean_(t,c) abs(20 log10(abs(b[t,f,c]) / abs(bhat[t,f,c]))).",
+      "source_url": "https://arxiv.org/html/2501.08047v1#S3.SS4",
+      "paper_reference": 14,
+      "reference_equation": 5,
+      "limitations": "Gen-A defines each frequency over time and channels. ADEPS does not fully specify table frequency/scene aggregation, valid-bin selection, amplitude floor, or silent-bin handling."
+    },
+    {
+      "id": "coherence",
+      "label": "Magnitude-squared coherence",
+      "label_jp": "振幅二乗コヒーレンス",
+      "label_en": "Magnitude-squared coherence",
+      "unit": "unitless",
+      "higher_is_better": true,
+      "range": [
+        0,
+        1
+      ],
+      "definition": "C(f) = mean_c abs(sum_t conj(b[t,f,c]) * bhat[t,f,c])^2 / (sum_t abs(b[t,f,c])^2 * sum_t abs(bhat[t,f,c])^2). The division occurs per channel before channel averaging.",
+      "source_url": "https://arxiv.org/html/2501.08047v1#S3.SS4",
+      "paper_reference": 14,
+      "reference_equation": 6,
+      "limitations": "Zero denominators and table aggregation are not fully specified. Constant gain or phase rotation can preserve coherence; this metric alone does not establish complete spatial accuracy."
+    },
+    {
+      "id": "ild_error_db",
+      "label": "ILD error",
+      "label_jp": "両耳間レベル差の誤差",
+      "label_en": "Interaural level difference error",
+      "unit": "dB",
+      "higher_is_better": false,
+      "definition": "Mean absolute error of interaural level differences after binaural rendering using Neumann KU100 HRTFs and ERB bands.",
+      "source_url": "https://arxiv.org/html/2608.24558v3#S4",
+      "paper_references": [
+        9,
+        31,
+        32
+      ],
+      "limitations": "Exact HRTF selection, rendering, ERB filters, time/frequency averaging, and numeric safeguards are not fully specified in ADEPS."
+    },
+    {
+      "id": "ic_error",
+      "label": "IC error",
+      "label_jp": "両耳間コヒーレンスの誤差",
+      "label_en": "Interaural coherence error",
+      "unit": "unitless",
+      "higher_is_better": false,
+      "definition": "Mean absolute error of interaural coherence cues after the specified binaural rendering and ERB-band analysis.",
+      "source_url": "https://arxiv.org/html/2608.24558v3#S4",
+      "paper_references": [
+        9,
+        31,
+        32
+      ],
+      "limitations": "This is binaural interaural-coherence error, distinct from coefficient magnitude-squared coherence. Windowing, lag search, and aggregation are not fully specified in ADEPS."
+    }
+  ],
+  "arrays": [
+    {
+      "id": "mics4",
+      "label": "4 Mics",
+      "label_jp": "4マイク",
+      "label_en": "4 microphones",
+      "microphones": 4,
+      "realizations_tables_1_2": 4,
+      "realizations_table_3": 1,
+      "geometry": "Random irregular; Table 3 selects a single fixed geometry.",
+      "pairwise_spacing_m": [
+        0.02,
+        0.18
+      ],
+      "coordinates_in_paper": false
+    },
+    {
+      "id": "mics5",
+      "label": "5 Mics",
+      "label_jp": "5マイク",
+      "label_en": "5 microphones",
+      "microphones": 5,
+      "realizations_tables_1_2": 4,
+      "geometry": "Random irregular",
+      "pairwise_spacing_m": [
+        0.02,
+        0.18
+      ],
+      "coordinates_in_paper": false
+    },
+    {
+      "id": "mics6",
+      "label": "6 Mics",
+      "label_jp": "6マイク",
+      "label_en": "6 microphones",
+      "microphones": 6,
+      "realizations_tables_1_2": 4,
+      "geometry": "Random irregular",
+      "pairwise_spacing_m": [
+        0.02,
+        0.18
+      ],
+      "coordinates_in_paper": false
+    },
+    {
+      "id": "aria",
+      "label": "Aria",
+      "label_jp": "Project Aria",
+      "label_en": "Project Aria",
+      "microphones": null,
+      "realizations_tables_1_2": 1,
+      "geometry": "Project Aria head-worn array",
+      "pairwise_spacing_m": null,
+      "coordinates_in_paper": false,
+      "source_url": "https://arxiv.org/abs/2308.13561",
+      "note": "ADEPS Section 4 names the device but does not enumerate the channels used or publish its response matrix; no channel count is inferred here."
+    }
+  ],
+  "methods": [
+    {
+      "id": "linear",
+      "label": "Linear",
+      "description": "Tikhonov-regularized linear encoder, Eq. 5.",
+      "array_specific_training": false,
+      "source_url": "https://arxiv.org/html/2608.24558v3#S2.SS3"
+    },
+    {
+      "id": "parametric",
+      "label": "Param.",
+      "description": "Parametric resynthesis supplied with oracle source directions and device array transfer functions; an oracle-aided comparator.",
+      "array_specific_training": false,
+      "oracle_source_directions": true,
+      "source_url": "https://arxiv.org/html/2608.24558v3#S4",
+      "paper_reference": 9
+    },
+    {
+      "id": "unet",
+      "label": "U-Net",
+      "description": "Array-specific encoder trained for the one 4-microphone geometry in Table 3.",
+      "array_specific_training": true,
+      "parameters_million_reported": 10.2,
+      "source_url": "https://arxiv.org/html/2608.24558v3#S4",
+      "paper_reference": 11
+    },
+    {
+      "id": "diff_enc",
+      "label": "Diff-Enc.",
+      "description": "Array-specific diffusion encoder with channel-concatenation conditioning, trained for the Table 3 geometry.",
+      "array_specific_training": true,
+      "parameters_million_reported": 30.8,
+      "source_url": "https://arxiv.org/html/2608.24558v3#S4"
+    },
+    {
+      "id": "adeps",
+      "label": "ADEPS",
+      "description": "Original authors’ trained, array-independent order-5 prior, conditioned on the array during DPS inference. These published values are not measurements of this application’s independent model.",
+      "array_specific_training": false,
+      "parameters_million_reported": 30.8,
+      "source_url": "https://arxiv.org/html/2608.24558v3#S4"
+    }
+  ],
+  "conditions": {
+    "source_url": "https://arxiv.org/html/2608.24558v3#S4",
+    "pdf_page": 4,
+    "training": {
+      "corpus": "VCTK",
+      "room_response_method": "HARP-generated target Ambisonics room impulse responses",
+      "scenes": 20000,
+      "N_p": 5,
+      "ideal_complex_coefficients": 36,
+      "backbone": "NCSN++M extended with changed input/output channels and adaLN noise/time conditioning",
+      "parameters_million_reported": 30.8,
+      "compression": {
+        "alpha": 0.67,
+        "beta": 3
+      },
+      "noise_schedule": {
+        "sigma_max": 80,
+        "sigma_min": 0.002,
+        "rho": 10
+      },
+      "objective": "EDM-preconditioned, noise-weighted squared denoising error, Eq. 12",
+      "array_geometry_used_for_prior_training": false
+    },
+    "test": {
+      "corpus": "WSJ0",
+      "scenes": 1000,
+      "array_realizations": 13,
+      "test_signals_reported": 13000,
+      "room_dimensions_ranges_m": [
+        [
+          6,
+          10
+        ],
+        [
+          6,
+          10
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "reverberation_t60_s": [
+        0.1,
+        0.4
+      ],
+      "array_center_region_m": [
+        1,
+        1
+      ],
+      "speech_source_counts": [
+        1,
+        2
+      ],
+      "source_distance_m": [
+        0.8,
+        1.5
+      ],
+      "source_sampling": "Source count, distance, and arrival direction sampled per scenario; directions uniform as reported. Angular bounds and seeds are not listed.",
+      "observation": "p = V a + noise, Eq. 2",
+      "noise": "Additive Gaussian, independent across microphones in the signal model",
+      "snr_db": 50,
+      "N_eff_conditions": [
+        5,
+        15
+      ],
+      "N_enc": 1,
+      "evaluated_coefficients": 4,
+      "binaural_hrtf": "Neumann KU100",
+      "binaural_bands": "ERB",
+      "sample_rate_hz": null,
+      "fft_length": null,
+      "duration_seconds": null,
+      "note": "13,000 is the paper’s reported scene-by-array count, not the number of independent speech scenes. The paper does not separately give a Table 3 signal count or a combined count over both N_eff settings."
+    },
+    "inference": {
+      "N_p": 5,
+      "sigma_max": 20,
+      "sigma_min": 0.002,
+      "rho": 10,
+      "reverse_steps": 150,
+      "initialization": "Gaussian perturbation around compressed linear encoding, Algorithm 1",
+      "guidance": "Likelihood gradient through H(E V H^-1(denoised)), normalized by its norm and sigma",
+      "gamma": null,
+      "eta_prime": null,
+      "note": "The paper does not supply numerical gamma or eta_prime, nor an unambiguous terminal sigma convention."
+    },
+    "not_specified_in_paper": [
+      "Exact train/evaluation scene lists, audio segments, speaker identities, seeds, and split manifest",
+      "Sample rate, FFT/hop/window/scaling, chunk length, overlap, and resampling",
+      "Complex network channel packing and explicit SH normalization/channel convention",
+      "Complete network layer configuration, optimizer, batch size, training steps, and learning-rate schedule",
+      "Numerical linear-regularization and likelihood-guidance constants",
+      "Exact array geometry/ATF files and binaural rendering implementation",
+      "Metric floors, zero/silence handling, frequency/scene aggregation, and confidence intervals"
+    ]
+  },
+  "tables": [
+    {
+      "number": 1,
+      "title": "Order matched: effective order 5, prior order 5",
+      "title_en": "Order matched: effective order 5, prior order 5",
+      "title_jp": "次数が一致：音場5次・事前分布5次",
+      "source_url": "https://arxiv.org/html/2608.24558v3#S3.T1",
+      "pdf_page": 4,
+      "N_eff": 5,
+      "N_p": 5,
+      "N_enc": 1,
+      "array_ids": [
+        "mics4",
+        "mics5",
+        "mics6",
+        "aria"
+      ],
+      "array_scope_en": "Four independently randomized geometries per microphone-count group; one Project Aria array.",
+      "array_scope_jp": "マイク数ごとに4種類のランダムな配置、およびProject Ariaの1配置。",
+      "rows": [
+        {
+          "method_id": "linear",
+          "label": "Linear",
+          "values": {
+            "mics4": {
+              "si_sdr_db": 6.8,
+              "spectral_error_db": 8.39,
+              "coherence": 0.81,
+              "ild_error_db": 3.61,
+              "ic_error": 0.12
+            },
+            "mics5": {
+              "si_sdr_db": 7.95,
+              "spectral_error_db": 7.78,
+              "coherence": 0.82,
+              "ild_error_db": 3.04,
+              "ic_error": 0.11
+            },
+            "mics6": {
+              "si_sdr_db": 9.26,
+              "spectral_error_db": 7.21,
+              "coherence": 0.83,
+              "ild_error_db": 2.77,
+              "ic_error": 0.1
+            },
+            "aria": {
+              "si_sdr_db": 3.63,
+              "spectral_error_db": 14.71,
+              "coherence": 0.76,
+              "ild_error_db": 2.44,
+              "ic_error": 0.11
+            }
+          }
+        },
+        {
+          "method_id": "parametric",
+          "label": "Param.",
+          "values": {
+            "mics4": {
+              "si_sdr_db": 3.8,
+              "spectral_error_db": 5.85,
+              "coherence": 0.72,
+              "ild_error_db": 0.98,
+              "ic_error": 0.09
+            },
+            "mics5": {
+              "si_sdr_db": 3.92,
+              "spectral_error_db": 5.79,
+              "coherence": 0.72,
+              "ild_error_db": 0.91,
+              "ic_error": 0.08
+            },
+            "mics6": {
+              "si_sdr_db": 3.91,
+              "spectral_error_db": 5.77,
+              "coherence": 0.72,
+              "ild_error_db": 0.92,
+              "ic_error": 0.08
+            },
+            "aria": {
+              "si_sdr_db": 2.86,
+              "spectral_error_db": 6.04,
+              "coherence": 0.71,
+              "ild_error_db": 0.93,
+              "ic_error": 0.09
+            }
+          }
+        },
+        {
+          "method_id": "adeps",
+          "label": "ADEPS",
+          "values": {
+            "mics4": {
+              "si_sdr_db": 11.66,
+              "spectral_error_db": 5.15,
+              "coherence": 0.8,
+              "ild_error_db": 1.02,
+              "ic_error": 0.07
+            },
+            "mics5": {
+              "si_sdr_db": 14.18,
+              "spectral_error_db": 4.72,
+              "coherence": 0.85,
+              "ild_error_db": 0.68,
+              "ic_error": 0.04
+            },
+            "mics6": {
+              "si_sdr_db": 16.2,
+              "spectral_error_db": 4.35,
+              "coherence": 0.88,
+              "ild_error_db": 0.53,
+              "ic_error": 0.03
+            },
+            "aria": {
+              "si_sdr_db": 10.0,
+              "spectral_error_db": 6.67,
+              "coherence": 0.73,
+              "ild_error_db": 0.77,
+              "ic_error": 0.06
+            }
+          }
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "title": "Order mismatch: effective order 15, prior order 5",
+      "title_en": "Order mismatch: effective order 15, prior order 5",
+      "title_jp": "次数が不一致：音場15次・事前分布5次",
+      "source_url": "https://arxiv.org/html/2608.24558v3#S3.T2",
+      "pdf_page": 4,
+      "N_eff": 15,
+      "N_p": 5,
+      "N_enc": 1,
+      "array_ids": [
+        "mics4",
+        "mics5",
+        "mics6",
+        "aria"
+      ],
+      "array_scope_en": "Four independently randomized geometries per microphone-count group; one Project Aria array.",
+      "array_scope_jp": "マイク数ごとに4種類のランダムな配置、およびProject Ariaの1配置。",
+      "rows": [
+        {
+          "method_id": "linear",
+          "label": "Linear",
+          "values": {
+            "mics4": {
+              "si_sdr_db": 6.71,
+              "spectral_error_db": 9.56,
+              "coherence": 0.82,
+              "ild_error_db": 3.65,
+              "ic_error": 0.12
+            },
+            "mics5": {
+              "si_sdr_db": 7.82,
+              "spectral_error_db": 9.32,
+              "coherence": 0.82,
+              "ild_error_db": 3.11,
+              "ic_error": 0.11
+            },
+            "mics6": {
+              "si_sdr_db": 9.09,
+              "spectral_error_db": 8.37,
+              "coherence": 0.83,
+              "ild_error_db": 2.84,
+              "ic_error": 0.1
+            },
+            "aria": {
+              "si_sdr_db": 3.31,
+              "spectral_error_db": 10.84,
+              "coherence": 0.76,
+              "ild_error_db": 2.39,
+              "ic_error": 0.12
+            }
+          }
+        },
+        {
+          "method_id": "parametric",
+          "label": "Param.",
+          "values": {
+            "mics4": {
+              "si_sdr_db": 3.73,
+              "spectral_error_db": 6.29,
+              "coherence": 0.71,
+              "ild_error_db": 0.95,
+              "ic_error": 0.08
+            },
+            "mics5": {
+              "si_sdr_db": 3.76,
+              "spectral_error_db": 6.61,
+              "coherence": 0.7,
+              "ild_error_db": 2.54,
+              "ic_error": 0.08
+            },
+            "mics6": {
+              "si_sdr_db": 3.78,
+              "spectral_error_db": 6.73,
+              "coherence": 0.71,
+              "ild_error_db": 0.88,
+              "ic_error": 0.08
+            },
+            "aria": {
+              "si_sdr_db": 2.26,
+              "spectral_error_db": 7.36,
+              "coherence": 0.66,
+              "ild_error_db": 0.91,
+              "ic_error": 0.08
+            }
+          }
+        },
+        {
+          "method_id": "adeps",
+          "label": "ADEPS",
+          "values": {
+            "mics4": {
+              "si_sdr_db": 9.85,
+              "spectral_error_db": 5.72,
+              "coherence": 0.74,
+              "ild_error_db": 1.21,
+              "ic_error": 0.08
+            },
+            "mics5": {
+              "si_sdr_db": 10.57,
+              "spectral_error_db": 5.58,
+              "coherence": 0.76,
+              "ild_error_db": 1.05,
+              "ic_error": 0.07
+            },
+            "mics6": {
+              "si_sdr_db": 12.67,
+              "spectral_error_db": 5.03,
+              "coherence": 0.8,
+              "ild_error_db": 0.86,
+              "ic_error": 0.06
+            },
+            "aria": {
+              "si_sdr_db": 4.94,
+              "spectral_error_db": 7.43,
+              "coherence": 0.64,
+              "ild_error_db": 1.3,
+              "ic_error": 0.1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "title": "Array-specific comparison: one 4-microphone array",
+      "title_en": "Array-specific comparison: one 4-microphone array",
+      "title_jp": "特定の4マイク配置に学習した方式との比較",
+      "source_url": "https://arxiv.org/html/2608.24558v3#S3.T3",
+      "pdf_page": 4,
+      "N_eff": 15,
+      "N_p": 5,
+      "N_enc": 1,
+      "array_ids": [
+        "mics4"
+      ],
+      "array_scope_en": "One fixed 4-microphone geometry used to train U-Net and Diff-Enc.; ADEPS has no geometry-specific training. Do not substitute the Table 2 four-geometry group for this column.",
+      "array_scope_jp": "U-NetとDiff-Enc.を学習した特定の4マイク配置。ADEPSはその配置を学習に使わない。表2の4配置をまとめた列とは異なる。",
+      "rows": [
+        {
+          "method_id": "linear",
+          "label": "Linear",
+          "values": {
+            "mics4": {
+              "si_sdr_db": 6.63,
+              "spectral_error_db": 11.02,
+              "coherence": 0.8,
+              "ild_error_db": 3.24,
+              "ic_error": 0.13
+            }
+          }
+        },
+        {
+          "method_id": "unet",
+          "label": "U-Net",
+          "values": {
+            "mics4": {
+              "si_sdr_db": 6.16,
+              "spectral_error_db": 5.83,
+              "coherence": 0.83,
+              "ild_error_db": 2.33,
+              "ic_error": 0.11
+            }
+          }
+        },
+        {
+          "method_id": "diff_enc",
+          "label": "Diff-Enc.",
+          "values": {
+            "mics4": {
+              "si_sdr_db": 9.52,
+              "spectral_error_db": 6.01,
+              "coherence": 0.78,
+              "ild_error_db": 0.88,
+              "ic_error": 0.06
+            }
+          }
+        },
+        {
+          "method_id": "adeps",
+          "label": "ADEPS",
+          "values": {
+            "mics4": {
+              "si_sdr_db": 9.23,
+              "spectral_error_db": 5.88,
+              "coherence": 0.71,
+              "ild_error_db": 1.13,
+              "ic_error": 0.07
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "reported_metrics_not_available": [
+    "nrmse_db"
+  ],
+  "frequency_curves": {
+    "available_as_numeric_data_in_paper": false,
+    "figure_url": "https://arxiv.org/html/2608.24558v3#S4.F1",
+    "note": "Figure 1 is a plot of spectral error and coherence. No numerical curve is transcribed or digitized into this file; do not interpolate table values into frequency curves."
+  },
+  "limitations_jp": [
+    "論文v3に掲載された参考値です。このアプリの独自モデルやADEPS+αの再計算結果ではありません。",
+    "論文はWSJ0の1,000場面と13配置、当アプリの評価は別の音声・場面・配置・処理長を使用しています。値を並べても、同一条件での優劣や論文超えを示すことにはなりません。",
+    "評価対象は1次の4係数です。表1は音場5次と事前分布5次が一致、表2・3は音場15次と事前分布5次が不一致です。アプリの5次一致の結果を表2・3と直接比較できません。",
+    "論文にはNRMSEの表値や数値の周波数曲線がありません。SI-SDRをNRMSEへ換算したり、図1をアプリの測定値として使ったりしません。",
+    "スペクトル誤差とコヒーレンスは引用文献に式がありますが、論文の全帯域平均・無音処理・床値などは十分に特定できません。両耳のILD/IC誤差には別途KU100のHRTFを使うレンダリングが必要です。",
+    "ADEPSが全指標で最良ではありません。表3のSI-SDRはDiff-Enc.が9.52 dB、ADEPSが9.23 dB。コヒーレンスはU-Netが0.83、ADEPSが0.71です。",
+    "これは合成音場に対する研究評価の参照です。実会場の音、スピーカー補正、長い音楽、聴感上の優位性を保証しません。"
+  ],
+  "limitations_en": [
+    "These are values published in paper v3, not recomputed results from this application’s independent model or ADEPS+alpha.",
+    "The paper uses 1,000 WSJ0 scenes and 13 array realizations. This application evaluates different audio, scenes, geometry, and processing lengths. A side-by-side display is not a controlled comparison or evidence of exceeding the paper.",
+    "Evaluation covers four first-order coefficients. Table 1 matches effective and prior orders at 5; Tables 2 and 3 use effective order 15 with prior order 5. This application’s matched-order results cannot be directly compared with the latter.",
+    "The paper supplies neither tabulated NRMSE nor numerical frequency curves. SI-SDR must not be converted into NRMSE, and Figure 1 must not be presented as this application’s measurements.",
+    "Cited papers define spectral error and coherence, but full-band aggregation, silent-bin treatment, and floors are insufficiently specified in ADEPS. ILD/IC errors additionally require the KU100 binaural renderer.",
+    "ADEPS does not lead every metric. In Table 3, Diff-Enc. has SI-SDR 9.52 dB versus ADEPS 9.23 dB; U-Net has coherence 0.83 versus ADEPS 0.71.",
+    "These synthetic-field research results do not establish venue performance, loudspeaker correction, long-form music quality, or perceptual superiority."
+  ]
+}

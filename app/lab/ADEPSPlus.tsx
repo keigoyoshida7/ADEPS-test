@@ -4,6 +4,7 @@ import { asset } from './assets';
 import { fmt, Plot } from './Plots';
 import PlusAudition from './PlusAudition';
 import PlusProgress from './PlusProgress';
+import PaperComparison from './PaperComparison';
 import './ADEPSPlus.css';
 
 type Value = number | null;
@@ -19,7 +20,7 @@ export type PlusBenchmark = {
   frequencies_hz: number[]; curves: Record<string, Curve>; selection: Record<string, unknown>; provenance: Record<string, unknown>;
   sources: { title: string; url: string }[]; limitations_jp: string[]; limitations_en: string[]; example_url?: string;
 };
-type Load = { state: 'loading' | 'unavailable' | 'invalid' } | { state: 'ready'; report: PlusBenchmark };
+type Load = { state: 'loading' | 'unavailable' | 'invalid' } | { state: 'ready'; report: PlusBenchmark; sha256: string };
 const REPORT = 'models/plus-benchmark.json';
 const finite = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
 const numeric = (value: unknown): value is Value => value === null || finite(value);
@@ -108,8 +109,11 @@ export default function ADEPSPlus({ language, active = true, onNavigate }: { lan
     const controller = new AbortController();
     void fetch(asset(REPORT), { cache: 'no-store', signal: controller.signal }).then(async response => {
       if (!response.ok) throw new Error('unavailable');
-      const value: unknown = await response.json();
-      if (!controller.signal.aborted) setLoad(validPlusBenchmark(value) ? { state: 'ready', report: value } : { state: 'invalid' });
+      const raw = await response.text();
+      const value: unknown = JSON.parse(raw);
+      const sha256 = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw))))
+        .map(v => v.toString(16).padStart(2, '0')).join('');
+      if (!controller.signal.aborted) setLoad(validPlusBenchmark(value) ? { state: 'ready', report: value, sha256 } : { state: 'invalid' });
     }).catch(() => { if (!controller.signal.aborted) setLoad({ state: 'unavailable' }); });
     return () => controller.abort();
   }, [active, revision]);
@@ -159,6 +163,7 @@ export default function ADEPSPlus({ language, active = true, onNavigate }: { lan
       <p>{load.state === 'invalid' ? l('数値・場面数・曲線・集計の対応を確認してから表示します。再読込しても変わらない場合は、記録の書き出しを確認してください。', 'Numbers, scene counts, curves and summaries must agree before display. If reloading does not help, check the exported record.')
         : l('計算が完了し、実際の評価ファイルが用意されると、このページに比較表と周波数の図が表示されます。ページを開くだけでは計算は始まりません。', 'Tables and frequency plots appear when an actual evaluation file is ready. Opening this page does not start computation.')}</p></section>}
     {report && selected && plus && curveData && <>
+      <PaperComparison language={language} active={active} original={report} sourceSha256={load.state === 'ready' ? load.sha256 : ''}/>
       <section className="ap-section"><header className="ap-section-heading"><span className="eyebrow">01 / OVERVIEW</span><h3>{l(report.title_jp, report.title_en)}</h3></header>
         <div className="ap-verdict"><strong>{primaryPassed ? l('事前に決めた2つの主比較を達成', 'Both predefined primary comparisons passed') : l('主比較の達成は未確認', 'Primary success has not been established')}</strong><p>{l('主比較は、調整済みLinearと現在の独自ADEPSに対する誤差の改善です。下の他の比較は、各処理の効果を分けて調べるためにも掲載しています。', 'The primary comparisons test error reduction against tuned Linear and the current independent ADEPS. Other comparisons below also isolate the contribution of each processing step.')}</p></div>
         {withoutDenoiser && <div className="ap-ablation"><strong>{l('学習済みモデル自体の寄与', 'Contribution of the trained denoiser')}</strong><p>{denoiserGain === null ? l('比較できる値が揃っていません。', 'Comparable values are unavailable.') : denoiserGain > 0 ? l(`同じ処理のモデルOFFに対して、ONの平均誤差は ${fmt(denoiserGain, 3)} dB 改善しました。`, `Against the same processing with the model OFF, ON improved mean error by ${fmt(denoiserGain, 3)} dB.`) : denoiserGain < 0 ? l(`同じ処理では、モデルOFFの方が平均誤差で ${fmt(-denoiserGain, 3)} dB 良好でした。この試験で、学習済みモデルの追加が精度を上げたとは言えません。`, `With otherwise identical processing, model OFF achieved ${fmt(-denoiserGain, 3)} dB lower mean error. This test does not establish a benefit from adding the trained denoiser.`) : l('同じ処理のモデルONとOFFで、平均誤差は同じでした。この指標では学習済みモデルを加える利益は確認できません。', 'With otherwise identical processing, model ON and OFF have equal mean error. This metric shows no benefit from adding the trained denoiser.')}</p></div>}
